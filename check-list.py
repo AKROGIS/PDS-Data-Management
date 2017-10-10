@@ -28,13 +28,44 @@ def check_unique_sources(data):
             print(problem)
 
 
+def check_unusual(data):
+    substitutions = [('ALBERS', 'AKR'), ('STATEWID', 'STATEWIDE')]
+    for row in data:
+        old = row[0].upper()
+        new = row[1].upper()
+        ext = row[2].upper()
+        if new and ext:
+            print("ERROR: multiple destinations old:{0}, new:{1}, ext:{2}".format(old, new, ext))
+        else:
+            match = False
+            if new:
+                if old == new:
+                    continue
+                for (s, r) in substitutions:
+                    if old.replace(s, r) == new:
+                        match = True
+                        break
+                if not match:
+                    print("Moving old:{0} to new:{1}".format(old, new))
+            if ext:
+                if old == ext:
+                    continue
+                for (s, r) in substitutions:
+                    if old.replace(s, r) == ext:
+                        match = True
+                        break
+                if not match:
+                    print("Moving old:{0} to ext:{1}".format(old, ext))
+
+
 def main():
     filepath = r'data/reorg.csv'
     with open(filepath, 'r') as fh:
         # ignore the first record (header)
         fh.readline()
         data = csv.reader(fh)
-        check_unique_sources(data)
+        # check_unique_sources(data)
+        check_unusual(data)
 
 
 if __name__ == '__main__':
