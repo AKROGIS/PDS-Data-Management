@@ -20,8 +20,12 @@ def check_unique_sources(data):
     for index, value in enumerate(sources[:-1]):
         if sources[index+1].startswith(value):
             invalid.append(value)
-    return invalid
-
+    # output to console
+    problems = invalid
+    if 0 < len(problems):
+        print("{0} source prefixes are not unique".format(len(problems)))
+        for problem in problems:
+            print(problem)
 
 
 def main():
@@ -30,11 +34,8 @@ def main():
         # ignore the first record (header)
         fh.readline()
         data = csv.reader(fh)
-        problems = check_unique_sources(data)
-        if 0 < len(problems):
-            print("{0} source prefixes are not unique".format(len(problems)))
-            for problem in problems:
-                print(problem)
+        check_unique_sources(data)
+
 
 if __name__ == '__main__':
     main()
