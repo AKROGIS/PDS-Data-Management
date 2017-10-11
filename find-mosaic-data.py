@@ -20,6 +20,18 @@ def check_gdb(gdb):
         # exports all paths and path types
         out_table = 'c:/tmp/junk/' + item + '.dbf'
         arcpy.ExportMosaicDatasetPaths_management(mosaic, out_table)
+        with arcpy.da.SearchCursor(out_table, "Path") as cursor:
+            for row in cursor:
+                path = row[0]
+                folder, name = os.path.split(path)
+                name, ext = os.path.splitext(name)
+                size = -1
+                try:
+                    size = os.path.getsize(path)
+                except os.error:
+                    pass
+                print('{0},{1},{2},{3},{4},{5}'.format(gdb, item, folder, name, ext, size))
+        os.remove(out_table)
 
 
 def main(folder):
