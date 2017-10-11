@@ -50,15 +50,30 @@ def printer(row):
     print(row)
 
 
-def main(folder):
+def check_folder(folder, outputter=None):
     if os.path.splitext(folder)[1].upper() == '.GDB':
-        check_gdb(folder, printer)
+        check_gdb(folder, outputter)
     else:
         for root, dirs, files in os.walk(folder):
             for name in dirs:
                 if os.path.splitext(name)[1].upper() == '.GDB':
-                    check_gdb(os.path.join(root, name), printer)
+                    check_gdb(os.path.join(root, name), outputter)
+
+
+def main(folder, csv_file=None):
+    if csv_file is None:
+        check_folder(folder, printer)
+    else:
+        import csv
+        with open(csv_file, 'w') as f:
+            csv_writer = csv.writer(f)
+
+            def put_in_csv(row):
+                csv_writer.writerow(row)
+
+            put_in_csv(['gdb', 'item', 'folder', 'name', 'ext', 'size'])
+            check_folder(folder, put_in_csv)
 
 
 if __name__ == '__main__':
-    main(r'Z:\IServer\Mosaics\ANIA')
+    main(r'Z:\IServer\Mosaics\ANIA', 'data/images.csv')
