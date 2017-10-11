@@ -10,16 +10,21 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import arcpy
 import os
 import tempfile
+# import shutil
 
 
 def check_gdb(gdb):
     # print(gdb)
     arcpy.env.workspace = gdb
+    # make folder for temp files.
+    # I cant use a real temp file because to get a name, I must create it,
+    # and arcpy.Export..() doesn't like the file existing even with arcpy.env.overwriteOutput = True
+    temp_folder = tempfile.mkdtemp(prefix='mosaic_paths')
     for item in arcpy.ListDatasets('*', 'Mosaic'):
         print('{0},{1}'.format(gdb, item))
         mosaic = os.path.join(gdb, item)
+        out_table = os.path.join(temp_folder, '{}.dbf'.format(item))
         # exports all paths and path types
-        _handle, out_table = tempfile.mkstemp(suffix='.dbf', prefix='mosaic_paths')
         arcpy.ExportMosaicDatasetPaths_management(mosaic, out_table)
         with arcpy.da.SearchCursor(out_table, "Path") as cursor:
             for row in cursor:
@@ -32,7 +37,8 @@ def check_gdb(gdb):
                 except os.error:
                     pass
                 print('{0},{1},{2},{3},{4},{5}'.format(gdb, item, folder, name, ext, size))
-        os.remove(out_table)
+        os.remove(out_table)  # need to make sure locks are gone before removing folder
+    # shutil.rmtree(temp_folder)  # fails due to a race condition with an ArcGIS lock
 
 
 def main(folder):
