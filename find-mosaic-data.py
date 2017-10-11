@@ -9,6 +9,7 @@ use arcpy
 from __future__ import absolute_import, division, print_function, unicode_literals
 import arcpy
 import os
+import tempfile
 
 
 def check_gdb(gdb):
@@ -18,7 +19,7 @@ def check_gdb(gdb):
         print('{0},{1}'.format(gdb, item))
         mosaic = os.path.join(gdb, item)
         # exports all paths and path types
-        out_table = 'c:/tmp/junk/' + item + '.dbf'
+        _handle, out_table = tempfile.mkstemp(suffix='.dbf', prefix='mosaic_paths')
         arcpy.ExportMosaicDatasetPaths_management(mosaic, out_table)
         with arcpy.da.SearchCursor(out_table, "Path") as cursor:
             for row in cursor:
