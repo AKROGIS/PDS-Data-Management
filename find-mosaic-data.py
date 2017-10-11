@@ -13,9 +13,10 @@ import tempfile
 # import shutil
 
 
-def check_gdb(gdb):
+def check_gdb(gdb, outputter=None):
     # print(gdb)
     arcpy.env.workspace = gdb
+    results = []
     # make folder for temp files.
     # I cant use a real temp file because to get a name, I must create it,
     # and arcpy.Export..() doesn't like the file existing even with arcpy.env.overwriteOutput = True
@@ -36,19 +37,27 @@ def check_gdb(gdb):
                     size = os.path.getsize(path)
                 except os.error:
                     pass
-                print('{0},{1},{2},{3},{4},{5}'.format(gdb, item, folder, name, ext, size))
+                if outputter is not None:
+                    outputter([gdb, item, folder, name, ext, size])
+                else:
+                    results.append([gdb, item, folder, name, ext, size])
         os.remove(out_table)  # need to make sure locks are gone before removing folder
     # shutil.rmtree(temp_folder)  # fails due to a race condition with an ArcGIS lock
+    return results
+
+
+def printer(row):
+    print(row)
 
 
 def main(folder):
     if os.path.splitext(folder)[1].upper() == '.GDB':
-        check_gdb(folder)
+        check_gdb(folder, printer)
     else:
         for root, dirs, files in os.walk(folder):
             for name in dirs:
                 if os.path.splitext(name)[1].upper() == '.GDB':
-                    check_gdb(os.path.join(root, name))
+                    check_gdb(os.path.join(root, name), printer)
 
 
 if __name__ == '__main__':
