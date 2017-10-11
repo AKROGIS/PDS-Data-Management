@@ -26,7 +26,11 @@ def check_gdb(gdb, outputter=None):
         mosaic = os.path.join(gdb, item)
         out_table = os.path.join(temp_folder, '{}.dbf'.format(item))
         # exports all paths and path types
-        arcpy.ExportMosaicDatasetPaths_management(mosaic, out_table)
+        try:
+            arcpy.ExportMosaicDatasetPaths_management(mosaic, out_table)
+        except arcpy.ExecuteError as ex:
+            print('{}, {}, {}'.format(gdb, item, ex))
+            continue
         with arcpy.da.SearchCursor(out_table, "Path") as cursor:
             for row in cursor:
                 path = row[0]
