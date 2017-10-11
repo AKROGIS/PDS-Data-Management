@@ -1,3 +1,11 @@
+"""
+Checks the folder mapping file that Stephanie created.
+This file lists old_Xdrive_path, new_small_Xdrive_path, new_external_Xdrive_path, other...
+Multiple checks are possible.
+1) make sure the if X:\alber\base -> x:\akr\base then we do not have x:\albers -> anything
+2) look for abnormal mappings (most folders are not renamed, ignore)
+"""
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 from io import open  # for python2/3 compatibility
 
