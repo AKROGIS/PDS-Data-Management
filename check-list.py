@@ -29,7 +29,7 @@ def check_unique_sources(data):
 
 
 def check_unusual(data):
-    substitutions = [('ALBERS', 'AKR'), ('STATEWID', 'STATEWIDE')]
+    substitutions = [('ALBERS', 'AKR'), ('STATEWID', 'STATEWIDE'), ('SUBSIST', 'SUBSISTENCE')]
     for row in data:
         old = row[0].upper()
         new = row[1].upper()
