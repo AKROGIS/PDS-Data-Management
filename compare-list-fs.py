@@ -54,12 +54,12 @@ def main(root, items):
     search(root, new_items)
     missing = list(set(new_items).difference(set(found)))
 
-    print('extra', [e.replace(root+'\\', '') for e in extra])
-    print('missing', [m.replace(root+'\\', '') for m in missing])
+    print('extra', [e.replace(root + os.path.sep, '') for e in extra])
+    print('missing', [m.replace(root + os.path.sep, '') for m in missing])
 
 
 def test():
-    ais_root = "data/ais"
+    ais_root = os.path.join('data', 'ais')
     ais_list = ['a.txt', 'c.txt', r'a\b.txt', r'a\c.txt', 'b', r'd\c', 'e', 'f']  # use OS specific path separator
     # cd $ais_root
     # mkdir a; mkdir b; mkdir c; mkdir d; mkdir d/b; mkdir d/c; mkdir e; mkdir e/a; mkdir g; mkdir g/a
