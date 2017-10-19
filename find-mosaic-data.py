@@ -80,4 +80,5 @@ def main(folder, csv_file=None):
 
 
 if __name__ == '__main__':
-    main(r'Z:\IServer\Mosaics\ANIA', 'data/images.csv')
+    main('Z:\\', 'data/images_z.csv')
+    main('X:\\', 'data/images_x.csv')
