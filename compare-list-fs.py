@@ -56,7 +56,7 @@ def search(start, items):
     return found, extra
 
 
-def main(root, items):
+def print_issues(root, items):
     new_items = [os.path.join(root, item) for item in items]
     found, extra = search(root, new_items)
     missing = list(set(new_items).difference(set(found)))
@@ -67,13 +67,13 @@ def main(root, items):
 
 
 def test():
-    ais_root = os.path.join('data', 'ais')
-    ais_list = ['a.txt', 'c.txt', r'a\b.txt', r'a\c.txt', 'b', r'd\c', 'e', 'f']  # use OS specific path separator
-    # cd $ais_root
+    test_root = os.path.join('data', 'test')
+    test_list = ['a.txt', 'c.txt', r'a\b.txt', r'a\c.txt', 'b', r'd\c', 'e', 'f']  # use OS specific path separator
+    # cd $test_root
     # mkdir a; mkdir b; mkdir c; mkdir d; mkdir d/b; mkdir d/c; mkdir e; mkdir e/a; mkdir g; mkdir g/a
     # touch a.txt; touch b.txt; touch a/a.txt; touch  a/b.txt
     #
-    # ais
+    # test
     #    - a.txt  (listed/found file)
     #    - b.txt  (unlisted/extra file)
     #     (c.txt is a listed/missing file)
@@ -95,7 +95,7 @@ def test():
     # found = [a.txt, a/b.txt, b, d/c, e]
     # missing = [c.txt, a/c.txt, f]
     # extra = [b.txt, a/a.txt, c, d/b, g]
-    main(ais_root, ais_list)
+    print_issues(test_root, test_list)
 
 
 if __name__ == '__main__':
