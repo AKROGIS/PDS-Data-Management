@@ -3,19 +3,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # import csv
 import os
 
-extra = []
-found = []
-
-
-def mark_found(path):
-    # print('found')
-    found.append(path)
-
-
-def mark_extra(path):
-    # print('extra')
-    extra.append(path)
-
 
 def known_prefix(path, items):
     for item in items:
@@ -25,37 +12,41 @@ def known_prefix(path, items):
 
 
 def search(start, items):
+    found = []
+    extra = []
     for root, folders, files in os.walk(start):
         # print('walk', root, folders, files)
         for file_ in files:
             path = os.path.join(root, file_)
             # print(path)
             if path in items:
-                mark_found(path)
+                found.append(path)
             else:
-                mark_extra(path)
+                extra.append(path)
         skip_folders = []
         for folder in folders:
             path = os.path.join(root, folder)
             # print(path)
             if path in items:
-                mark_found(path)
+                found.append(path)
                 skip_folders.append(folder)
             else:
                 if not known_prefix(path, items):
-                    mark_extra(path)
+                    extra.append(path)
                     skip_folders.append(folder)
         for folder in skip_folders:
             folders.remove(folder)
+    return found, extra
 
 
 def main(root, items):
     new_items = [os.path.join(root, item) for item in items]
-    search(root, new_items)
+    found, extra = search(root, new_items)
     missing = list(set(new_items).difference(set(found)))
 
-    print('extra', [e.replace(root + os.path.sep, '') for e in extra])
-    print('missing', [m.replace(root + os.path.sep, '') for m in missing])
+    print('found', sorted([f.replace(root + os.path.sep, '') for f in found]))
+    print('missing', sorted([m.replace(root + os.path.sep, '') for m in missing]))
+    print('extra', sorted([e.replace(root + os.path.sep, '') for e in extra]))
 
 
 def test():
@@ -88,7 +79,6 @@ def test():
     # missing = [c.txt, a/c.txt, f]
     # extra = [b.txt, a/a.txt, c, d/b, g]
     main(ais_root, ais_list)
-    print('found', found)
 
 
 if __name__ == '__main__':
