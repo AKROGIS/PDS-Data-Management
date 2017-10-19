@@ -19,7 +19,7 @@ def mark_extra(path):
 
 def known_prefix(path, items):
     for item in items:
-        if item.startswith(path):
+        if item.startswith(path + os.path.sep):
             return True
     return False
 
