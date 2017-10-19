@@ -16,8 +16,8 @@ This testing has many aspects
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
-# from io import open  # for python2/3 compatibility
-# import csv
+from io import open  # for python2/3 compatibility
+import csv
 import os
 
 
@@ -54,6 +54,14 @@ def search(start, items):
         for folder in skip_folders:
             folders.remove(folder)
     return found, extra
+
+
+def load_csv(filepath, col=0):
+    with open(filepath, 'r') as fh:
+        # ignore the first record (header)
+        fh.readline()
+        data = [row[col] for row in csv.reader(fh)]
+    return data
 
 
 def print_issues(root, items):
@@ -98,5 +106,11 @@ def test():
     print_issues(test_root, test_list)
 
 
+def test_csv():
+    root = r'\\inpakrovmais\data'
+    items = load_csv('data/ais_map.csv', 0)
+    print_issues(root, items)
+
+
 if __name__ == '__main__':
-    test()
+    test_csv()
