@@ -19,6 +19,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from io import open  # for python2/3 compatibility
 import csv
 import os
+import hashlib
 
 
 def known_prefix(path, items):
@@ -112,5 +113,17 @@ def test_csv():
     print_issues(root, items)
 
 
+def hash_file(path):
+    BLOCKSIZE = 65536
+    hasher = hashlib.sha1()
+    with open(path, 'rb') as afile:
+        buf = afile.read(BLOCKSIZE)
+        while len(buf) > 0:
+            hasher.update(buf)
+            buf = afile.read(BLOCKSIZE)
+    return hasher.hexdigest()
+
+
 if __name__ == '__main__':
-    test_csv()
+    # test_csv()
+    print(hash_file(r'data\reorg.csv'))
