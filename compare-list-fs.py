@@ -1,3 +1,20 @@
+"""
+Compare the file move list with the file system
+
+This testing has many aspects
+1) ensure that the list of source items is complete
+   - find items in list that are not in file system
+   - find items in filesystem that are not covered by the list (not a folder covers everything within it)
+2) ensure that the lists of destination items (both internal and external) are complete
+   - find items in list that are not in file system
+   - find items in filesystem that are not covered by the list (not a folder covers everything within it)
+3) ensure that there are no duplicates in the source list or each destination list
+4) ensure that each source has one and only one mapping to an internal or external destination
+5) ensure that where there is a one to one match, that the contents are the same
+   - sameness can be checked by file count/size for a quick first check
+   - sameness can only be guaranteed if the files have the same hash
+"""
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 # from io import open  # for python2/3 compatibility
 # import csv
