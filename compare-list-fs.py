@@ -3,26 +3,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # import csv
 import os
 
-ais_root = "data/ais"
-ais_list = ['a', 'c/d', 'd/a/a', 'd/a/c', 'f']
-#
-# ais
-#    - a
-#      - a (do not check)
-#    - b
-#      - b
-#    - d
-#      - a
-#         - a
-#         - b
-#         - c
-#    - e
-#
-# found = [a, d/a/a, d/a/c]
-# missing = [c/d, f]
-# extra = [b, d/a/b, e]
-
-
 extra = []
 found = []
 
@@ -70,14 +50,46 @@ def search(start, items):
 
 
 def main(root, items):
-    new_items = [os.path.join(ais_root, item) for item in items]
+    new_items = [os.path.join(root, item) for item in items]
     search(root, new_items)
     missing = list(set(new_items).difference(set(found)))
 
-    # print('original', new_items)
-    # print('found', found)
     print('extra', [e.replace(root+'/', '') for e in extra])
     print('missing', [m.replace(root+'/', '') for m in missing])
 
 
-main(ais_root, ais_list)
+def test():
+    ais_root = "data/ais"
+    ais_list = ['a.txt', 'c.txt', r'a/b.txt', r'a/c.txt', 'b', r'd/c', 'e', 'f']
+    # cd $ais_root
+    # mkdir a; mkdir b; mkdir c; mkdir d; mkdir d/b; mkdir d/c; mkdir e; mkdir e/a; mkdir g; mkdir g/a
+    # touch a.txt; touch b.txt; touch a/a.txt; touch  a/b.txt
+    #
+    # ais
+    #    - a.txt  (listed/found file)
+    #    - b.txt  (unlisted/extra file)
+    #     (c.txt is a listed/missing file)
+    #    - a  (unlisted dir but a prefix, so not extra)
+    #      - a.txt  (unlisted/extra file in dir)
+    #      - b.txt  (listed/found file in dir)
+    #       (c.txt is a missing file)
+    #    - b  (listed/found dir)
+    #    - c  (unlisted/extra dir)
+    #    - d  (unlisted dir but a prefix, so not extra)
+    #      - b  (unlisted/extra dir)
+    #      - c  (listed/found dir)
+    #    - e (listed/found dir)
+    #      - a (content in listed parent skipped, not extra/found/missing)
+    #     (f is a listed/missing dir)
+    #    - g  (unlisted/extra dir)
+    #      - a (content in extra parent skipped, not extra/found/missing)
+    #
+    # found = [a.txt, a/b.txt, b, d/c, e]
+    # missing = [c.txt, a/c.txt, f]
+    # extra = [b.txt, a/a.txt, c, d/b, g]
+    main(ais_root, ais_list)
+    print('found', found)
+
+
+if __name__ == '__main__':
+    test()
