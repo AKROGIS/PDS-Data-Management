@@ -21,6 +21,127 @@ import csv
 import os
 import hashlib
 
+"""
+# configuration constants
+int_root = ''
+ext_root = ''
+files = {file#: ("root", "map_path", "hash_path")}
+
+# types
+errors = [(file#, line#, "Issue")]
+mappings = {(file#,line#): ("old_path", "int_path", "ext_path",...)}
+file_hash = {(file#, "path"): hash} 
+hash_file = {hash:[(file#, "path")]}
+trees = {"root": paths dict}
+paths = {"path": (file#,line#)}
+maps = {"old_path": ("new_path",file#,line#)}
+"""
+
+
+def read_csv(files):
+    """
+    Read a group of CSV properly formated CSV files and create the program data structures
+
+    :param files: dict {file#: ("root", "map_path", "hash_path")}
+    :return: (mappings dict, file_hash dict)
+    mappings dict: {(file#,line#): ("old_path", "int_path", "ext_path",...)}
+    file_hash dict: {(file#, "path"): hash}
+    """
+    mappings = {}
+    file_hash = {}
+    return mappings, file_hash
+
+
+def get_paths(mappings, files):
+    """
+    Simplifies the mappings by returning a collection of paths for each root in files
+
+    The int paths are at index 1 in the mapping tuple
+    The ext paths are at index 2 in the mapping tuple
+    The int paths are always file #1 and the ext paths are file #2
+    :param mappings: dict {(file#,line#):("old_path","int_path","ext_path",...)}
+    :param files: dict {file#: ("root", "map_path", "hash_path")}
+    :return: trees dict {"root": paths dict}
+    paths dict: {path:(file#,line#)}
+    """
+    trees = {}
+    return trees
+
+
+def compare_list_to_files(root, paths):
+    """
+    Compares the list of paths to the file system at root, returning an errors
+
+    An error is returned for each extra (path in fs is not found in paths) and
+    missing (path in paths is not found in fs).
+
+    :param root: string, the prefix to add to all paths in the files dict
+    :param paths: dict {path:(file#,line#)}
+    :return: errors list [(file#, line#, "Issue")]
+    """
+    errors = []
+    return errors
+
+
+def make_maps(mappings):
+    """
+    Simplifies the mappings by creating a map from each source to a destination
+
+    If there are duplicates in the list of sources, then the results are undefined.
+
+    :param mappings: dict {(file#,line#):("old_path","int_path","ext_path",...)}
+    :return: (errors list, maps dict)
+    errors  list [(file#, line#, "Issue")]
+    maps dict: {"old_path": ("new_path",file#,line#)}
+    """
+    errors = []
+    maps = {}
+    return errors, maps
+
+
+def find_dups(mappings):
+    """
+    Searches the mappings for any duplicates in the source or destination paths
+
+    An error is created for each line that is not unique.
+
+    :param mappings: dict {(file#,line#):("old_path","int_path","ext_path",...)}
+    :return: errors list [(file#, line#, "Issue")]
+    """
+    errors = []
+    return errors
+
+
+def check_equivalence(maps, file_hash=None):
+    """
+    Checks if the source and destination in the map are equivalent
+
+    The source/destination is a path to a file or a folder (source and destination must be the same type)
+    Equivalence can be checked quickly (file_hash == None), by comparing the file count, and total byte count
+    If file_hash is not None, then equivalence is check by looking up the precomputed hash value for both files
+    if the source/destination are directories, then the file system is querried for all files contained within and
+    all files are compared for equivalence by matching thier precomputed hash valies in file_hash.
+
+    :param maps: dict {"old_path": ("new_path",file#,line#)}
+    :param file_hash: {(file#, "path"): hash}
+    :return: errors list [(file#, line#, "Issue")]
+    """
+    errors = []
+    return errors
+
+
+def print_errors(errors, files=None, file_path=None):
+    """
+    Writes a list of errors to a CSV file, or prints to the console
+
+    If files is provided, then the root of the file data is printed, instead of the file number.
+
+    :param errors: list [(file#, line#, "Issue")]
+    :param files: dict {file#: ("root", "map_path", "hash_path")}
+    :param file_path: string path to location to create a CSV file.  If None, print to console
+    :return: None
+    """
+
 
 def known_prefix(path, items):
     for item in items:
@@ -124,6 +245,27 @@ def hash_file(path):
     return hasher.hexdigest()
 
 
+def main():
+    errors = []
+    # file_info = {file#: ("root", "map_path", "hash_path")}
+    file_info = {
+        1: (r'inpakrovmdist\gisdata2', None, r'data/int_hash'),  # column 2 of the map files
+        2: (r'inpakrovmdist\gisdata3', None, r'data/ext_hash'),  # column 3 of the map files
+        3: (r'inpakrovmdist\gisdata', r'data/dist_map', r'data/dist_hash'),
+        4: (r'inpakrovmais\data', r'data/ais_map', r'data/ais_hash')
+    }
+    mappings, file_hashes = read_csv(file_info)
+    trees = get_paths(mappings, file_info)
+    for root, paths in trees.items():
+        errors += compare_list_to_files(root, paths)
+    errors += find_dups(mappings)
+    errs, maps = make_maps(mappings)
+    errors += errs
+    errors += check_equivalence(maps, file_hashes)
+    print_errors(errors, file_info)
+
+
 if __name__ == '__main__':
     # test_csv()
-    print(hash_file(r'data\reorg.csv'))
+    # print(hash_file(r'data\reorg.csv'))
+    main()
