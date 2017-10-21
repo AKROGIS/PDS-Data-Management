@@ -41,7 +41,8 @@ def get_file_hashes(start):
 
 def write_folder_to_file(folder, csv_file):
     hashlist = get_file_hashes(folder)
-    with open(csv_file, 'w') as fh:
+    mode = 'wb' # 'w' for python 3; 'wb' for python 2
+    with open(csv_file, mode) as fh:
         writer = csv.writer(fh)
         writer.writerow(['path', 'name', 'hash'])
         for row in hashlist:
@@ -50,4 +51,4 @@ def write_folder_to_file(folder, csv_file):
 
 if __name__ == '__main__':
     # print(sha1_file(r'data\reorg.csv'))
-    write_folder_to_file(r'.', r'data\ais_hash.csv')
+    write_folder_to_file(r'data\test', r'data\ais_hash.csv')
