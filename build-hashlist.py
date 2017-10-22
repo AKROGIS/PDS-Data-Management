@@ -45,6 +45,18 @@ def get_file_hashes(start):
     hash_list = []
     try:
         for root, folders, files in os.walk(start):
+            gdbs = [d for d in folders if d.upper().endswith('.GDB')]
+            for gdb in gdbs:
+                path = os.path.join(root, gdb)
+                print('hashing ' + path)
+                try:
+                    sha1 = sha1_folder(path)
+                except Exception as ex:
+                    print(ex)
+                    sha1 = -1
+                # print([root, name, sha1])
+                hash_list.append([root, gdb, sha1])
+                folders.remove(gdb)
             for name in files:
                 path = os.path.join(root, name)
                 print('hashing ' + path)
