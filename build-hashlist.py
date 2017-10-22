@@ -20,6 +20,27 @@ def sha1_file(path):
     return hasher.hexdigest()
 
 
+def sha1_folder(directory):
+    _blocksize_ = 65536
+    hasher = hashlib.sha1()
+    if not os.path.exists(directory):
+        return -1
+    try:
+        for root, dirs, files in os.walk(directory):
+            for name in files:
+                # print 'Hashing', name
+                path = os.path.join(root, name)
+                with open(path, 'rb') as afile:
+                    buf = afile.read(_blocksize_)
+                    while len(buf) > 0:
+                        hasher.update(buf)
+                        buf = afile.read(_blocksize_)
+    except Exception as ex:
+        print(ex)
+        return -2
+    return hasher.hexdigest()
+
+
 def get_file_hashes(start):
     hash_list = []
     try:
@@ -41,7 +62,7 @@ def get_file_hashes(start):
 
 def write_folder_to_file(folder, csv_file):
     hashlist = get_file_hashes(folder)
-    mode = 'wb' # 'w' for python 3; 'wb' for python 2
+    mode = 'wb'  # 'w' for python 3; 'wb' for python 2
     with open(csv_file, mode) as fh:
         writer = csv.writer(fh)
         writer.writerow(['path', 'name', 'hash'])
