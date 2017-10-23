@@ -79,6 +79,21 @@ def compare_list_to_files(root, paths):
     :return: errors list [(file#, line#, "Issue")]
     """
     errors = []
+    items = [os.path.join(root, item) for item in paths]
+    found, extra = search(root, items)
+    missing = list(set(items).difference(set(found)))
+    missing = [m.replace(root + os.path.sep, '') for m in missing]
+    extra = [e.replace(root + os.path.sep, '') for e in extra]
+    for item in missing:
+        file_num, line_num = paths[item]
+        errors.append((file_num, line_num, "`{}` was not found on the disk.".format(item)))
+    line_num = -1  # extra errors do not have a line number, but they are in the same filesystem
+    try:
+        file_num, _ = paths[paths.keys()[0]]
+    except IndexError:
+        file_num = -1
+    for item in extra:
+        errors.append((file_num, line_num, "`{}` was found on the disk, but not listed.".format(item)))
     return errors
 
 
