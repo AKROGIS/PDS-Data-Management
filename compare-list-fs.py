@@ -141,6 +141,19 @@ def make_maps(mappings):
     """
     errors = []
     maps = {}
+    for key in mappings:
+        file_num, line_num = key
+        old_path, int_path, ext_path = mappings[key]
+        if int_path is not None and ext_path is not None:
+            errors.append((file_num, line_num, "Line has both an internal and external destination"))
+            continue
+        new_path = int_path if ext_path is None else ext_path
+        if old_path is None and new_path is None:
+            errors.append((file_num, line_num, "Line has both no source or destination"))
+            continue
+        # ignore source -> None and None -> Destination
+        if old_path is not None and new_path is not None:
+            maps[old_path] = (new_path, file_num, line_num)
     return errors, maps
 
 
