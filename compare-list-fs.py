@@ -81,6 +81,20 @@ def get_paths(mappings, files):
     paths dict: {path:(file#,line#)}
     """
     trees = {}
+    for key in files:
+        root = files[key][0]
+        trees[root] = {}
+    int_root = files[0][0]
+    ext_root = files[1][0]
+    for key in mappings:
+        file_num, line_num = key
+        old_path, int_path, ext_path = mappings[key]
+        old_root, _, _ = files[file_num]
+        trees[old_root][old_path] = (file_num, line_num)
+        if int_path is not None:
+            trees[int_root][int_path] = (file_num, line_num)
+        if ext_path is not None:
+            trees[ext_root][ext_path] = (file_num, line_num)
     return trees
 
 
