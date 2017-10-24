@@ -199,6 +199,23 @@ def print_errors(errors, files=None, file_path=None):
     :param file_path: string path to location to create a CSV file.  If None, print to console
     :return: None
     """
+    if file_path is None:
+        for file_num, line_num, issue in errors:
+            if files is not None:
+                root = files[file_num]
+            else:
+                root = file_num
+            print('{0}, {1}, {2}'.format(root, line_num, issue))
+    else:
+        with open(file_path, 'wb') as fh:
+            writer = csv.writer(fh)
+            writer.writerow(['file', 'line', 'issue'])
+            for file_num, line_num, issue in errors:
+                if files is not None:
+                    root = files[file_num]
+                else:
+                    root = file_num
+                writer.writerow([root, line_num, issue])
 
 
 def known_prefix(path, items):
