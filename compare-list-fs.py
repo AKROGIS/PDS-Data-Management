@@ -48,6 +48,23 @@ def read_csv(files):
     """
     mappings = {}
     file_hash = {}
+    for file_num in files:
+        root, map_path, hash_path = files[file_num]
+        if map_path is not None:
+            with open(map_path, 'rb') as fh:
+                # ignore the first record (header)
+                fh.readline()
+                line_num = 1
+                for row in csv.reader(fh):
+                    line_num += 1
+                    mappings[(file_num, line_num)] = (row[0], row[1], row[2])
+        if hash_path is not None:
+            with open(hash_path, 'rb') as fh:
+                # ignore the first record (header)
+                fh.readline()
+                for row in csv.reader(fh):
+                    path = os.path.join(row[0], row[1])
+                    file_hash[(file_num, path)] = row[2]
     return mappings, file_hash
 
 
