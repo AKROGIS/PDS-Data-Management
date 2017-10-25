@@ -69,6 +69,10 @@ def read_csv(files):
                 for row in csv.reader(fh):
                     path = os.path.join(row[0], row[1])
                     file_hash[(file_num, path)] = row[2]
+    if len(mappings) == 0:
+        mappings = None
+    if len(file_hash) == 0:
+        file_hash = None
     return mappings, file_hash
 
 
@@ -132,13 +136,14 @@ def compare_list_to_files(root, paths):
     return errors
 
 
-def make_maps(mappings):
+def make_maps(mappings, files):
     """
     Simplifies the mappings by creating a map from each source to a destination
 
     If there are duplicates in the list of sources, then the results are undefined.
 
     :param mappings: dict {(file#,line#):("old_path","int_path","ext_path",...)}
+    :param files: dict {file#: ("root", "map_path", "hash_path")}
     :return: (errors list, maps dict)
     errors  list [(file#, line#, "Issue")]
     maps dict: {"old_path": ("new_path",file#,line#)}
@@ -157,7 +162,9 @@ def make_maps(mappings):
             continue
         # ignore source -> None and None -> Destination
         if old_path is not None and new_path is not None:
-            maps[old_path] = (new_path, file_num, line_num)
+            old = os.path.join(files[file_num][0], old_path)
+            new = os.path.join(files[1][0], new_path)
+            maps[old] = (new, file_num, line_num)
     return errors, maps
 
 
@@ -192,7 +199,11 @@ def check_equivalence(maps, file_hash=None):
     if file_hash is None:
         for old_path in maps:
             new_path, file_num, line_num = maps[old_path]
-            if not paths_equal(old_path, new_path):
+            print("{0}, {1}".format(old_path, new_path))
+            if 'Source_Data' in old_path:
+                print("*************  Skipping ****************")
+            elif not paths_equal(old_path, new_path):
+                print("*************  Folders not equal ****************")
                 errors.append((file_num, line_num, "Folders not equal: {0} <> {1}".format(old_path, new_path)))
     else:
         for old_path in maps:
@@ -386,20 +397,37 @@ def test_csv():
     print_issues(root, items)
 
 
+def test_equivalence():
+    test_map = {
+        r'\\inpakrovmdist\gisdata\AHAP':
+            (r'\\inpakrovmdist\gisdata\AHAP', 2, 1),
+        r'\\inpakrovmdist\gisdata\AHAP\ANIA':
+            (r'\\inpakrovmdist\gisdata2\Extras\ANIA\AHAP', 2, 2),
+        r'\\inpakrovmdist\gisdata\AHAP\BELA':
+            (r'\\inpakrovmdist\gisdata2\Extras\CAKR\AHAP', 2, 3),
+        r'\\inpakrovmdist\gisdata\OrthoBase\ANCH/UA_ANCH.mdb':
+            (r'\\inpakrovmdist\gisdata2\Extras\Anchorage\Imagery/UA_ANCH.mdb', 2, 4),
+        r'\\inpakrovmdist\gisdata\Albers\base\Anno_GDB':
+            (r'\\inpakrovmdist\gisdata2\akr\Statewide\anno', 2, 5),
+    }
+    errors = check_equivalence(test_map, None)
+    print_errors(errors, None)
+
+
 def main():
     errors = []
     # file_info = {file#: ("root", "map_path", "hash_path")}
     file_info = {
         1: (r'\\inpakrovmdist\gisdata2', None, None),  # r'data/int_hash'),  # Destination: column 2/3 of the map files
-        2: (r'\\inpakrovmdist\gisdata', r'data/dist_map.csv', None),  # r'data/dist_hash'),
-        3: (r'\\inpakrovmais\data', r'data/ais_map.csv', None),  # r'data/ais_hash')
+        2: (r'\\inpakrovmdist\gisdata', r'data\PDS Moves - inpakrovmdist%5Cgisdata.csv', None),  # r'data/dist_hash'),
+        3: (r'\\inpakrovmais\data', r'data\PDS Moves - inpakrovmais%5Cdata.csv', None),  # r'data/ais_hash')
     }
     mappings, file_hashes = read_csv(file_info)
     trees = get_paths(mappings, file_info)
     for root, paths in trees.items():
         errors += compare_list_to_files(root, paths)
     errors += find_dups(mappings)
-    errs, maps = make_maps(mappings)
+    errs, maps = make_maps(mappings, file_info)
     errors += errs
     errors += check_equivalence(maps, file_hashes)
     print_errors(errors, file_info)
@@ -407,4 +435,5 @@ def main():
 
 if __name__ == '__main__':
     # test_csv()
+    # test_equivalence()
     main()
