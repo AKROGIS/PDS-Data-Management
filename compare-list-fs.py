@@ -19,6 +19,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from io import open  # for python2/3 compatibility
 import csv
 import os
+import filecmp
 
 """
 # configuration constants
@@ -188,6 +189,20 @@ def check_equivalence(maps, file_hash=None):
     :return: errors list [(file#, line#, "Issue")]
     """
     errors = []
+    if file_hash is None:
+        for old_path in maps:
+            new_path, file_num, line_num = maps[old_path]
+            if not paths_equal(old_path, new_path):
+                errors.append((file_num, line_num, "Folders not equal: {0} <> {1}".format(old_path, new_path)))
+    else:
+        for old_path in maps:
+            new_path, file_num, line_num = maps[old_path]
+            try:
+                match = file_hash[(file_num, old_path)] == file_hash[(1, new_path)]
+            except KeyError:
+                match = False
+            if not match:
+                errors.append((file_num, line_num, "Folders not equal: {0} <> {1}".format(old_path, new_path)))
     return errors
 
 
@@ -220,6 +235,64 @@ def print_errors(errors, files=None, file_path=None):
                 else:
                     root = file_num
                 writer.writerow([root, line_num, issue])
+
+
+def paths_equal(path1, path2):
+    """
+    Test if two files are 'equal'
+
+    files are equal if they have the same os_stat() values
+    :param path1: path to a file
+    :param path2: path to another file
+    :return: bool
+    """
+    if path1 == path2:
+        return True
+    if os.path.isfile(path1)  && os.path.isfile(path2):
+        return files_equal(path1, path2)
+    if os.path.isdir(path1)  && os.path.isdir(path2):
+        return folders_equal(path1, path2)
+    return False
+
+
+def files_equal(path1, path2)
+    """
+    Test if two files are 'equal'
+
+    files are equal if they have the same os_stat() values 
+    :param path1: path to a file
+    :param path2: path to another file
+    :return: bool
+    """
+    return filecmp.cmp(path1, path2)
+
+
+def folders_equal(path1, path2)
+    """
+    Test if two folders are 'equal'
+
+    folders all the files in each folder are equal. Each folder must have the same number of files and all
+    sub folders must also be equal.  Assumes that the files and folders have the same names (actually that
+    the order provided by os.walk() is the same
+    :param path1: path to a folder
+    :param path2: path to another folder
+    :return: bool
+    """
+    compared = filecmp.dircmp(path1, path2)
+    if 0 < len(compared.left_only):
+        return False
+    if 0 < len(compared.right_only):
+        return False
+    if 0 < len(compared.funny_files):
+        return False
+    if 0 < len(compared.common_funny):
+        return False
+    if 0 < len(compared.diff_files):
+        return False
+    for subdir in compared.common_dirs:
+        if not folders_equal(os.path.join(path1, subdir), os.path.join(path2, subdir)):
+            return False
+    return True
 
 
 def known_prefix(path, items):
