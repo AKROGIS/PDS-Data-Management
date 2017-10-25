@@ -57,7 +57,10 @@ def read_csv(files):
                 line_num = 1
                 for row in csv.reader(fh):
                     line_num += 1
-                    mappings[(file_num, line_num)] = (row[0], row[1], row[2])
+                    src_path = row[0] if row[0] else None
+                    int_path = row[1] if row[1] else None
+                    ext_path = row[2] if row[2] else None
+                    mappings[(file_num, line_num)] = (src_path, int_path, ext_path)
         if hash_path is not None:
             with open(hash_path, 'rb') as fh:
                 # ignore the first record (header)
@@ -84,17 +87,17 @@ def get_paths(mappings, files):
     for key in files:
         root = files[key][0]
         trees[root] = {}
-    int_root = files[0][0]
-    ext_root = files[1][0]
+    dest_root = files[1][0]
     for key in mappings:
         file_num, line_num = key
         old_path, int_path, ext_path = mappings[key]
         old_root, _, _ = files[file_num]
         trees[old_root][old_path] = (file_num, line_num)
+        # if there is an internal and external destination, it will be flagged later
         if int_path is not None:
-            trees[int_root][int_path] = (file_num, line_num)
+            trees[dest_root][int_path] = (file_num, line_num)
         if ext_path is not None:
-            trees[ext_root][ext_path] = (file_num, line_num)
+            trees[dest_root][ext_path] = (file_num, line_num)
     return trees
 
 
@@ -110,7 +113,7 @@ def compare_list_to_files(root, paths):
     :return: errors list [(file#, line#, "Issue")]
     """
     errors = []
-    items = [os.path.join(root, item) for item in paths]
+    items = [os.path.join(root, item) for item in paths if item]
     found, extra = search(root, items)
     missing = list(set(items).difference(set(found)))
     missing = [m.replace(root + os.path.sep, '') for m in missing]
@@ -199,10 +202,11 @@ def print_errors(errors, files=None, file_path=None):
     :param file_path: string path to location to create a CSV file.  If None, print to console
     :return: None
     """
+    errors.sort()
     if file_path is None:
         for file_num, line_num, issue in errors:
             if files is not None:
-                root = files[file_num]
+                root = files[file_num][0]
             else:
                 root = file_num
             print('{0}, {1}, {2}'.format(root, line_num, issue))
@@ -313,10 +317,9 @@ def main():
     errors = []
     # file_info = {file#: ("root", "map_path", "hash_path")}
     file_info = {
-        1: (r'inpakrovmdist\gisdata2', None, r'data/int_hash'),  # column 2 of the map files
-        2: (r'inpakrovmdist\gisdata3', None, r'data/ext_hash'),  # column 3 of the map files
-        3: (r'inpakrovmdist\gisdata', r'data/dist_map', r'data/dist_hash'),
-        4: (r'inpakrovmais\data', r'data/ais_map', r'data/ais_hash')
+        1: (r'\\inpakrovmdist\gisdata2', None, None),  # r'data/int_hash'),  # Destination: column 2/3 of the map files
+        2: (r'\\inpakrovmdist\gisdata', r'data/dist_map.csv', None),  # r'data/dist_hash'),
+        3: (r'\\inpakrovmais\data', r'data/ais_map.csv', None),  # r'data/ais_hash')
     }
     mappings, file_hashes = read_csv(file_info)
     trees = get_paths(mappings, file_info)
