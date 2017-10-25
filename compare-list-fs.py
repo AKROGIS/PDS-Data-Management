@@ -248,14 +248,14 @@ def paths_equal(path1, path2):
     """
     if path1 == path2:
         return True
-    if os.path.isfile(path1)  && os.path.isfile(path2):
+    if os.path.isfile(path1) and os.path.isfile(path2):
         return files_equal(path1, path2)
-    if os.path.isdir(path1)  && os.path.isdir(path2):
+    if os.path.isdir(path1) and os.path.isdir(path2):
         return folders_equal(path1, path2)
     return False
 
 
-def files_equal(path1, path2)
+def files_equal(path1, path2):
     """
     Test if two files are 'equal'
 
@@ -267,7 +267,7 @@ def files_equal(path1, path2)
     return filecmp.cmp(path1, path2)
 
 
-def folders_equal(path1, path2)
+def folders_equal(path1, path2):
     """
     Test if two folders are 'equal'
 
