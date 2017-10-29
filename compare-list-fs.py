@@ -178,6 +178,35 @@ def find_dups(mappings):
     :return: errors list [(file#, line#, "Issue")]
     """
     errors = []
+    seen_sources = set()
+    seen_destinations = set()
+    src_dups = set()
+    dest_dups = set()
+
+    for source in mappings.values()[0]:
+        if source not in seen_sources:
+            seen_sources.add(source)
+        else:
+            src_dups.add(source)
+
+    for destination in mappings.values()[1] + mappings.values()[2]:
+        if destination not in seen_destinations:
+            seen_destinations.add(destination)
+        else:
+            dest_dups.add(destination)
+
+    for key in mappings:
+        src, dest1, dest2 = mappings(key)
+        if src in src_dups:
+            file_num, line_num = key
+            errors.append((file_num, line_num, "Source '{0}' is a duplicate".format(src)))
+        if dest1 in dest_dups:
+            file_num, line_num = key
+            errors.append((file_num, line_num, "Destination '{0}' is a duplicate".format(dest1)))
+        if dest2 in dest_dups:
+            file_num, line_num = key
+            errors.append((file_num, line_num, "Destination '{0}' is a duplicate".format(dest2)))
+
     return errors
 
 
