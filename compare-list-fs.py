@@ -58,9 +58,9 @@ def read_csv(files):
                 line_num = 1
                 for row in csv.reader(fh):
                     line_num += 1
-                    src_path = row[0] if row[0] else None
-                    int_path = row[1] if row[1] else None
-                    ext_path = row[2] if row[2] else None
+                    src_path = unicode(row[0], 'utf-8') if row[0] else None
+                    int_path = unicode(row[1], 'utf-8') if row[1] else None
+                    ext_path = unicode(row[2], 'utf-8') if row[2] else None
                     mappings[(file_num, line_num)] = (src_path, int_path, ext_path)
         if hash_path is not None:
             with open(hash_path, 'rb') as fh:
