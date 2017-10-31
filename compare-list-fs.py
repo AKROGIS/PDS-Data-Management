@@ -183,20 +183,24 @@ def find_dups(mappings):
     src_dups = set()
     dest_dups = set()
 
-    for source in mappings.values()[0]:
+    for source in [src for src, dest1, dest2 in mappings.values()]:
+        if source is None:
+            continue
         if source not in seen_sources:
             seen_sources.add(source)
         else:
             src_dups.add(source)
 
-    for destination in mappings.values()[1] + mappings.values()[2]:
+    for destination in [d1 for s, d1, d2 in mappings.values()] + [d2 for s, d1, d2 in mappings.values()]:
+        if destination is None:
+            continue
         if destination not in seen_destinations:
             seen_destinations.add(destination)
         else:
             dest_dups.add(destination)
 
     for key in mappings:
-        src, dest1, dest2 = mappings(key)
+        src, dest1, dest2 = mappings[key]
         if src in src_dups:
             file_num, line_num = key
             errors.append((file_num, line_num, "Source '{0}' is a duplicate".format(src)))
