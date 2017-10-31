@@ -160,7 +160,10 @@ def make_maps(mappings, files):
         if old_path is None and new_path is None:
             errors.append((file_num, line_num, "Line has both no source or destination"))
             continue
-        # ignore source -> None and None -> Destination
+        if old_path is not None and new_path is None:
+            errors.append((file_num, line_num, "Source '{}' has no destination".format(old_path)))
+            continue
+        # ignore old_path is None and new_path is not None (new file on destination is ok
         if old_path is not None and new_path is not None:
             old = os.path.join(files[file_num][0], old_path)
             new = os.path.join(files[1][0], new_path)
