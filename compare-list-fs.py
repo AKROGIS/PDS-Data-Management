@@ -235,11 +235,11 @@ def check_equivalence(maps, file_hash=None):
     if file_hash is None:
         for old_path in maps:
             new_path, file_num, line_num = maps[old_path]
-            print("{0}, {1}".format(old_path, new_path))
+            # print("{0}, {1}".format(old_path, new_path))
             if 'Source_Data' in old_path:
-                print("*************  Skipping ****************")
+                pass # print("*************  Skipping ****************")
             elif not paths_equal(old_path, new_path):
-                print("*************  Folders not equal ****************")
+                # print("*************  Folders not equal ****************")
                 errors.append((file_num, line_num, "Folders not equal: {0} <> {1}".format(old_path, new_path)))
     else:
         for old_path in maps:
