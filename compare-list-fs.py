@@ -469,7 +469,17 @@ def main():
     print_errors(errors, file_info)
 
 
+def test_specific_folders():
+    # print(paths_equal(r'\\inpakrovmdist\gisdata\GIS\ArcGIS10.3.1',
+    #                   r'\\inpakrovmdist\gisdata2\Extras\Software\ArcGIS 10.3.1'))
+    # for name in os.listdir(r'\\inpakrovmdist\gisdata\GIS\ThemeMgr\Alaska-wide - Multi Park Themes'):
+    for name in ['GIS\ThemeMgr']:
+        print(name, paths_equal(os.path.join(r'\\inpakrovmdist\gisdata', name),
+                                os.path.join(r'\\inpakrovmdist\gisdata2', name)))
+
+
 if __name__ == '__main__':
     # test_csv()
     # test_equivalence()
+    # test_specific_folders()
     main()
