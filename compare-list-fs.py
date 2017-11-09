@@ -58,16 +58,14 @@ def read_csv(files):
                 line_num = 1
                 for row in csv.reader(fh):
                     line_num += 1
-                    src_path = unicode(row[0], 'utf-8') if row[0] else None
-                    int_path = unicode(row[1], 'utf-8') if row[1] else None
-                    ext_path = unicode(row[2], 'utf-8') if row[2] else None
-                    mappings[(file_num, line_num)] = (src_path, int_path, ext_path)
+                    unicode_row = [unicode(item, 'utf-8') if item else None for item in row]
+                    mappings[(file_num, line_num)] = tuple(unicode_row)
         if hash_path is not None:
             with open(hash_path, 'rb') as fh:
                 # ignore the first record (header)
                 fh.readline()
                 for row in csv.reader(fh):
-                    path = os.path.join(row[0], row[1])
+                    path = os.path.join(unicode(row[0], 'utf-8'), unicode(row[1], 'utf-8'))
                     file_hash[(file_num, path)] = row[2]
     if len(mappings) == 0:
         mappings = None
@@ -95,7 +93,9 @@ def get_paths(mappings, files):
     dest_root = files[1][0]
     for key in mappings:
         file_num, line_num = key
-        old_path, int_path, ext_path = mappings[key]
+        old_path, int_path, ext_path = mappings[key][:3]
+        if ext_path is None:
+            ext_path = mappings[key][3]
         old_root, _, _ = files[file_num]
         trees[old_root][old_path] = (file_num, line_num)
         # if there is an internal and external destination, it will be flagged later
@@ -152,7 +152,12 @@ def make_maps(mappings, files):
     maps = {}
     for key in mappings:
         file_num, line_num = key
-        old_path, int_path, ext_path = mappings[key]
+        old_path, int_path, ext_path, ext2_path, status = mappings[key][:5]
+        if ext_path is None:
+            ext_path = ext2_path
+        else:
+            if ext2_path is not None:
+                errors.append((file_num, line_num, "Line has two external destination"))
         if int_path is not None and ext_path is not None:
             errors.append((file_num, line_num, "Line has both an internal and external destination"))
             continue
@@ -160,7 +165,7 @@ def make_maps(mappings, files):
         if old_path is None and new_path is None:
             errors.append((file_num, line_num, "Line has both no source or destination"))
             continue
-        if old_path is not None and new_path is None:
+        if old_path is not None and new_path is None and status != 'trash':
             errors.append((file_num, line_num, "Source '{}' has no destination".format(old_path)))
             continue
         # ignore old_path is None and new_path is not None (new file on destination is ok
@@ -194,8 +199,14 @@ def find_dups(mappings):
         else:
             src_dups.add(source)
 
-    for destination in [d1 for s, d1, d2 in mappings.values()] + [d2 for s, d1, d2 in mappings.values()]:
+    for mapping in mappings.values():
+        old_path, int_path, ext_path, ext2_path, status = mapping[:5]
+        destination = int_path if int_path is not None else ext_path
         if destination is None:
+            destination = ext2_path
+        if destination is None:
+            continue
+        if status == 'duplicate' or status == 'similiar':
             continue
         if destination not in seen_destinations:
             seen_destinations.add(destination)
@@ -217,7 +228,7 @@ def find_dups(mappings):
     return errors
 
 
-def check_equivalence(maps, file_hash=None):
+def check_equivalence(maps, mappings, file_hash=None):
     """
     Checks if the source and destination in the map are equivalent
 
@@ -227,6 +238,7 @@ def check_equivalence(maps, file_hash=None):
     if the source/destination are directories, then the file system is querried for all files contained within and
     all files are compared for equivalence by matching thier precomputed hash valies in file_hash.
 
+    :param mappings: dict {(file#,line#):("old_path","int_path","ext_path",...)}
     :param maps: dict {"old_path": ("new_path",file#,line#)}
     :param file_hash: {(file#, "path"): hash}
     :return: errors list [(file#, line#, "Issue")]
@@ -242,7 +254,9 @@ def check_equivalence(maps, file_hash=None):
                 print("***  Skipping {} == {}".format(old_path, new_path))
             elif not paths_equal(old_path, new_path):
                 # print("*************  Folders not equal ****************")
-                errors.append((file_num, line_num, "Folders not equal: {0} <> {1}".format(old_path, new_path)))
+                status = mappings[(file_num, line_num)][4]
+                if status != 'similar':
+                    errors.append((file_num, line_num, "Folders not equal: {0} <> {1}".format(old_path, new_path)))
     else:
         for old_path in maps:
             new_path, file_num, line_num = maps[old_path]
@@ -467,7 +481,7 @@ def main():
     errors += find_dups(mappings)
     errs, maps = make_maps(mappings, file_info)
     errors += errs
-    errors += check_equivalence(maps, file_hashes)
+    errors += check_equivalence(maps, mappings, file_hashes)
     print_errors(errors, file_info)
 
 
