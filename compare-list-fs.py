@@ -236,8 +236,10 @@ def check_equivalence(maps, file_hash=None):
         for old_path in maps:
             new_path, file_num, line_num = maps[old_path]
             # print("{0}, {1}".format(old_path, new_path))
-            if 'Source_Data' in old_path:
-                pass # print("*************  Skipping ****************")
+            if new_path.endswith('SDMI_IFSAR'):
+                print("***  Skipping {} == {}".format(old_path, new_path))
+            elif new_path.endswith('SDMI_SPOT'):
+                print("***  Skipping {} == {}".format(old_path, new_path))
             elif not paths_equal(old_path, new_path):
                 # print("*************  Folders not equal ****************")
                 errors.append((file_num, line_num, "Folders not equal: {0} <> {1}".format(old_path, new_path)))
