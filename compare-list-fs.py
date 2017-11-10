@@ -256,6 +256,8 @@ def check_equivalence(maps, mappings, file_hash=None):
                 print("***  Skipping {} == {}".format(old_path, new_path))
             elif new_path.endswith('SDMI_SPOT'):
                 print("***  Skipping {} == {}".format(old_path, new_path))
+            elif new_path.startswith('Source_Data\\'):
+                print("***  Skipping {} == {}".format(old_path, new_path))
             elif not paths_equal(old_path, new_path):
                 # print("*************  Folders not equal ****************")
                 status = mappings[(file_num, line_num)][4]
