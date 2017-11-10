@@ -191,7 +191,8 @@ def find_dups(mappings):
     src_dups = set()
     dest_dups = set()
 
-    for source in [src for src, dest1, dest2 in mappings.values()]:
+    for mapping in mappings.values():
+        source = mapping[0]
         if source is None:
             continue
         if source not in seen_sources:
@@ -206,7 +207,7 @@ def find_dups(mappings):
             destination = ext2_path
         if destination is None:
             continue
-        if status == 'duplicate' or status == 'similiar':
+        if status == 'duplicate' or status == 'similar':
             continue
         if destination not in seen_destinations:
             seen_destinations.add(destination)
@@ -214,7 +215,7 @@ def find_dups(mappings):
             dest_dups.add(destination)
 
     for key in mappings:
-        src, dest1, dest2 = mappings[key]
+        src, dest1, dest2, dest3 = mappings[key][:4]
         if src in src_dups:
             file_num, line_num = key
             errors.append((file_num, line_num, "Source '{0}' is a duplicate".format(src)))
@@ -224,6 +225,9 @@ def find_dups(mappings):
         if dest2 in dest_dups:
             file_num, line_num = key
             errors.append((file_num, line_num, "Destination '{0}' is a duplicate".format(dest2)))
+        if dest3 in dest_dups:
+            file_num, line_num = key
+            errors.append((file_num, line_num, "Destination '{0}' is a duplicate".format(dest3)))
 
     return errors
 
