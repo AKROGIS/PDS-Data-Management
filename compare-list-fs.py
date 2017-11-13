@@ -256,7 +256,7 @@ def check_equivalence(maps, mappings, file_hash=None):
                 print("***  Skipping {} == {}".format(old_path, new_path))
             elif new_path.endswith('SDMI_SPOT'):
                 print("***  Skipping {} == {}".format(old_path, new_path))
-            elif new_path.startswith('Source_Data\\'):
+            elif new_path.startswith('\\\\inpakrovmdist\\gisdata2\\Source_Data\\'):
                 print("***  Skipping {} == {}".format(old_path, new_path))
             elif not paths_equal(old_path, new_path):
                 # print("*************  Folders not equal ****************")
@@ -355,6 +355,7 @@ def folders_equal(path1, path2):
     if 0 < len(compared.funny_files):
         return False
     if 0 < len(compared.common_funny):
+        # Will happen if paths match but cannot be stat()'d because path is longer than 256
         return False
     if 0 < len(compared.diff_files):
         return False
