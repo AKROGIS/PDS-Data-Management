@@ -101,6 +101,7 @@ def fix_file(path, replace_map):
         logger.info("%s has no broken data sources", path)
 
     for layer in broken_layers:
+        logger.info('Layer %s in %s is broken', layer.name, path)
         if not layer.supports('WORKSPACEPATH'):
             logger.error('Layer %s in %s is broken, but does not have a workspace.  Skipping', layer.name, path)
             continue
@@ -120,6 +121,7 @@ def fix_file(path, replace_map):
     if save_required:
         try:
             doc.save()
+            logger.info("%s has been repaired and saved", path)
         except Exception as ex:
             logger.error('arcpy was unable to save the repaired document %s', path)
 
@@ -160,4 +162,6 @@ def main():
 
 
 if __name__ == '__main__':
+    logger.addHandler(logging.StreamHandler())
+    logger.setLevel(logging.DEBUG)
     main()
