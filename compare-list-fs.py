@@ -30,7 +30,7 @@ files = {file#: ("root", "map_path", "hash_path")}
 # types
 errors = [(file#, line#, "Issue")]
 mappings = {(file#,line#): ("old_path", "int_path", "ext_path",...)}
-file_hash = {(file#, "path"): hash} 
+file_hash = {(file#, "path"): hash}
 hash_file = {hash:[(file#, "path")]}
 trees = {"root": paths dict}
 paths = {"path": (file#,line#)}
@@ -328,7 +328,7 @@ def files_equal(path1, path2):
     """
     Test if two files are 'equal'
 
-    files are equal if they have the same os_stat() values 
+    files are equal if they have the same os_stat() values
     :param path1: path to a file
     :param path2: path to another file
     :return: bool

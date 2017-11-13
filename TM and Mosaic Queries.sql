@@ -31,7 +31,7 @@ SELECT gdb, item, folder
   FROM [Scratch].[dbo].[IMAGES_X] as i
   left join [Scratch].[dbo].[TM_20171030] as t
   on t.workspace_Path = i.gdb and t.Data_Source = i.item
-  where gdb like '%IKONOS%' and t.workspace_Path is not Null 
+  where gdb like '%IKONOS%' and t.workspace_Path is not Null
   group by gdb, item, folder
   order by gdb, item, folder
 
@@ -47,7 +47,7 @@ SELECT gdb, item, folder
 
 -- Mosaic datasets on AIS (services)
 SELECT gdb, item, folder
-  FROM [Scratch].[dbo].[IMAGES_Z] 
+  FROM [Scratch].[dbo].[IMAGES_Z]
   where gdb like '%IKONOS%'
   group by gdb, item, folder
   order by folder,gdb, item
