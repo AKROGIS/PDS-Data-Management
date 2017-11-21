@@ -113,7 +113,7 @@ def fix_file(path, replace_map):
             continue
 
         try:
-            doc.findAndReplaceWorkspacePath(workspace, new_workspace, False)
+            layer.findAndReplaceWorkspacePath(workspace, new_workspace, False)
             save_required = True
         except Exception as ex:
             logger.error('Unable to repair layer  %s in %s, problem: %s', layer.name, path, ex)
