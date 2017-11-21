@@ -101,7 +101,7 @@ def fix_file(path, replace_map):
         logger.info("%s has no broken data sources", path)
 
     for layer in broken_layers:
-        logger.info('Layer %s in %s is broken', layer.name, path)
+        logger.warning('Layer %s in %s is broken', layer.name, path)
         if not layer.supports('WORKSPACEPATH'):
             logger.error('Layer %s in %s is broken, but does not have a workspace.  Skipping', layer.name, path)
             continue
@@ -140,6 +140,7 @@ def find_and_fix_all(start, extension, replace_map):
             ext = os.path.splitext(name)[1].lower()
             if ext == extension_lowercase:
                 old_path = os.path.join(root, name)
+                logger.debug(old_path)
                 fix_file(old_path, replace_map)
 
 
@@ -163,5 +164,5 @@ def main():
 
 if __name__ == '__main__':
     logger.addHandler(logging.StreamHandler())
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.WARN)
     main()
