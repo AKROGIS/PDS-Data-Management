@@ -48,7 +48,7 @@ def find_replacement(old_path, replace_map):
     return None
 
 
-def fix_file(path, replace_map):
+def check_and_fix_file(path, replace_map, fix='check'):
     """
     Fix broken datasources in an mxd or layer file
 
@@ -89,7 +89,6 @@ def fix_file(path, replace_map):
         logger.warning("%s is not an .mxd or .lyr file", path)
         return
 
-    broken_layers = []
     save_required = False
     try:
         broken_layers = arcpy.mapping.ListBrokenDataSources(doc)
@@ -99,6 +98,7 @@ def fix_file(path, replace_map):
 
     if not broken_layers:
         logger.info("%s has no broken data sources", path)
+        return
 
     for layer in broken_layers:
         logger.warning('Layer %s in %s is broken', layer.name, path)
@@ -106,10 +106,17 @@ def fix_file(path, replace_map):
             logger.error('Layer %s in %s is broken, but does not have a workspace.  Skipping', layer.name, path)
             continue
 
+        if fix == 'check':
+            continue
+
         workspace = layer.workspacePath
         new_workspace = find_replacement(workspace, replace_map)
         if new_workspace is None:
             logger.error('Unable to find replacement for %s in %s.  Skipping', workspace, path)
+            continue
+
+        if fix == 'find-fix':
+            logger.warn('Replace %s with %s in %s', workspace, new_workspace , path)
             continue
 
         try:
@@ -126,7 +133,7 @@ def fix_file(path, replace_map):
             logger.error('arcpy was unable to save the repaired document %s', path)
 
 
-def find_and_fix_all(start, extension, replace_map):
+def find_and_fix_all(start, extension, replace_map, fix='check'):
     """
     Find and fix all files with `extension' below start in the file system
 
@@ -141,7 +148,7 @@ def find_and_fix_all(start, extension, replace_map):
             if ext == extension_lowercase:
                 old_path = os.path.join(root, name)
                 logger.debug(old_path)
-                fix_file(old_path, replace_map)
+                check_and_fix_file(old_path, replace_map, fix=fix)
 
 
 def read_csv_map(csvpath):
@@ -157,12 +164,21 @@ def read_csv_map(csvpath):
     return mappings
 
 
-def main():
-    replace_map = read_csv_map(r'data\PDS Moves - inpakrovmdist%5Cgisdata.csv')
-    find_and_fix_all(r'X:\GIS\ThemeMgr', '.lyr', replace_map)
+def main(fix='check'):
+    if fix not in ['check', 'find-fix', 'fix']:
+        fix = 'check'
+    replace_map = None
+    if fix in ['find-fix', 'fix']:
+        replace_map = read_csv_map(r'data\PDS Moves - inpakrovmdist%5Cgisdata.csv')
+    find_and_fix_all(r'X:\GIS\ThemeMgr', '.lyr', replace_map, fix=fix)
 
 
 if __name__ == '__main__':
     logger.addHandler(logging.StreamHandler())
     logger.setLevel(logging.WARN)
-    main()
+    # fix is one of 'check', 'find-fix', 'fix'
+    #   check just prints broken layers (fastest)
+    #   find-fix does a 'check', and find/prints the fix
+    #   fix does a 'find-fix' and then repairs and overwrites the layer files (slowest)
+    #   the default is 'check'
+    main(fix='check')
