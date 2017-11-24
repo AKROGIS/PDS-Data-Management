@@ -70,3 +70,42 @@ JOIN
   group by gdb, item) AS X
   ON X.item = z.item
   order by X.item --, X.folder
+
+
+  --  Raster Mosaics with issues
+  select * from mosaics_20171121 where contents = 'Mixed' or errors is not null
+
+  SELECT folder FROM mosaic_images group by folder order by folder
+  SELECT folder FROM mosaic_images where folder not like '%.Overviews%' group by folder order by folder
+
+  select count(*) from mosaic_images
+
+  SELECT fgdb from mosaics_20171121 group by fgdb order by fgdb
+
+  --All mossics not moved to new Mosaics folder
+  select m.fgdb, d.internal from (select fgdb from [mosaics_20171121] group by fgdb having fgdb like 'X:%') as m
+  left join moves_dist as d on m.fgdb = 'X:\' + d.original
+  where d.internal is null or d.internal not like 'Mosaics%'
+  union
+  select m.fgdb, d.internal from (select fgdb from [mosaics_20171121] group by fgdb having fgdb like 'Z:%') as m
+  left join moves_ais as d on m.fgdb = 'Z:\' + d.original
+  where d.internal is null or d.internal not like 'Mosaics%'
+
+  -- SPOT5
+  select * from mosaic_images where folder like '%SPOT5%' order by ext, folder -- All Paths
+  select ext, count(*) from mosaic_images where folder like '%SPOT5%' group by ext -- All Paths
+  select * from mosaic_images where folder like '%\SDMI\SPOT5\%' order by ext, folder  -- paths on dist (or X)
+  select ext, count(*) from mosaic_images where folder like '%\SDMI\SPOT5\%' group by ext  -- paths on dist (or X)
+  -- SPOT5 paths not on dist (or X)  -- just overviews and some wierd self reference X:\Albers\base\Imagery\SPOT5\SDMI.gdb\AMD_SPOT5_CIR1_CAT
+  select * from mosaic_images where folder like '%SPOT5%' and folder not like '%\SDMI\SPOT5\%' order by ext, folder
+  select * from mosaic_images where folder like '%SPOT5%' and folder not like '%\SDMI\SPOT5\%' and folder not like '%.Overviews%' order by ext, folder
+
+
+  -- IFSAR
+  select * from mosaic_images where folder like '%IFSAR%' order by ext, folder -- All Paths
+  select ext, count(*) from mosaic_images where folder like '%IFSAR%' group by ext -- All Paths
+  select * from mosaic_images where folder like '%\SDMI\IFSAR\%' order by ext, folder  -- paths on dist (or X)
+  select ext, count(*) from mosaic_images where folder like '%\SDMI\IFSAR\%' group by ext  -- paths on dist (or X)
+  -- IFSAR paths not on dist (or X)  -- just overviews others referencing the mosaic (on Z and on X)
+  select * from mosaic_images where folder like '%IFSAR%' and folder not like '%\SDMI\IFSAR\%' order by ext, folder
+  select * from mosaic_images where folder like '%IFSAR%' and folder not like '%\SDMI\IFSAR\%' and folder not like '%\Mosaics\%' and folder not like '%.Overviews%' order by ext, folder
