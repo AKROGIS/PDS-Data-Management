@@ -31,20 +31,21 @@ def check_gdb(gdb, outputter=None):
         mosaic = os.path.join(gdb, item)
         try:
             ref = arcpy.Describe(mosaic).referenced
-        except arcpy.ExecuteError as ex:
-            print('{}, {}, {}'.format(gdb, item, ex))
+        except AttributeError as ex:
+            print('{},{},{},{},{}'.format(gdb, item, contents, 'NA', ex))
             continue
-        print('{0},{1},{2},{3}'.format(gdb, item, contents, ref))
         if ref:
+            print('{0},{1},{2},{3},'.format(gdb, item, contents, ref))
             continue
         out_table = os.path.join(temp_folder, '{}.dbf'.format(item))
         # exports all paths and path types
         try:
             arcpy.ExportMosaicDatasetPaths_management(mosaic, out_table)
         except arcpy.ExecuteError as ex:
-            print('{}, {}, {}'.format(gdb, item, ex))
+            print('{},{},{},{},{}'.format(gdb, item, contents, ref, ex))
             continue
-        with arcpy.da.SearchCursor(out_table, "Path,SourceID") as cursor:
+        print('{},{},{},{},'.format(gdb, item, contents, ref))
+        with arcpy.da.SearchCursor(out_table, ["Path","SourceOID"]) as cursor:
             for row in cursor:
                 path = row[0]
                 sid = row[1]
@@ -58,7 +59,7 @@ def check_gdb(gdb, outputter=None):
                 if outputter is not None:
                     outputter([gdb, item, folder, name, ext, sid, size])
                 else:
-                    results.append([gdb, item, folder, name, ext, size])
+                    results.append([gdb, item, folder, name, ext, sid, size])
         os.remove(out_table)  # need to make sure locks are gone before removing folder
     # shutil.rmtree(temp_folder)  # fails due to a race condition with an ArcGIS lock
     return results
@@ -89,7 +90,7 @@ def main(folder, csv_file=None):
             def put_in_csv(row):
                 csv_writer.writerow(row)
 
-            put_in_csv(['gdb', 'item', 'folder', 'name', 'ext', 'size'])
+            put_in_csv(['fgdb', 'mosaic', 'folder', 'filename', 'extension', 'sourceoid', 'size'])
             check_folder(folder, put_in_csv)
 
 
