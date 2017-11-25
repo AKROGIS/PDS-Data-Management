@@ -109,3 +109,89 @@ JOIN
   -- IFSAR paths not on dist (or X)  -- just overviews others referencing the mosaic (on Z and on X)
   select * from mosaic_images where folder like '%IFSAR%' and folder not like '%\SDMI\IFSAR\%' order by ext, folder
   select * from mosaic_images where folder like '%IFSAR%' and folder not like '%\SDMI\IFSAR\%' and folder not like '%\Mosaics\%' and folder not like '%.Overviews%' order by ext, folder
+
+
+  -- Find Matches in Lake Clark IKONOS folders on X/Z
+
+  -- nothing on x is in z
+  SELECT *
+  from lacl_Ikonos_tif_x as x
+  left join lacl_Ikonos_tif_z as z
+  -- on x.filename = z.filename and x.size = z.size  -- nothing
+  on x.size = z.size  -- one match
+
+  -- nothing on z is in z
+  SELECT *
+  from lacl_Ikonos_tif_z as z
+  left join lacl_Ikonos_tif_x as x
+  -- on x.filename = z.filename and x.size = z.size  -- nothing
+  on x.size = z.size  -- one match
+
+  select sum(size)/1024/1024/1024 from lacl_Ikonos_tif_x  --564 GB
+  select sum(size)/1024/1024/1024 from lacl_Ikonos_tif_z  --509 GB
+
+
+  -- Find Matches in SPOT5
+
+  -- 13 images on x are not on z
+  SELECT *
+  from spot_tif_x as x
+  left join spot_tif_z as z
+  on x.filename = z.filename and x.size = z.size
+  --where z.folder is not null  -- 17295 matches found
+  where z.folder is null  -- 13 not found on Z
+  --where x.folder = 'X:\SDMI\SPOT5\SPOT5.SDMI.ORTHO.20110517.0970_1228' -- 3 => Z:\SPOT5\SDMI.ORTHO.2010\SPOT5.SDMI.ORTHO.2010.0970_1228
+  --where x.folder = 'X:\SDMI\SPOT5\SPOT5.SDMI.ORTHO.20110517.0998_1232' -- 3 => Z:\SPOT5\SDMI.ORTHO.2010\SPOT5.SDMI.ORTHO.2010.0998_1232
+  --where x.folder = 'X:\SDMI\SPOT5\SPOT5.SDMI.ORTHO.20111206.1036_1226' -- 3 => Z:\SPOT5\SDMI.ORTHO.2010\SPOT5.SDMI.ORTHO.2010.1036_1226
+  --where x.folder = 'X:\SDMI\SPOT5\SPOT5.SDMI.ORTHO.20111206.1050_1224' -- 3 => Z:\SPOT5\SDMI.ORTHO.2010\SPOT5.SDMI.ORTHO.2010.1050_1224
+  --where x.folder = 'X:\SDMI\SPOT5\SPOT5.SDMI.ORTHO.20111206.1044_1224' -- 1 => Z:\SPOT5\SDMI.ORTHO.2010\SPOT5.SDMI.ORTHO.2010.1044_1224
+
+  -- everything on z is in x (except 150 (2 unique) control point images)
+  SELECT *
+  from spot_tif_z as z
+  left join spot_tif_x as x
+  on x.filename = z.filename and x.size = z.size
+  where z.filename not like 'GCP%'
+  --and x.folder is not null  -- 17445 found - 150 (like GCP%) that are dups = 17295 matches found
+  and x.folder is null  -- 0 not found
+
+  -- find dups
+  select filename, size, count(*) from spot_tif_x group by filename, size having count(*) > 1  --none
+  select filename, size, count(*) from spot_tif_z group by filename, size having count(*) > 1  --2*75 = 150
+
+  select * from spot_tif_z where filename like 'GCP%'
+
+
+
+-- Find Matches in IFSAR
+
+-- 3137 images on x are not on z (oh boy.. sigh..)
+-- all (10030) are found if I only check the name, and not the size.
+SELECT *, (x.size - z.size)/(1.0 * x.size)
+from ifsar_tif_x as x
+left join ifsar_tif_z as z
+--on x.filename = z.filename and x.size = z.size
+--on x.size = z.size
+on x.filename = z.filename
+where z.folder is not null  -- 6773 matches found by name and size; 10030 by only name
+--where z.folder is null  -- 3137 not found on Z by name and size; 0 not found by only name
+--where x.folder like 'X:\SDMI\IFSAR\2012\%' -- => Z:\IFSAR\FEDI_Data\Copper_River\USGS_15_Tiles\*
+--order by x.folder
+order by (x.size - z.size)/(1.0 * x.size)
+
+-- 5472 images on Z are not on X
+SELECT *
+from ifsar_tif_z as z
+left join ifsar_tif_x as x
+on x.filename = z.filename and x.size = z.size
+--where x.folder is not null  -- 6773 matches found
+where x.folder is null  -- 5472 not found
+
+-- find dups
+select filename, size, count(*) from ifsar_tif_x group by filename, size having count(*) > 1  --none
+select filename, size, count(*) from ifsar_tif_z group by filename, size having count(*) > 1  --49*2 + 1*8 = 57 extras
+select filename, count(*) from ifsar_tif_x group by filename having count(*) > 1  --none
+select filename, count(*) from ifsar_tif_z group by filename having count(*) > 1  --176*2 + 1*8
+
+select * from ifsar_tif_z where filename not like 'DTM%' and filename not like 'DSM%' and filename not like 'ORI%'
+select * from ifsar_tif_x where filename = 'ak_90m_16bit_ellip_gf9_nonul'  -- 8 in z, 0 in x
