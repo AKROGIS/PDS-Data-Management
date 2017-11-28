@@ -254,9 +254,9 @@ def check_equivalence(maps, mappings, file_hash=None):
             # print("{0}, {1}".format(old_path, new_path))
             if new_path.endswith('SDMI_IFSAR'):
                 print("***  Skipping {} == {}".format(old_path, new_path))
-            elif new_path.endswith('SDMI_SPOT'):
+            elif new_path.endswith('SDMI_SPOT5'):
                 print("***  Skipping {} == {}".format(old_path, new_path))
-            elif new_path.startswith('\\\\inpakrovmdist\\gisdata2\\Source_Data\\'):
+            elif new_path.startswith('\\\\inpakrovmdist\\gisdata2\\Extras2\\Source_Data\\'):
                 print("***  Skipping {} == {}".format(old_path, new_path))
             elif old_path.endswith('\\X_RetiredData\\Archive'):
                 print("***  Skipping {} == {}".format(old_path, new_path))
