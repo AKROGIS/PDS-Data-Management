@@ -71,6 +71,18 @@ JOIN
   ON X.item = z.item
   order by X.item --, X.folder
 
+  -- TIFF Image folders (except overviews) feeding mosaics
+  select * from
+  	(SELECT folder from mosaic_images
+  	where (size > -1 or left(folder, 4) = '.gdb') and left(folder, 8) <> 'X:\SDMI\'
+  	and folder not like '%.Overviews' and folder not like '\\inpakrovmdist\GISData\SDMI\%'
+  	group by folder
+  	union
+  	select 'X:\SDMI\IFSAR\' as folder
+  	union
+  	select 'X:\SDMI\SPOT5\' as folder) as folder
+  order by folder
+  
 
   --  Raster Mosaics with issues
   select * from mosaics_20171121 where contents = 'Mixed' or errors is not null
