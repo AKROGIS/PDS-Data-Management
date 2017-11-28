@@ -82,7 +82,7 @@ JOIN
   	union
   	select 'X:\SDMI\SPOT5\' as folder) as folder
   order by folder
-  
+
 
   --  Raster Mosaics with issues
   select * from mosaics_20171121 where contents = 'Mixed' or errors is not null
@@ -207,3 +207,25 @@ select filename, count(*) from ifsar_tif_z group by filename having count(*) > 1
 
 select * from ifsar_tif_z where filename not like 'DTM%' and filename not like 'DSM%' and filename not like 'ORI%'
 select * from ifsar_tif_x where filename = 'ak_90m_16bit_ellip_gf9_nonul'  -- 8 in z, 0 in x
+
+
+-- Get mosaic repair data; does not work on IFSAR and SPOT5
+SELECT
+   fgdb as old_fgdb, mosaic,
+   Coalesce('X:\' + d.internal, 'X:\' + a.internal) as new_fgdb,
+   folder as old_folder,
+   Replace(Coalesce(Replace(folder, d2.original, d2.new), Replace(folder, a2.original, a2.new)), '\\inpakrovmdist\gisdata\', 'X:\') as new_folder
+FROM
+   (select fgdb, mosaic, folder from mosaic_images
+    where folder not like '%SDMI\SPOT5%' AND folder not like '%SDMI\IFSAR%'
+	group by fgdb, mosaic, folder) as i
+LEFT JOIN moves_dist as d
+   ON 'X:\' + d.original = i.fgdb
+LEFT JOIN moves_ais as a
+   ON 'Z:\' + a.original = i.fgdb
+LEFT JOIN
+   (select original, Coalesce(internal, external1, external2) as new from moves_dist) as d2
+   ON i.folder like 'X:\' + d2.original + '%'  OR i.folder like '\\inpakrovmdist\gisdata\' + d2.original +'%'
+LEFT JOIN
+   (select original, Coalesce(internal, external1, external2) as new from moves_dist) as a2
+   ON i.folder like 'X:\' + a2.original + '%'  OR i.folder like '\\inpakrovmdist\gisdata\' + a2.original +'%'
