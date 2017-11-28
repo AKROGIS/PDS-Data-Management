@@ -211,10 +211,10 @@ select * from ifsar_tif_x where filename = 'ak_90m_16bit_ellip_gf9_nonul'  -- 8 
 
 -- Get mosaic repair data; does not work on IFSAR and SPOT5
 SELECT
-   fgdb as old_fgdb, mosaic,
+   i.fgdb as old_fgdb, i.mosaic,
+   i.folder as old_folder,
    Coalesce('X:\' + d.internal, 'X:\' + a.internal) as new_fgdb,
-   folder as old_folder,
-   Replace(Coalesce(Replace(folder, d2.original, d2.new), Replace(folder, a2.original, a2.new)), '\\inpakrovmdist\gisdata\', 'X:\') as new_folder
+   Replace(Replace(Coalesce(Replace(folder, d2.original, d2.new), Replace(folder, a2.original, a2.new)), '\\inpakrovmdist\gisdata\', 'X:\'), '\\inpakrovmais\data\', 'X:\') as new_folder
 FROM
    (select fgdb, mosaic, folder from mosaic_images
     where folder not like '%SDMI\SPOT5%' AND folder not like '%SDMI\IFSAR%'
@@ -225,7 +225,21 @@ LEFT JOIN moves_ais as a
    ON 'Z:\' + a.original = i.fgdb
 LEFT JOIN
    (select original, Coalesce(internal, external1, external2) as new from moves_dist) as d2
-   ON i.folder like 'X:\' + d2.original + '%'  OR i.folder like '\\inpakrovmdist\gisdata\' + d2.original +'%'
+   ON i.folder like 'X:\' + d2.original + '%' OR i.folder like '\\inpakrovmdist\gisdata\' + d2.original +'%'
 LEFT JOIN
-   (select original, Coalesce(internal, external1, external2) as new from moves_dist) as a2
-   ON i.folder like 'X:\' + a2.original + '%'  OR i.folder like '\\inpakrovmdist\gisdata\' + a2.original +'%'
+   (select original, Coalesce(internal, external1, external2) as new from moves_ais) as a2
+   ON i.folder like 'X:\' + a2.original + '%' OR i.folder like '\\inpakrovmdist\gisdata\' + a2.original +'%' OR i.folder like '\\inpakrovmais\data\' + a2.original +'%'
+
+--where i.fgdb like 'Z:\%'
+--where Coalesce('X:\' + d.internal, 'X:\' + a.internal) is null
+order by new_fgdb, new_folder
+
+-- What are the possible starting points for fgdbs in mosaic images
+select distinct left(fgdb,10) as sp from mosaic_images order by sp -- X:\ or Z:\
+
+-- What are the possible starting points for images in fgdbs in mosaic images
+select distinct left(folder,14) as sp from mosaic_images order by sp  -- X:\ or Z:\
+
+-- Show me which mosaics have unusual paths to imagery
+select * from mosaic_images where folder like 'X:\Local\%' or folder like 'X:\GLBA_Local\%' or folder like 'C:\%' or folder like 'E:\%' or folder like 'P:\%' or folder like '\\inpakrovmgis\%'
+select fgdb, mosaic, folder from mosaic_images where folder like '\\inpakrovmais\%' group by fgdb, mosaic, folder
