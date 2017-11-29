@@ -46,8 +46,7 @@ def find_replacement(old_path, replace_map):
         except KeyError:
             continue
         else:
-            return old_path.replace(tried_root, new_root, count=1)
-
+            return old_path.replace(tried_root, new_root, 1)
     return None
 
 
@@ -178,6 +177,7 @@ def main(fix='check'):
 
 if __name__ == '__main__':
     logger.addHandler(logging.StreamHandler())
+    logger.addHandler(logging.FileHandler(r"data\fix-file.log"))    
     logger.setLevel(logging.WARN)
     # fix is one of 'check', 'find-fix', 'fix'
     #   check just prints broken layers (fastest)
