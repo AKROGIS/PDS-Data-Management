@@ -42,9 +42,11 @@ def find_replacement(old_path, replace_map):
         else:
             tried_root = os.path.join(tried_root, part)
         try:
-            return replace_map[tried_root]
+            new_root = replace_map[tried_root]
         except KeyError:
             continue
+        else:
+            return old_path.replace(tried_root, new_root, 1)
     return None
 
 
@@ -175,10 +177,11 @@ def main(fix='check'):
 
 if __name__ == '__main__':
     logger.addHandler(logging.StreamHandler())
+    logger.addHandler(logging.FileHandler(r"data\fix-file.log"))    
     logger.setLevel(logging.WARN)
     # fix is one of 'check', 'find-fix', 'fix'
     #   check just prints broken layers (fastest)
     #   find-fix does a 'check', and find/prints the fix
     #   fix does a 'find-fix' and then repairs and overwrites the layer files (slowest)
     #   the default is 'check'
-    main(fix='check')
+    main(fix='find-fix')
