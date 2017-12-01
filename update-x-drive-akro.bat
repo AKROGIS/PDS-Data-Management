@@ -1,6 +1,6 @@
 @echo off
 echo This script will update or create a copy of the X drive components for backup or deployment.
-echo Run this with administrative privileges.
+echo Run using Command Prompt (Admin) or right-click, Run as administrator.
 echo If an updated drive is available locally use that as the source. Otherwise use the server.
 
 REM Clear source, set default server source paths
@@ -10,7 +10,8 @@ set lgx1src=\\inpakrovmdist\GISData2\Extras
 set lgx1folder=\Extras
 set lgx2src=\\inpakrovmdist\GISData2\Source_Data
 set lgx2folder=\Source_Data
-
+set parm=
+set copyhrs=""
 
 REM Ask user what type of drive to create or update
 set /p xtype="Enter SM, LG1 or LG2 depending on the type of X drive you are working with: "
@@ -45,6 +46,12 @@ IF %xtype%==LG1 (
       )
 )
 
+REM Check if user wants to restrict hours for copying
+set /p copyhrs="Enter Y to restrict copy operations outside of business hours; otherwise press Enter to continue with full copy: "
+IF %copyhrs%==Y (
+   set parm=/RH:1720-0600 /PF
+)
+
 REM It's easy to unintentionally trigger a massive deletion, warn user
 echo WARNING: 
 echo All content at %xtgtfull% may be removed in this operation! 
@@ -55,10 +62,10 @@ REM Last chance to cancel
 pause
 
 REM Robocopy with source and destination; switches explained below
-@robocopy %xsrc% %xtgtfull% /R:5 /W:5 /Z /MIR /TEE /NP /NFL /NS /NC /XJ /COPY:DATSO /XD "$RECYCLE.BIN" "System Volume Information" /LOG:update-x-drive-akro.log
+@robocopy %xsrc% %xtgtfull% /R:5 /W:5 /Z /MIR /TEE /NP /NFL /NS /NC /XJ /COPY:DATSO /XD "$RECYCLE.BIN" "System Volume Information" /LOG:update-x-drive-akro.log %parm%
 
 REM Done, prompt user to check for errors
-echo Operation completed, check console and log file (update-x-drive-akro.log) for errors
+echo Operation completed, check console and log file (update-x-drive-akro.log) for errors (locate and move from C:\Windows\System32 if not run from another location using the Command Prompt (Admin).
 pause
 
 REM Robocopy switches
@@ -76,4 +83,6 @@ REM  /NC - don't log file class
 REM  /XJ - don't copy through junctions
 REM /COPY:DATSO - copy data, attributes, timestamps, security, owner info (excludes audit info, which causes issues; otherwise same as /COPYALL)
 REM /LOG:file - writes log to file
+REM /RH:HHMM-HHMM - sets run hours
+REM  /PF - check run hours per file
 REM Reference: https://ss64.com/nt/robocopy.html
