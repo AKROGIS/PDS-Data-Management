@@ -62,7 +62,7 @@ REM Last chance to cancel
 pause
 
 REM Robocopy with source and destination; switches explained below
-@robocopy %xsrc% %xtgtfull% /R:5 /W:5 /Z /MIR /TEE /NP /NFL /NS /NC /XJ /COPY:DATSO /XD "$RECYCLE.BIN" "System Volume Information" /LOG:update-x-drive-akro.log %parm%
+@robocopy %xsrc% %xtgtfull% /R:5 /W:5 /ZB /MIR /NP /NFL /NS /NC /XJ /XD "$RECYCLE.BIN" "System Volume Information" /LOG:update-x-drive-akro.log %parm%
 
 REM Done, prompt user to check for errors
 echo Operation completed, check console and log file (update-x-drive-akro.log) for errors (locate and move from C:\Windows\System32 if not run from another location using the Command Prompt (Admin).
@@ -72,8 +72,10 @@ REM Robocopy switches
 REM /R:5 - retry a file five times
 REM /W:5 - wait five seconds between retries
 REM   /Z - restartable copy mode (fault tolerant)
+REM   /B - backup mode - may be faster than /Z and fewer or no issues with file locks
+REM  /ZB - restartable mode, unless locked, then use backup mode
 REM /MIR - mirror (copy and delete in destination)
-REM /TEE - output progress to console and to log
+REM /TEE - output progress to console and to log - hit to up-front performance, overwhelms output, not recommended
 REM  /NP - no progress (overwhelms output)
 REM /NFL - no file listing (too much output; may be useful in some cases)
 REM /NDL - no directory listing (if running silently at server will reduce log size)
