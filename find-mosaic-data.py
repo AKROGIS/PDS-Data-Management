@@ -95,5 +95,6 @@ def main(folder, csv_file=None):
 
 
 if __name__ == '__main__':
-    main('Z:\\', 'data/images_z.csv')
-    main('X:\\', 'data/images_x.csv')
+    # main('Z:\\', 'data/images_z.csv')
+    # main('X:\\', 'data/images_x.csv')
+    main('Y:\\Mosaics', 'data/images_new_x.csv')
