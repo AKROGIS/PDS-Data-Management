@@ -1,0 +1,25 @@
+﻿<ESRI.Configuration xmlns="http://schemas.esri.com/Desktop/AddIns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>MapFixer</Name>
+  <AddInID>{5c68b92a-b0fd-4a0c-8ba1-9b4a685925fe}</AddInID>
+  <Description>This tool will look for any broken data sources and provide a potential fix for each one. It should run as soon as the map or this tool loads as well as upon any user request. </Description>
+  <Version>1.0</Version>
+  <Image>Images\MapFixer.png</Image>
+  <Author>Regan Sarwas</Author>
+  <Company>NPS Alaska GIS Team</Company>
+  <Date>12/12/17</Date>
+  <Targets>
+    <Target name="Desktop" version="10.5" />
+  </Targets>
+  <AddIn language="CLR" library="MapFixer.dll" namespace="MapFixer">
+    <ArcMap>
+      <Commands>
+        <Button id="NPS_Alaska_GIS_MapFixer_CheckMap" class="CheckMapButton" message="This command looks for any broken data sources in your map and provide a potential fix for each one." caption="Check This Map" tip="Find and fix for any broken data sources" category="NPS Utilities" image="Images\CheckMap.png" />
+      </Commands>
+      <Extensions>
+        <Extension id="NPS_Alaska_GIS_MapFixer_CheckMapExtension" class="CheckMapExtension" productName="NPS Alaska PDS Map Fixer" showInExtensionDialog="true" autoLoad="true">
+          <Description>This Extension looks for any broken data sources in your map and provide a potential fix for each one.  It runs as soon as the map or this tool is loaded.</Description>
+        </Extension>
+      </Extensions>
+    </ArcMap>
+  </AddIn>
+</ESRI.Configuration>
