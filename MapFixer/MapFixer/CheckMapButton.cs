@@ -15,7 +15,11 @@ namespace MapFixer
         {
             ArcMap.Application.CurrentTool = null;
             ESRI.ArcGIS.Framework.IMessageDialog msgBox = new ESRI.ArcGIS.Framework.MessageDialogClass();
-            msgBox.DoModal("Check Map", "The button has been pushed.", "OK", "Really?", ArcMap.Application.hWnd);
+            var mf = new MapFixer();
+            foreach (string name in mf.BrokenDataSources)
+            {
+                msgBox.DoModal("Broken Data Source", name, "OK", "Cancel", ArcMap.Application.hWnd);
+            }
         }
         protected override void OnUpdate()
         {
