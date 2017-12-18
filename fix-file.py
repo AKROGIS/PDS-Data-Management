@@ -103,7 +103,7 @@ def check_and_fix_file(path, replace_map, fix='check'):
         return
 
     for layer in broken_layers:
-        logger.warning('Layer %s in %s is broken', layer.name, path)
+        logger.warning('%s/%s', path, layer.name)
         if not layer.supports('WORKSPACEPATH'):
             logger.error('Layer %s in %s is broken, but does not have a workspace.  Skipping', layer.name, path)
             continue
@@ -114,7 +114,7 @@ def check_and_fix_file(path, replace_map, fix='check'):
         workspace = layer.workspacePath
         new_workspace = find_replacement(workspace, replace_map)
         if new_workspace is None:
-            logger.error('Unable to find replacement for %s in %s.  Skipping', workspace, path)
+            logger.error('  %s Not Found', workspace)
             continue
 
         if fix == 'find-fix':
@@ -171,8 +171,8 @@ def main(fix='check'):
         fix = 'check'
     replace_map = None
     if fix in ['find-fix', 'fix']:
-        replace_map = read_csv_map(r'data\PDS Moves - inpakrovmdist%5Cgisdata.csv')
-    find_and_fix_all(r'X:\GIS\ThemeMgr', '.lyr', replace_map, fix=fix)
+        replace_map = read_csv_map(r'data\PDS Moves - inpakrovmdist%5Cgisdata.csv') # r'data\lyr_moves.csv'
+    find_and_fix_all(r'X:\GIS\ThemeMgr\ANIA Themes', '.lyr', replace_map, fix=fix)
 
 
 if __name__ == '__main__':
