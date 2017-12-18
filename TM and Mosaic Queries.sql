@@ -174,6 +174,57 @@ JOIN
 
   select * from spot_tif_z where filename like 'GCP%'
 
+  -- SPOT% Mosaic repair mapping
+  select m.fgdb, m.mosaic, m.folder, 
+         replace(z.folder, 'Z:\SPOT5', 'X:\Extras\AKR\Statewide\Imagery\SDMI_SPOT5') as new_folder
+  from mosaic_images as m
+  left join SPOT_TIF_Z as z
+  on m.filename = z.filename and m.size = z.size
+ where m.folder like '%SPOT5%' and z.folder is not null --and mosaic = 'SPOT5_CIR'
+ group by m.fgdb, m.mosaic, m.folder,
+         replace(z.folder, 'Z:\SPOT5', 'X:\Extras\AKR\Statewide\Imagery\SDMI_SPOT5')
+order by m.folder
+
+   -- SPOT5 overview Mosaic repair mapping
+  select fgdb, mosaic, folder, 
+         replace(folder, 'X:\Albers\base\Imagery\SPOT5\SDMI.Overviews', 'X:\Mosaics\Statewide\Imagery\SDMI_SPOT5.Overviews') as new_folder
+  from mosaic_images
+ where folder like '%SPOT5%' and folder like '%.Overviews%'
+ group by fgdb, mosaic, folder, 
+         replace(folder, 'X:\Albers\base\Imagery\SPOT5\SDMI.Overviews', 'X:\Mosaics\Statewide\Imagery\SDMI_SPOT5.Overviews')
+
+-- IFSAR Mosaic repair mapping: SIZE EQUAL
+  select m.fgdb, m.mosaic, m.folder + '\' + m.filename as old_name, 
+         replace(z.folder, 'Z:\IFSAR', 'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR') + '\' + z.filename as new_name
+  from mosaic_images as m
+  left join IFSAR_TIF_Z as z
+  on m.filename = z.filename and m.size = z.size
+ where m.folder like '%IFSAR%' and z.folder is not null
+
+-- IFSAR Mosaic repair mapping: SIZE NOT EQUAL
+  select m.fgdb, m.mosaic, m.folder + '\' + m.filename as old_name, 
+         replace(z.folder, 'Z:\IFSAR', 'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR') + '\' + z.filename as new_name
+  from mosaic_images as m
+  left join IFSAR_TIF_Z as z
+  on m.filename = z.filename and m.size != z.size
+ where m.folder like '%IFSAR%' and z.folder is not null
+
+ -- IFSAR overview Mosaic repair mapping: SIZE EQUAL
+  select m.fgdb, m.mosaic, m.folder + '\' + m.filename as old_name, 
+         replace(z.folder, 'Z:\IFSAR', 'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR') + '\' + z.filename as new_name
+  from mosaic_images as m
+  left join IFSAR_TIF_Z as z
+  on m.filename = z.filename and m.size = z.size
+ where m.folder like '%IFSAR%' and m.folder like '%.Overviews%'
+
+-- IFSAR overview Mosaic repair mapping: SIZE NOT EQUAL
+  select m.fgdb, m.mosaic, m.folder + '\' + m.filename as old_name, 
+         replace(z.folder, 'Z:\IFSAR', 'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR') + '\' + z.filename as new_name
+  from mosaic_images as m
+  left join IFSAR_TIF_Z as z
+  on m.filename = z.filename and m.size != z.size
+ where m.folder like '%IFSAR%' and m.folder like '%.Overviews%'
+
 
 
 -- Find Matches in IFSAR
@@ -190,7 +241,7 @@ where z.folder is not null  -- 6773 matches found by name and size; 10030 by onl
 --where z.folder is null  -- 3137 not found on Z by name and size; 0 not found by only name
 --where x.folder like 'X:\SDMI\IFSAR\2012\%' -- => Z:\IFSAR\FEDI_Data\Copper_River\USGS_15_Tiles\*
 --order by x.folder
-order by (x.size - z.size)/(1.0 * x.size)
+order by Z.filename, (x.size - z.size)/(1.0 * x.size)
 
 -- 5472 images on Z are not on X
 SELECT *
