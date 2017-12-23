@@ -174,6 +174,57 @@ JOIN
 
   select * from spot_tif_z where filename like 'GCP%'
 
+  -- SPOT% Mosaic repair mapping
+  select m.fgdb, m.mosaic, m.folder, 
+         replace(z.folder, 'Z:\SPOT5', 'X:\Extras\AKR\Statewide\Imagery\SDMI_SPOT5') as new_folder
+  from mosaic_images as m
+  left join SPOT_TIF_Z as z
+  on m.filename = z.filename and m.size = z.size
+ where m.folder like '%SPOT5%' and z.folder is not null --and mosaic = 'SPOT5_CIR'
+ group by m.fgdb, m.mosaic, m.folder,
+         replace(z.folder, 'Z:\SPOT5', 'X:\Extras\AKR\Statewide\Imagery\SDMI_SPOT5')
+order by m.folder
+
+   -- SPOT5 overview Mosaic repair mapping
+  select fgdb, mosaic, folder, 
+         replace(folder, 'X:\Albers\base\Imagery\SPOT5\SDMI.Overviews', 'X:\Mosaics\Statewide\Imagery\SDMI_SPOT5.Overviews') as new_folder
+  from mosaic_images
+ where folder like '%SPOT5%' and folder like '%.Overviews%'
+ group by fgdb, mosaic, folder, 
+         replace(folder, 'X:\Albers\base\Imagery\SPOT5\SDMI.Overviews', 'X:\Mosaics\Statewide\Imagery\SDMI_SPOT5.Overviews')
+
+-- IFSAR Mosaic repair mapping: SIZE EQUAL
+  select m.fgdb, m.mosaic, m.folder + '\' + m.filename as old_name, 
+         replace(z.folder, 'Z:\IFSAR', 'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR') + '\' + z.filename as new_name
+  from mosaic_images as m
+  left join IFSAR_TIF_Z as z
+  on m.filename = z.filename and m.size = z.size
+ where m.folder like '%IFSAR%' and z.folder is not null
+
+-- IFSAR Mosaic repair mapping: SIZE NOT EQUAL
+  select m.fgdb, m.mosaic, m.folder + '\' + m.filename as old_name, 
+         replace(z.folder, 'Z:\IFSAR', 'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR') + '\' + z.filename as new_name
+  from mosaic_images as m
+  left join IFSAR_TIF_Z as z
+  on m.filename = z.filename and m.size != z.size
+ where m.folder like '%IFSAR%' and z.folder is not null
+
+ -- IFSAR overview Mosaic repair mapping: SIZE EQUAL
+  select m.fgdb, m.mosaic, m.folder + '\' + m.filename as old_name, 
+         replace(z.folder, 'Z:\IFSAR', 'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR') + '\' + z.filename as new_name
+  from mosaic_images as m
+  left join IFSAR_TIF_Z as z
+  on m.filename = z.filename and m.size = z.size
+ where m.folder like '%IFSAR%' and m.folder like '%.Overviews%'
+
+-- IFSAR overview Mosaic repair mapping: SIZE NOT EQUAL
+  select m.fgdb, m.mosaic, m.folder + '\' + m.filename as old_name, 
+         replace(z.folder, 'Z:\IFSAR', 'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR') + '\' + z.filename as new_name
+  from mosaic_images as m
+  left join IFSAR_TIF_Z as z
+  on m.filename = z.filename and m.size != z.size
+ where m.folder like '%IFSAR%' and m.folder like '%.Overviews%'
+
 
 
 -- Find Matches in IFSAR
@@ -190,7 +241,7 @@ where z.folder is not null  -- 6773 matches found by name and size; 10030 by onl
 --where z.folder is null  -- 3137 not found on Z by name and size; 0 not found by only name
 --where x.folder like 'X:\SDMI\IFSAR\2012\%' -- => Z:\IFSAR\FEDI_Data\Copper_River\USGS_15_Tiles\*
 --order by x.folder
-order by (x.size - z.size)/(1.0 * x.size)
+order by Z.filename, (x.size - z.size)/(1.0 * x.size)
 
 -- 5472 images on Z are not on X
 SELECT *
@@ -272,3 +323,72 @@ LEFT JOIN
 --where i.fgdb like 'Z:\%'
 --where Coalesce('X:\' + d.internal, 'X:\' + a.internal) is null
 order by new_fgdb, new_folder
+
+
+
+--- *********************************************
+--- * Checks for final build of IFSAR/SPOT based on paths on new x (copy of ais/data)
+--- *********************************************
+SELECT * FROM [reorg].[dbo].[SPOT_TIF_x] where filename like '%cir'
+
+SELECT *
+  from spot_tif_x as x
+  left join spot_tif_z as z
+  on x.filename = z.filename and x.size = z.size
+  --where z.folder is not null  -- 17295 matches found
+  where z.folder is null  -- 13 not found on Z
+
+
+select folder from spot_tif_z where filename like '%1044_1224%'
+
+select m.fgdb, m.mosaic, m.folder + '\' + m.filename as old_name, 
+         replace(z.folder, 'Z:\IFSAR', 'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR') + '\' + z.filename as new_name
+  from mosaic_images as m
+  left join IFSAR_TIF_Z as z
+  on m.filename = z.filename and m.size = z.size
+ where m.folder like '%IFSAR%' and z.folder is not null and mosaic = 'ORI'
+
+ --Compare DTM files
+select * from mosaic_images where fgdb = 'X:\Mosaics\Statewide\DEMs\DEM_IFSAR.gdb' and mosaic = 'DTM'
+   and folder not like '%.Overviews' order by filename  -- 3381 images (3044 unique)  that all start with 'DTM_'
+select folder,filename, count(*) from mosaic_images where fgdb = 'X:\Mosaics\Statewide\DEMs\DEM_IFSAR.gdb' and mosaic = 'DTM'
+   and folder not like '%.Overviews' group by folder,filename having count(*) > 1  -- 337 dups
+select * from ifsar_tif_Z where filename like 'DTM_%'  -- 3208 Images
+select * from ifsar_tif_X where filename like 'DTM_%'  -- 3124 Images
+
+ --Compare DSM files
+select * from mosaic_images where fgdb = 'X:\Mosaics\Statewide\DEMs\DEM_IFSAR.gdb' and mosaic = 'DSM'
+    and folder not like '%.Overviews' order by filename  -- 3045 images that all start with 'DSM_'
+select folder,filename, count(*) from mosaic_images where fgdb = 'X:\Mosaics\Statewide\DEMs\DEM_IFSAR.gdb' and mosaic = 'DSM'
+    and folder not like '%.Overviews' group by folder,filename having count(*) > 1  -- No dups
+select * from ifsar_tif_Z where filename like 'DSM_%'  -- 3208 Images
+select * from ifsar_tif_X where filename like 'DSM_%'  -- 3125 Images
+
+ --Compare ORI files
+select * from mosaic_images where fgdb = 'X:\Mosaics\Statewide\Imagery\ORI_IFSAR.gdb' and mosaic = 'ORI'
+    and folder not like '%.Overviews' order by len(filename)  -- 2708 images that all start with 'ORI_' only one ends with '_sup1'
+select * from mosaic_images where fgdb = 'X:\Mosaics\Statewide\Imagery\ORI_IFSAR.gdb' and mosaic = 'ORI_SUP'
+    and folder not like '%.Overviews' order by filename  -- 841 images (3549 total) that all start with 'ORI_' and end with '_sup%'
+select folder,filename, count(*) from mosaic_images where fgdb = 'X:\Mosaics\Statewide\Imagery\ORI_IFSAR.gdb' and mosaic = 'ORI_SUP'
+    and folder not like '%.Overviews' group by folder,filename having count(*) > 1  -- No dups
+select * from ifsar_tif_Z where filename like 'ORI_%'  -- 4146 Images
+select * from ifsar_tif_X where filename like 'ORI_%'  -- 3629 Images
+
+select count(*) from ifsar_tif_Z  -- 12245
+select * from ifsar_tif_Z where filename not like 'ORI_%' and  filename not like 'DSM_%' and  filename not like 'DTM_%' order by filename -- 1683 (not used)
+select 4146+3208+3208+1683  -- 10562 + 1683 = 12245
+select sum(size)/1024/1024/1024 from ifsar_tif_Z where filename not like 'ORI_%' and  filename not like 'DSM_%' and  filename not like 'DTM_%' -- 111 GB in unused tif images
+select * from ifsar_tif_Z where filename not like 'ORI_%' and  filename not like 'DSM_%' and  filename not like 'DTM_%' and filename like '%ORI'  --1286
+select * from ifsar_tif_Z where filename not like 'ORI_%' and  filename not like 'DSM_%' and  filename not like 'DTM_%' and (filename like '%_dem' or filename like '%_dtm') --363
+select * from ifsar_tif_Z where filename not like 'ORI_%' and  filename not like 'DSM_%' and  filename not like 'DTM_%' and filename not like '%_dem' and filename not like '%_dtm' and filename not like '%ORI' --34
+
+select replace(folder,'Z:\IFSAR', 'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR') + '\' + filename + ext from ifsar_tif_Z where filename like 'DTM_%' -- 3208
+select replace(folder,'Z:\IFSAR', 'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR') + '\' + filename + ext from ifsar_tif_Z where filename like 'DSM_%' -- 3208
+select replace(folder,'Z:\IFSAR', 'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR') + '\' + filename + ext from ifsar_tif_Z where filename like 'ORI_%' and filename not like '%_sup%'  -- 3141
+select replace(folder,'Z:\IFSAR', 'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR') + '\' + filename + ext from ifsar_tif_Z where filename like 'ORI_%sup%' -- 1005
+
+select replace(folder,'Z:\IFSAR', 'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR') + '\' + filename + ext from ifsar_tif_Z where filename not like 'ORI_%' and  filename not like 'DSM_%' and  filename not like 'DTM_%' and filename like '%ORI'  --1286
+
+select replace(folder,'Z:\IFSAR', 'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR') + '\' + filename + ext from ifsar_tif_Z where filename not like 'ORI_%' and  filename not like 'DSM_%' and  filename not like 'DTM_%' and (filename like '%_dem' or filename like '%_dtm') --363
+
+
