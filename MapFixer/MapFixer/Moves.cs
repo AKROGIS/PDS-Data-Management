@@ -61,6 +61,7 @@ namespace MapFixer
 
             public GisDataset ToGisDataset(GisDataset gisDataset)
             {
+                //FIXME: gisDataset workspace is a full path to the dataasource; while the partial might have a partial path (i.e an ancestor workspace)
                 return new GisDataset(
                     WorkspacePath,
                     WorkspaceType ?? gisDataset.WorkspaceType,
@@ -121,6 +122,7 @@ namespace MapFixer
             //It may contain an empty list of moves, which will is dealt with appropriately
             //The csv file used for input should be validated whenever it is edited.
             //   do the same parsing below and print exceptions and/or warnings whenever the foreach loop continues (skips a line)
+            //   Also need to check for chronological ordering
             try
             {
                 foreach (string line in File.ReadLines(csvpath))
@@ -151,11 +153,61 @@ namespace MapFixer
             catch { }
         }
 
-        private List<Move> GetMoves(DateTime since, GisDataset startingDataset)
+        private bool IsDataSourceMatch(GisDataset newDataset, PartialGisDataset oldDataset)
         {
-            var moves = new List<Move>();
-            //FIXME: Implement
-            return moves;
+            if (newDataset.DatasourceName == null)
+                return false;
+            if (oldDataset.DatasourceName == null)
+                return false;
+            if (string.Compare(newDataset.DatasourceName, oldDataset.DatasourceName, true) != 0)
+                return false;
+            return IsWorkspaceMatch(newDataset, oldDataset);
+        }
+
+        private bool IsWorkspaceMatch(GisDataset newDataset, PartialGisDataset oldDataset)
+        {
+            string oldPath = oldDataset.WorkspacePath;
+            string newPath = newDataset.WorkspacePath;
+            //FIXME: Compare full Workspace path; need to consider X:\ == \\inpakrovmdist\gisdata{2}\
+            return true;
+        }
+
+        private bool IsPartialWorkspaceMatch(GisDataset newDataset, PartialGisDataset oldDataset)
+        {
+            string oldPath = oldDataset.WorkspacePath;
+            string newPath = newDataset.WorkspacePath;
+            //FIXME: Check for partial(prefix) Workspace match; need to consider X:\ == \\inpakrovmdist\gisdata{2}\
+            return true;
+        }
+
+        private Move? FindLastMove(GisDataset dataset)
+        {
+            //Assumes CSV file is in Chronological order
+            GisDataset searchDataset = dataset;
+            Move? lastFoundMove = null;
+            foreach (Move move in _moves)
+            {
+                if (IsDataSourceMatch(searchDataset, move.OldDataset) ||
+                    IsPartialWorkspaceMatch(searchDataset, move.OldDataset))
+                {
+                    lastFoundMove = move;
+                    // prefer the replacement dataset over the new dataset
+                    PartialGisDataset? destination = move.ReplacementDataset ?? move.NewDataset;
+                    if (destination == null)
+                    {
+                        //If there is neither new or replacement, I'm done looking; give the user the layer or message in the move
+                        //TODO: consider that I might have gotten here after a move to a replacement, but the branch to the new might have been better
+                        return lastFoundMove;
+                    }
+                    else
+                    {
+                        // Keep searching; but now search for the new/replace dataset as the old dataset
+                        searchDataset = destination.Value.ToGisDataset(searchDataset);
+                    }
+                    //FIXME: if move1 = /a -> /b and Move2 = /b -> /c;  then I need to replace /a with /c in input /a/x/file.ext; but last move doesn't have /a
+                }
+            }
+            return lastFoundMove;
         }
 
         private PartialGisDataset? GetLastNewDataset(List<Move> moves)
@@ -197,13 +249,14 @@ namespace MapFixer
         public Solution? GetSolution(GisDataset oldDataset, DateTime since = default(DateTime))
         {
             // default for since is the earliest possible DateTime, which will consider all moves in the database
-            var moves = GetMoves(since, oldDataset);
-            if (moves.Count == 0)
+            Move? maybeMove = FindLastMove(oldDataset);
+            if (maybeMove == null)
                 return null;
-            var newDataset = GetLastNewDataset(moves);
-            var replacementDataset = GetLastReplacementDataset(moves);
-            var layerFile = GetLastLayerFilePath(moves);
-            var remarks = GetLastRemarks(moves);
+            Move move = maybeMove.Value;
+            var newDataset = move.NewDataset;
+            var replacementDataset = move.ReplacementDataset;
+            var layerFile = move.ReplacementLayerFilePath;
+            var remarks = move.Remarks;
             if (newDataset == null && replacementDataset == null && layerFile == null && remarks == null)
                 return null;
             return new Solution(newDataset?.ToGisDataset(oldDataset), replacementDataset?.ToGisDataset(oldDataset), layerFile, remarks);
