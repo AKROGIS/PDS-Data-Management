@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MapFixer
 {
     
     class Moves
     {
-        public struct GisDataset : IEquatable<GisDataset>
+        public struct GisDataset: IEquatable<GisDataset>
         {
             public GisDataset(string workspacePath, string workspaceType, string datasourceName, string datasourceType)
             {
@@ -35,11 +33,56 @@ namespace MapFixer
 
             public bool Equals(GisDataset other)
             {
-                if (WorkspacePath == other.WorkspacePath && WorkspaceType == other.WorkspaceType && DatasourceName == other.DatasourceName && DatasourceType == other.DatasourceType)
-                    return true;
-                else
-                    return false;
+                return WorkspacePath == other.WorkspacePath && WorkspaceType == other.WorkspaceType &&
+                    DatasourceName == other.DatasourceName && DatasourceType == other.DatasourceType;
             }
+
+            public bool IsOnPDS
+            {
+                get
+                {
+                    if (WorkspacePath.StartsWith(@"X:\", StringComparison.OrdinalIgnoreCase))
+                        return true;
+                    if (WorkspacePath.StartsWith(@"\\inpakrovmdist\gistata\", StringComparison.OrdinalIgnoreCase))
+                        return true;
+                    return WorkspacePath.StartsWith(@"\\inpakrovmdist\gistata2\", StringComparison.OrdinalIgnoreCase);
+                }
+            }
+
+            public string WorkspaceWithoutVolume
+            {
+                get
+                {
+                    return WorkspacePath.Substring(Path.GetPathRoot(WorkspacePath).Length);
+                }
+            }
+
+            public bool IsInTrash
+            {
+                get
+                {
+                    if (!IsOnPDS)
+                        return false;
+                    var path = WorkspaceWithoutVolume;
+                    return path.StartsWith(@"\Trash\", StringComparison.OrdinalIgnoreCase) ||
+                        path.StartsWith(@"\Extras\Trash\", StringComparison.OrdinalIgnoreCase) ||
+                        path.StartsWith(@"\Extras2\Trash\", StringComparison.OrdinalIgnoreCase);
+                }
+            }
+
+            public bool IsInArchive
+            {
+                get
+                {
+                    if (!IsOnPDS)
+                        return false;
+                    var path = WorkspaceWithoutVolume;
+                    return path.StartsWith(@"\Archive\", StringComparison.OrdinalIgnoreCase) ||
+                        path.StartsWith(@"\Extras\Archive\", StringComparison.OrdinalIgnoreCase) ||
+                        path.StartsWith(@"\Extras2\Archive\", StringComparison.OrdinalIgnoreCase);
+                }
+            }
+
         }
 
         struct PartialGisDataset
@@ -61,7 +104,6 @@ namespace MapFixer
 
             public GisDataset ToGisDataset(GisDataset gisDataset)
             {
-                //FIXME: gisDataset workspace is a full path to the dataasource; while the partial might have a partial path (i.e an ancestor workspace)
                 return new GisDataset(
                     WorkspacePath,
                     WorkspaceType ?? gisDataset.WorkspaceType,
@@ -73,16 +115,18 @@ namespace MapFixer
 
         public struct Solution
         {
-            public Solution(GisDataset? newDataset = null, GisDataset? replacementDataset = null, string replacementLayerFilePath = null, string remarks = null)
+            public Solution(DateTime timestamp, GisDataset? newDataset = null, GisDataset? replacementDataset = null, string replacementLayerFilePath = null, string remarks = null)
             {
                 if (newDataset == null && replacementDataset == null && string.IsNullOrWhiteSpace(replacementLayerFilePath) && string.IsNullOrWhiteSpace(remarks))
                     throw new NotSupportedException("At least one of the parameters must be non-null");
+                Timestamp = timestamp;
                 NewDataset = newDataset;
                 ReplacementDataset = replacementDataset;
                 ReplacementLayerFilePath = string.IsNullOrWhiteSpace(replacementLayerFilePath) ? null : replacementLayerFilePath;
                 Remarks = string.IsNullOrWhiteSpace(remarks) ? null : remarks;
             }
 
+            public DateTime Timestamp { get; }
             public GisDataset? NewDataset { get; }
             public GisDataset? ReplacementDataset { get; }
             public string ReplacementLayerFilePath { get; }
@@ -91,8 +135,8 @@ namespace MapFixer
 
         struct Move
         {
-            public Move(DateTime timestamp, PartialGisDataset oldDataset, PartialGisDataset? newDataset, 
-                PartialGisDataset? replacementDataset =null, string replacementLayerFilePath = null,
+            public Move(DateTime timestamp, PartialGisDataset oldDataset, PartialGisDataset? newDataset,
+                PartialGisDataset? replacementDataset = null, string replacementLayerFilePath = null,
                 string remarks = null)
             {
                 Timestamp = timestamp;
@@ -109,6 +153,44 @@ namespace MapFixer
             public PartialGisDataset? ReplacementDataset { get; }
             public string ReplacementLayerFilePath { get; }
             public string Remarks { get; }
+
+            public PartialGisDataset? PatchNewDataset(GisDataset source)
+            {
+                if (NewDataset == null)
+                    return null;
+                return PatchDataset(source, NewDataset.Value);
+            }
+
+            public PartialGisDataset? PatchReplacementDataset(GisDataset source)
+            {
+                if (ReplacementDataset == null)
+                    return null;
+                return PatchDataset(source, ReplacementDataset.Value);
+            }
+
+            private PartialGisDataset? PatchDataset(GisDataset source, PartialGisDataset newDataset)
+            {
+                //A partial dataset must have a fully specified workspace, but a move may describe a parent folder
+                //This method patches the new dataset by applying the move to the source workspace
+                //The workspace in the move's old dataset must be a prefix of the input source for this method to return a non-null result
+
+                var searchString = OldDataset.WorkspacePath;
+                int positionOfSearchString = source.WorkspacePath.IndexOf(searchString);
+                if (positionOfSearchString < 0)
+                {
+                    return null;
+                }
+                var newWorkspace = source.WorkspacePath.Substring(0, positionOfSearchString) +
+                    newDataset.WorkspacePath +
+                    source.WorkspacePath.Substring(positionOfSearchString + searchString.Length);
+
+                return new PartialGisDataset(
+                    newWorkspace,
+                    newDataset.WorkspaceType,
+                    newDataset.DatasourceType,
+                    newDataset.DatasourceType
+                );
+            }
         }
 
         private List<Move>  _moves = new List<Move>();
@@ -123,6 +205,7 @@ namespace MapFixer
             //The csv file used for input should be validated whenever it is edited.
             //   do the same parsing below and print exceptions and/or warnings whenever the foreach loop continues (skips a line)
             //   Also need to check for chronological ordering
+            //   Also check that workspace paths do not have volume information
             try
             {
                 foreach (string line in File.ReadLines(csvpath))
@@ -147,119 +230,81 @@ namespace MapFixer
                     if (newDataset == null && replacementDataset == null && layerFile == null && remarks == null)
                         continue;
 
-                    _moves.Add(new Move(timestamp, oldDataset, newDataset, replacementDataset, remarks));
+                    _moves.Add(new Move(timestamp, oldDataset, newDataset, replacementDataset, layerFile, remarks));
                 }
             }
             catch { }
         }
 
-        private bool IsDataSourceMatch(GisDataset newDataset, PartialGisDataset oldDataset)
+        private bool IsDataSourceMatch(GisDataset dataset, PartialGisDataset moveFrom)
         {
-            if (newDataset.DatasourceName == null)
+            if (dataset.DatasourceName == null)
                 return false;
-            if (oldDataset.DatasourceName == null)
+            if (moveFrom.DatasourceName == null)
                 return false;
-            if (string.Compare(newDataset.DatasourceName, oldDataset.DatasourceName, true) != 0)
+            if (string.Compare(dataset.DatasourceName, moveFrom.DatasourceName, true) != 0)
                 return false;
-            return IsWorkspaceMatch(newDataset, oldDataset);
+            return IsWorkspaceMatch(dataset, moveFrom);
         }
 
-        private bool IsWorkspaceMatch(GisDataset newDataset, PartialGisDataset oldDataset)
+        private bool IsWorkspaceMatch(GisDataset dataset, PartialGisDataset moveFrom)
         {
-            string oldPath = oldDataset.WorkspacePath;
-            string newPath = newDataset.WorkspacePath;
-            //FIXME: Compare full Workspace path; need to consider X:\ == \\inpakrovmdist\gisdata{2}\
-            return true;
+            // !!WARNING!! Assumes workspace paths in moves do not have volume information
+            string movePath = moveFrom.WorkspacePath;
+            string fullPath = dataset.WorkspaceWithoutVolume;
+            return string.Compare(fullPath, movePath, StringComparison.OrdinalIgnoreCase) == 0;
         }
 
-        private bool IsPartialWorkspaceMatch(GisDataset newDataset, PartialGisDataset oldDataset)
+        private bool IsPartialWorkspaceMatch(GisDataset dataset, PartialGisDataset moveFrom)
         {
-            string oldPath = oldDataset.WorkspacePath;
-            string newPath = newDataset.WorkspacePath;
-            //FIXME: Check for partial(prefix) Workspace match; need to consider X:\ == \\inpakrovmdist\gisdata{2}\
-            return true;
+            // !!WARNING!! Assumes workspace paths in moves do not have volume information
+            string movePath = moveFrom.WorkspacePath;
+            string fullPath = dataset.WorkspaceWithoutVolume;
+            // Just searching for oldPath somewhere in newpath could yield some false positives.
+            // Instead, strip the volume and only match if the beginning of the string
+            return fullPath.StartsWith(movePath, StringComparison.OrdinalIgnoreCase);
         }
 
-        private Move? FindLastMove(GisDataset dataset)
+        private Move? FindFirstMatchingMove(GisDataset dataset, DateTime since)
         {
-            //Assumes CSV file is in Chronological order
-            GisDataset searchDataset = dataset;
-            Move? lastFoundMove = null;
+            // !!WARNING!! Assumes moves list is in chronological order
             foreach (Move move in _moves)
             {
-                if (IsDataSourceMatch(searchDataset, move.OldDataset) ||
-                    IsPartialWorkspaceMatch(searchDataset, move.OldDataset))
+                if (move.Timestamp <= since)
+                    continue;
+
+                if (IsDataSourceMatch(dataset, move.OldDataset) ||
+                    IsPartialWorkspaceMatch(dataset, move.OldDataset))
                 {
-                    lastFoundMove = move;
-                    // prefer the replacement dataset over the new dataset
-                    PartialGisDataset? destination = move.ReplacementDataset ?? move.NewDataset;
-                    if (destination == null)
-                    {
-                        //If there is neither new or replacement, I'm done looking; give the user the layer or message in the move
-                        //TODO: consider that I might have gotten here after a move to a replacement, but the branch to the new might have been better
-                        return lastFoundMove;
-                    }
-                    else
-                    {
-                        // Keep searching; but now search for the new/replace dataset as the old dataset
-                        searchDataset = destination.Value.ToGisDataset(searchDataset);
-                    }
-                    //FIXME: if move1 = /a -> /b and Move2 = /b -> /c;  then I need to replace /a with /c in input /a/x/file.ext; but last move doesn't have /a
+                    return move;
                 }
             }
-            return lastFoundMove;
-        }
-
-        private PartialGisDataset? GetLastNewDataset(List<Move> moves)
-        {
-            PartialGisDataset? lastDataset = null;
-            foreach (Move move in moves)
-                if (move.NewDataset != null)
-                    lastDataset = move.NewDataset;
-            return lastDataset;
-        }
-
-        private PartialGisDataset? GetLastReplacementDataset(List<Move> moves)
-        {
-            PartialGisDataset? lastDataset = null;
-            foreach (Move move in moves)
-                if (move.ReplacementDataset != null)
-                    lastDataset = move.ReplacementDataset;
-            return lastDataset;
-        }
-
-        private string GetLastLayerFilePath(List<Move> moves)
-        {
-            string lastLayer = null;
-            foreach (Move move in moves)
-                if (move.ReplacementLayerFilePath != null)
-                    lastLayer = move.ReplacementLayerFilePath;
-            return lastLayer;
-        }
-
-        private string GetLastRemarks(List<Move> moves)
-        {
-            string lastRemark = null;
-            foreach (Move move in moves)
-                if (move.Remarks != null)
-                    lastRemark = move.Remarks;
-            return lastRemark;
+            return null;
         }
 
         public Solution? GetSolution(GisDataset oldDataset, DateTime since = default(DateTime))
         {
             // default for since is the earliest possible DateTime, which will consider all moves in the database
-            Move? maybeMove = FindLastMove(oldDataset);
+            // Returns the first move in the database since the date given.  The solution will have a timestamp when the move was made
+            // Be sure to call this again after the user has applied the given fix to see if there are subsequent moves that should be
+            // applied to the fix.  Keep going until there are no more solutions.
+
+            if (!oldDataset.IsOnPDS)
+                return null;
+
+            Move? maybeMove = FindFirstMatchingMove(oldDataset, since);
             if (maybeMove == null)
                 return null;
+
             Move move = maybeMove.Value;
-            var newDataset = move.NewDataset;
-            var replacementDataset = move.ReplacementDataset;
+            var newDataset = move.PatchNewDataset(oldDataset);
+            var replacementDataset = move.PatchReplacementDataset(oldDataset);
             var layerFile = move.ReplacementLayerFilePath;
             var remarks = move.Remarks;
             if (newDataset == null && replacementDataset == null && layerFile == null && remarks == null)
                 return null;
-            return new Solution(newDataset?.ToGisDataset(oldDataset), replacementDataset?.ToGisDataset(oldDataset), layerFile, remarks);
+            
+            return new Solution(move.Timestamp, newDataset?.ToGisDataset(oldDataset), replacementDataset?.ToGisDataset(oldDataset), layerFile, remarks);
         }
     }
 }
