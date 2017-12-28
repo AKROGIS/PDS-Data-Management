@@ -7,14 +7,20 @@ namespace MapFixer
 {
     public class CheckMapExtension : ESRI.ArcGIS.Desktop.AddIns.Extension
     {
+        public static Moves moves;
+        public static MapFixer mapFixer; 
+
         public CheckMapExtension()
         {
+            var dataPath = @"X:\GIS\ThemeMgr\DataMoves.csv";
+            moves = new Moves(dataPath);
+            mapFixer = new MapFixer();
         }
 
         protected override void OnStartup()
         {
             WireDocumentEvents();
-            //CheckDocument();
+            CheckDocument();
         }
 
         private void WireDocumentEvents()
@@ -24,9 +30,13 @@ namespace MapFixer
 
         void ArcMap_NewDocument()
         {
-            //CheckDOcument();
+            CheckDocument();
         }
 
+        public static void CheckDocument()
+        {
+            mapFixer.FixMap(moves);
+        }
     }
 
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ESRI.ArcGIS.Geodatabase;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,34 +7,35 @@ using System.Linq;
 namespace MapFixer
 {
     
-    class Moves
+    public class Moves
     {
         public struct GisDataset: IEquatable<GisDataset>
         {
-            public GisDataset(string workspacePath, string workspaceType, string datasourceName, string datasourceType)
+            // esriDatasetType: https://desktop.arcgis.com/en/arcobjects/latest/net/webframe.htm#esriDatasetType.htm
+            // esriWorkspaceProgID: https://desktop.arcgis.com/en/arcobjects/latest/net/webframe.htm#IWorkspaceName_WorkspaceFactoryProgID.htm
+
+            public GisDataset(string workspacePath, string workspaceProgID, string datasourceName, esriDatasetType datasourceType)
             {
                 if (string.IsNullOrWhiteSpace(workspacePath))
                     throw new ArgumentException("Initial value must not be null, empty or whitespace", "workspacePath");
-                if (string.IsNullOrWhiteSpace(workspaceType))
-                    throw new ArgumentException("Initial value must not be null, empty or whitespace", "workspaceType");
+                if (string.IsNullOrWhiteSpace(workspaceProgID))
+                    throw new ArgumentException("Initial value must not be null, empty or whitespace", "workspaceProgID");
                 if (string.IsNullOrWhiteSpace(datasourceName))
                     throw new ArgumentException("Initial value must not be null, empty or whitespace", "datasourceName");
-                if (string.IsNullOrWhiteSpace(datasourceType))
-                    throw new ArgumentException("Initial value must not be null, empty or whitespace", "datasourceType");
                 WorkspacePath = workspacePath;
-                WorkspaceType = workspaceType;
+                WorkspaceProgID = workspaceProgID;
                 DatasourceName = datasourceName;
                 DatasourceType = datasourceType;
             }
 
             public string WorkspacePath { get; }
-            public string WorkspaceType { get; }
+            public string WorkspaceProgID { get; }
             public string DatasourceName { get; }
-            public string DatasourceType { get; }
+            public esriDatasetType DatasourceType { get; }
 
             public bool Equals(GisDataset other)
             {
-                return WorkspacePath == other.WorkspacePath && WorkspaceType == other.WorkspaceType &&
+                return WorkspacePath == other.WorkspacePath && WorkspaceProgID == other.WorkspaceProgID &&
                     DatasourceName == other.DatasourceName && DatasourceType == other.DatasourceType;
             }
 
@@ -87,27 +89,27 @@ namespace MapFixer
 
         struct PartialGisDataset
         {
-            public PartialGisDataset(string workspacePath, string workspaceType=null, string datasourceName=null, string datasourceType=null)
+            public PartialGisDataset(string workspacePath, string workspaceProgID=null, string datasourceName=null, esriDatasetType? datasourceType=null)
             {
                 if (string.IsNullOrWhiteSpace(workspacePath))
                     throw new ArgumentException("Initial value must not be null, empty or whitespace", "workspacePath");
                 WorkspacePath = workspacePath;
-                WorkspaceType = workspaceType;
+                WorkspaceProgID = workspaceProgID;
                 DatasourceName = datasourceName;
                 DatasourceType = datasourceType;
             }
 
             public string WorkspacePath { get; }
-            public string WorkspaceType { get; }
+            public string WorkspaceProgID { get; }
             public string DatasourceName { get; }
-            public string DatasourceType { get; }
+            public esriDatasetType? DatasourceType { get; }
 
             public GisDataset ToGisDataset(GisDataset gisDataset)
             {
                 return new GisDataset(
                     WorkspacePath,
-                    WorkspaceType ?? gisDataset.WorkspaceType,
-                    DatasourceName ?? gisDataset.DatasourceType,
+                    WorkspaceProgID ?? gisDataset.WorkspaceProgID,
+                    DatasourceName ?? gisDataset.DatasourceName,
                     DatasourceType ?? gisDataset.DatasourceType
                 );
             }
@@ -186,8 +188,8 @@ namespace MapFixer
 
                 return new PartialGisDataset(
                     newWorkspace,
-                    newDataset.WorkspaceType,
-                    newDataset.DatasourceType,
+                    newDataset.WorkspaceProgID,
+                    newDataset.DatasourceName,
                     newDataset.DatasourceType
                 );
             }
@@ -206,6 +208,8 @@ namespace MapFixer
             //   do the same parsing below and print exceptions and/or warnings whenever the foreach loop continues (skips a line)
             //   Also need to check for chronological ordering
             //   Also check that workspace paths do not have volume information
+            //   check that columns 2,6,10 are progID strings (https://desktop.arcgis.com/en/arcobjects/latest/net/webframe.htm#IWorkspaceName_WorkspaceFactoryProgID.htm)
+            //   check that columns 4,8,12 are datasetTypes (https://desktop.arcgis.com/en/arcobjects/latest/net/webframe.htm#esriDatasetType.htm)
             try
             {
                 foreach (string line in File.ReadLines(csvpath))
@@ -218,13 +222,27 @@ namespace MapFixer
                         continue;
                     if (string.IsNullOrWhiteSpace(row[1]))
                         continue;
-                    var oldDataset = new PartialGisDataset(row[1], row[2], row[3], row[4]);
+                    esriDatasetType tempDataSourceType;
+                    esriDatasetType? dataSourceType = null;
+                    if (Enum.TryParse<esriDatasetType>(row[4], out tempDataSourceType))
+                        dataSourceType = tempDataSourceType;
+                    var oldDataset = new PartialGisDataset(row[1], row[2], row[3], dataSourceType);
                     PartialGisDataset? newDataset = null;
                     if (!string.IsNullOrWhiteSpace(row[5]))
-                        newDataset = new PartialGisDataset(row[5], row[6], row[7], row[8]);
+                    {
+                        dataSourceType = null;
+                        if (Enum.TryParse<esriDatasetType>(row[8], out tempDataSourceType))
+                            dataSourceType = tempDataSourceType;
+                        newDataset = new PartialGisDataset(row[5], row[6], row[7], dataSourceType);
+                    }
                     PartialGisDataset? replacementDataset = null;
                     if (!string.IsNullOrWhiteSpace(row[9]))
-                        replacementDataset = new PartialGisDataset(row[9], row[10], row[11], row[12]);
+                    {
+                        dataSourceType = null;
+                        if (Enum.TryParse<esriDatasetType>(row[12], out tempDataSourceType))
+                            dataSourceType = tempDataSourceType;
+                        replacementDataset = new PartialGisDataset(row[9], row[10], row[11], dataSourceType);
+                    }
                     var layerFile = string.IsNullOrWhiteSpace(row[13]) ? null : row[13].Trim();
                     var remarks = string.IsNullOrWhiteSpace(row[14]) ? null : row[14].Trim();
                     if (newDataset == null && replacementDataset == null && layerFile == null && remarks == null)
@@ -244,6 +262,8 @@ namespace MapFixer
                 return false;
             if (string.Compare(dataset.DatasourceName, moveFrom.DatasourceName, true) != 0)
                 return false;
+            if (moveFrom.DatasourceType != null && moveFrom.DatasourceType.Value != dataset.DatasourceType)
+                return false;
             return IsWorkspaceMatch(dataset, moveFrom);
         }
 
@@ -252,6 +272,8 @@ namespace MapFixer
             // !!WARNING!! Assumes workspace paths in moves do not have volume information
             string movePath = moveFrom.WorkspacePath;
             string fullPath = dataset.WorkspaceWithoutVolume;
+            if (moveFrom.WorkspaceProgID != null && moveFrom.WorkspaceProgID == dataset.WorkspaceProgID)
+                return false;
             return string.Compare(fullPath, movePath, StringComparison.OrdinalIgnoreCase) == 0;
         }
 
