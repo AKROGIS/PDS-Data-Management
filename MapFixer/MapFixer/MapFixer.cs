@@ -27,13 +27,18 @@ namespace MapFixer
                 Moves.Solution? maybeSolution = moves.GetSolution(oldDataset);
                 if (maybeSolution == null)
                 {
-                    //Unfixable layer; ignore or TODO: messageBox?
+                    string msg = string.Format("Sorry the layer '{0}' is broken, but it isn't due to the X drive reorganization, so I this addin does not have the information necessary to fix it.",
+                        dataLayer.DataSourceName.NameString);
+                    msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
                     continue; 
                 }
                 Moves.Solution solution = maybeSolution.Value;
                 if (solution.NewDataset == null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath == null)
                 {
-                    // TODO: messageBox solution.Remarks
+                    string msg = string.Format("The layer '{0}' is broken, but it cannot be fixed automatically.",
+                        dataLayer.DataSourceName.NameString);
+                    msg = msg + "\nNote: " + solution.Remarks;
+                    msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
                     continue;
                 }
                 if (solution.NewDataset == null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath != null)
@@ -61,6 +66,7 @@ namespace MapFixer
                 }
                 if (solution.NewDataset == null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath != null)
                 {
+                    //TODO
                     continue;
                 }
                 if (solution.NewDataset != null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath == null)
@@ -80,14 +86,17 @@ namespace MapFixer
                 }
                 if (solution.NewDataset != null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath != null)
                 {
+                    //TODO
                     continue;
                 }
                 if (solution.NewDataset != null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath == null)
                 {
+                    //TODO
                     continue;
                 }
                 if (solution.NewDataset != null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath != null)
                 {
+                    //TODO
                     continue;
                 }
 
