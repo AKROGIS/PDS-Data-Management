@@ -13,7 +13,7 @@
   <AddIn language="CLR" library="MapFixer.dll" namespace="MapFixer">
     <ArcMap>
       <Commands>
-        <Button id="NPS_Alaska_GIS_MapFixer_CheckMap" class="CheckMapButton" message="This command looks for any broken data sources in your map and provide a potential fix for each one." caption="Check This Map" tip="Find and fix for any broken data sources" category="NPS Utilities" image="Images\CheckMap.png" />
+        <Button id="NPS_Alaska_GIS_MapFixer_CheckMap" class="CheckMapButton" message="This command looks for broken data sources in your map and tries to provide a fix for each one." caption="Fix This Map" tip="Find and fix broken data sources" category="NPS Alaska" image="Images\CheckMap.png" />
       </Commands>
       <Extensions>
         <Extension id="NPS_Alaska_GIS_MapFixer_CheckMapExtension" class="CheckMapExtension" productName="NPS Alaska PDS Map Fixer" showInExtensionDialog="true" autoLoad="true">

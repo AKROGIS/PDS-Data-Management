@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-
-namespace MapFixer
+﻿namespace MapFixer
 {
     public class CheckMapExtension : ESRI.ArcGIS.Desktop.AddIns.Extension
     {
@@ -25,10 +20,10 @@ namespace MapFixer
 
         private void WireDocumentEvents()
         {
-            ArcMap.Events.NewDocument += delegate () { ArcMap_NewDocument(); };
+            ArcMap.Events.OpenDocument += delegate () { ArcMap_OpenDocument(); };
         }
 
-        void ArcMap_NewDocument()
+        void ArcMap_OpenDocument()
         {
             CheckDocument();
         }

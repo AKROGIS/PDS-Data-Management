@@ -94,8 +94,8 @@ namespace MapFixer
                 if (string.IsNullOrWhiteSpace(workspacePath))
                     throw new ArgumentException("Initial value must not be null, empty or whitespace", "workspacePath");
                 WorkspacePath = workspacePath;
-                WorkspaceProgID = workspaceProgID;
-                DatasourceName = datasourceName;
+                WorkspaceProgID = string.IsNullOrWhiteSpace(workspaceProgID) ? null : workspaceProgID;
+                DatasourceName = string.IsNullOrWhiteSpace(datasourceName) ? null : datasourceName;
                 DatasourceType = datasourceType;
             }
 

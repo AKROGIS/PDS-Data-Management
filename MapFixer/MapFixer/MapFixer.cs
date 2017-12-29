@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
-using ESRI.ArcGIS.esriSystem;
 using ESRI.ArcGIS.Geodatabase;
 
 namespace MapFixer
@@ -20,15 +15,25 @@ namespace MapFixer
         public void FixMap(Moves moves)
         {
             ESRI.ArcGIS.Framework.IMessageDialog msgBox = new ESRI.ArcGIS.Framework.MessageDialogClass();
-
-            foreach (IDataLayer2 dataLayer in BrokenDataSources)
+            var brokenDataSources = GetBrokenDataSources();
+            var autoFixesApplied = 0;
+            foreach (IDataLayer2 dataLayer in brokenDataSources)
             {
+                string layerName;
+                if (dataLayer is IDataset)
+                {
+                    layerName = ((IDataset)dataLayer).Name;
+                }
+                else
+                {
+                    layerName = ((ILayer2)dataLayer).Name;
+                }
                 Moves.GisDataset oldDataset = GetDataset(dataLayer);
                 Moves.Solution? maybeSolution = moves.GetSolution(oldDataset);
                 if (maybeSolution == null)
                 {
-                    string msg = string.Format("Sorry the layer '{0}' is broken, but it isn't due to the X drive reorganization, so I this addin does not have the information necessary to fix it.",
-                        dataLayer.DataSourceName.NameString);
+                    string msg = string.Format("Sorry the layer '{0}' is broken, but it isn't due to the X drive reorganization. This addin does not have the information necessary to fix it.",
+                        layerName);
                     msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
                     continue; 
                 }
@@ -36,8 +41,8 @@ namespace MapFixer
                 if (solution.NewDataset == null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath == null)
                 {
                     string msg = string.Format("The layer '{0}' is broken, but it cannot be fixed automatically.",
-                        dataLayer.DataSourceName.NameString);
-                    msg = msg + "\nNote: " + solution.Remarks;
+                        layerName);
+                    msg = msg + "\n\nNote: " + solution.Remarks;
                     msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
                     continue;
                 }
@@ -51,11 +56,11 @@ namespace MapFixer
                 }
                 if (solution.NewDataset == null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath == null)
                 {
-                    string msg = string.Format("The layer '{0}' is broken.  The data has been moved to a new locations.  Do you want to fix the layer?",
-                        dataLayer.DataSourceName.NameString);
+                    string msg = string.Format("The layer '{0}' is broken. The data has moved to a new location.  Do you want to fix the layer?",
+                        layerName);
                     if (solution.Remarks != null)
                     {
-                        msg = msg + "\nNote: " + solution.Remarks;
+                        msg = msg + "\n\nNote: " + solution.Remarks;
                     }
                     bool result = msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
                     if (result)
@@ -71,16 +76,23 @@ namespace MapFixer
                 }
                 if (solution.NewDataset != null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath == null)
                 {
-                    string msg = string.Format("The layer '{0}' is broken.  The data has been moved to a new locations.  Do you want to fix the layer?",
-                        dataLayer.DataSourceName.NameString);
-                    if (solution.Remarks != null)
+                    if (solution.Remarks == null)
                     {
-                        msg = msg + "\nNote: " + solution.Remarks;
-                    }
-                    bool result = msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
-                    if (result)
-                    {
+                        // This is the optimal action.  There is no good reason for a user not to click OK.
+                        // The user will be warned that layers have been fixed, and they can choose to not save the changes.
+                        autoFixesApplied += 1;
                         RepairLayer(dataLayer, oldDataset, solution.NewDataset.Value);
+                    }
+                    else
+                    {
+                        string msg = string.Format("The layer '{0}' is broken. The data has moved to a new location.  Do you want to fix the layer?",
+                            layerName);
+                        msg = msg + "\n\nNote: " + solution.Remarks;
+                        bool result = msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
+                        if (result)
+                        {
+                            RepairLayer(dataLayer, oldDataset, solution.NewDataset.Value);
+                        }
                     }
                     continue;
                 }
@@ -99,7 +111,24 @@ namespace MapFixer
                     //TODO
                     continue;
                 }
-
+            }
+            //TODO: Refresh TOC
+            ArcMap.Document.ActiveView.Refresh();
+            ArcMap.Document.CurrentContentsView.Refresh(null);
+            if (autoFixesApplied > 0)
+            {
+                string msg = String.Format("{0} broken layers were automatically fixed based on the new locations of known data sources. " +
+                    "Close the document without saving if this is not what you want.", autoFixesApplied);
+                msgBox.DoModal("Map has been modified", msg, "OK", null, ArcMap.Application.hWnd);
+            }
+            //Check for completeness
+            brokenDataSources = GetBrokenDataSources();
+            if (brokenDataSources.Count > 0)
+            {
+                string msg = "There are still some broken layers in your map. " +
+                    "If this is unexpected, it may be because some of the datasources have moved multiple times. " +
+                    "Try running the tool again.";
+                msgBox.DoModal("Map Check", msg, "OK", "Cancel", ArcMap.Application.hWnd);
             }
         }
 
@@ -119,32 +148,32 @@ namespace MapFixer
             }
         }
 
-        public IEnumerable<IDataLayer2> BrokenDataSources
+        public List<IDataLayer2> GetBrokenDataSources()
         {
-            get
+            List<IDataLayer2> layerList = new List<IDataLayer2>();
+            IMaps maps = ArcMap.Document.Maps;
+            for (int i = 0; i < maps.Count; i++)
             {
-                IMaps maps = ArcMap.Document.Maps;
-                for (int i = 0; i < maps.Count; i++)
+                IMap map = maps.Item[i];
+                IEnumLayer layerEnumerator = map.Layers[null, true];
+                ILayer layer;
+                while((layer = layerEnumerator.Next()) != null)
                 {
-                    IMap map = maps.Item[i];
-                    for (int layerIndex = 0; layerIndex < map.LayerCount; layerIndex++)
+                    if (layer is ILayer2)
                     {
-                        ILayer layer = map.Layer[layerIndex];
-                        if (layer is ILayer2)
+                        ILayer2 layer2 = (ILayer2)layer;
+                        if (!layer2.Valid)
                         {
-                            ILayer2 layer2 = (ILayer2)layer;
-                            if (!layer2.Valid)
+                            if (layer2 is IDataLayer2)
                             {
-                                if (layer2 is IDataLayer2)
-                                {
-                                    IDataLayer2 dataLayer = (IDataLayer2)layer2;
-                                    yield return dataLayer;
-                                }
+                                IDataLayer2 dataLayer = (IDataLayer2)layer2;
+                                layerList.Add(dataLayer);
                             }
                         }
                     }
                 }
             }
+            return layerList;
         }
 
         public Moves.GisDataset GetDataset(IDataLayer2 dataLayer)
