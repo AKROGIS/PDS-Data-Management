@@ -5,11 +5,6 @@ import csv
 import logging
 
 """
-Arguments:
-Help
-Ignore reference timestamp(s)
-Remote server(s)
-Moves db, if not config file
 
 	Read server reference timestamp
 Read csv, | delimeter
