@@ -1,7 +1,10 @@
 @echo off
-echo This script will update or create a copy of the X drive components for backup or deployment.
-echo Run using Command Prompt (Admin) or right-click, Run as administrator.
-echo If an updated drive is available locally use that as the source. Otherwise use the server.
+cls
+echo This script will update or create a copy of X drive components.
+echo Run using elevated Command Prompt (Admin) if there are permissions errors.
+echo If a current drive is available locally use that as the source.
+echo Otherwise use the server.
+echo.
 
 REM Clear source, set default server source paths
 set xsrc=""
@@ -11,13 +14,16 @@ set lgx1folder=\Extras
 set lgx2src=\\inpakrovmdist\GISData2\Source_Data
 set lgx2folder=\Source_Data
 set parm=
+set parm2=
 set copyhrs=""
+set zb=""
 
 REM Ask user what type of drive to create or update
-set /p xtype="Enter SM, LG1 or LG2 depending on the type of X drive you are working with: "
+set /p xtype="Enter SM, LG1 or LG2 for small, large1, or future large2 drive: "
+echo.
 
 REM Ask user for source
-set /p xsrc="Enter the source (with folder, if %lgx1folder% or %lgx2folder%) for the %xtype% X drive (no trailing slash), or default server location will be used: "
+set /p xsrc="If not using server, enter full source path, e.g. F:\Extras, or Enter: "
 
 REM Provide default server location for source if not otherwise provided
 IF %xsrc%=="" ( 
@@ -32,9 +38,10 @@ IF %xsrc%=="" (
           exit /b
           )
 )
+echo.
 
 REM User needs to provide target; we add folder if needed to control case and simplify path entry
-set /p xtgt="Enter the target (destination) for the %xtype% X drive to be updated (no trailing slash): "
+set /p xtgt="Enter path of the %xtype% X drive to be updated, e.g. D: or F: "
 
 REM Construct full target path if needed
 IF %xtype%==LG1 (
@@ -45,24 +52,33 @@ IF %xtype%==LG1 (
       set xtgtfull=%xtgt%
       )
 )
+echo.
 
 REM Check if user wants to restrict hours for copying
-set /p copyhrs="Enter Y to restrict copy operations outside of business hours; otherwise press Enter to continue with full copy: "
+set /p copyhrs="Enter Y to restrict copying to 6pm-6am, or Enter: "
 IF %copyhrs%==Y (
-   set parm=/RH:1720-0600 /PF
+   set parm=/RH:1800-0600 /PF
 )
+echo.
+
+REM Check if user wants to use fault-tolerant + backup mode (network and file locks)
+set /p zb="Enter Y if you expect network or file-lock issues, or Enter: "
+IF %zb%==Y (
+   set parm2=/ZB
+)
+echo.
 
 REM It's easy to unintentionally trigger a massive deletion, warn user
 echo WARNING: 
 echo All content at %xtgtfull% may be removed in this operation! 
-echo Verify source: %xsrc%
-echo If %xsrc% and %xtgtfull% are not exactly correct you may experience near-immediate and total DATA LOSS!
+echo Source: %xsrc% and Destination: %xtgtfull% 
+echo MUST be correct or you may experience DATA LOSS!
 
 REM Last chance to cancel
 pause
 
 REM Robocopy with source and destination; switches explained below
-@robocopy %xsrc% %xtgtfull% /R:5 /W:5 /ZB /MIR /NP /NFL /NS /NC /XJ /XD "$RECYCLE.BIN" "System Volume Information" /LOG:update-x-drive-akro.log %parm%
+@robocopy %xsrc% %xtgtfull% /R:5 /W:5 /MIR /NP /NDL /NS /NC /XJ /XD "$RECYCLE.BIN" "System Volume Information" /LOG:update-x-drive-akro.log %parm% %parm2%
 
 REM Done, prompt user to check for errors
 echo Operation completed, check console and log file (update-x-drive-akro.log) for errors (locate and move from C:\Windows\System32 if not run from another location using the Command Prompt (Admin).
