@@ -6,6 +6,7 @@ import config_logger
 import time
 import os
 import csv
+import date_limited
 
 logging.config.dictConfig(config_logger.config)
 # logging.raiseExceptions = False # Ignore errors in the logging system
@@ -34,41 +35,32 @@ def read_csv_map(csvpath):
     logger.info('Returning moves data.')
     return records
 
-def aggregate_data_sources(config):
-    if config.is_incremental:
-        logger.info('Doing incremental update for Owner:%s DataType:%s SubType:%s',
-                    config.owner_name, config.data_type_name, config.sub_type)
-        data_types = DataType.incremental_data_types(config)
-    else:
-        logger.info('Doing full update')
-        data_types = DataType.all_data_types(config)
-    for data_type in data_types:
-        logger.info('Aggregating %s', data_type.name)
-        if config.is_incremental:
-            aggregate_table = data_type.most_recent_staging_table
-            if aggregate_table is None:
-                logger.warning("No %s aggregation table to update. Doing full aggregation", data_type.name)
-                incremental_load = False
-                aggregate_table = data_type.create_aggregate_table()
-                ready_for_aggregation = aggregate_table is not None
-            else:
-                incremental_load = True
-                ready_for_aggregation = data_type.clear_aggregate_table(aggregate_table)
-        else:
-            incremental_load = False
-            aggregate_table = data_type.create_aggregate_table()
-            ready_for_aggregation = aggregate_table is not None
+def mover(moves_data, remote_server):
+    for move in moves_data: 
+        old_workspace_path_c = os.path.join(remote_server,old_workspace_path)
+        new_workspace_path_c = os.path.join(remote_server,new_workspace_path)
 
-        if not ready_for_aggregation:
-            logger.warning("Aggregation table not successfully created or cleared.  Skipping data load.")
-        else:
-            for data_source in DataSource.data_sources_to_aggregate(config=config,
-                                                                    data_type=data_type,
-                                                                    full_load_override=(not incremental_load)):
-                data_source.aggregate(aggregate_table)
-            if not incremental_load:
-                data_type.add_objectid_and_indexes(aggregate_table)
-                data_type.update_views(aggregate_table)
+        if timestamp > reference_timestamp and \
+        old_workspace_path <> new_workspace_path and \
+        new_workspace_path is not null and \
+        old_workspace_path is not null and \
+        os.path.exists(old_workspace_path_c) and \
+        not os.path.exists(new_workspace_path_c) and \
+        new_workspace_type is null and \
+        old_workspace_type is null and \
+        old_dataset_name is null:
+            try:
+                # find parent (lost child?)
+                new_workspace_path_parent_c = os.path.abspath(os.path.join(new_workspace_path_c, os.pardir))
+                # if parent folder does not exist create necessary folder structure through parent folder
+                if not os.path.exists(new_workspace_path_parent_c):
+                    os.makedirs(new_workspace_path_parent_c)
+                    logger.info('Created %s',new_workspace_path_parent_c)
+                # move: rename folder
+                os.rename(old_workspace_path_c,new_workspace_path_c)
+                logger.info('Success: moved %s to %s',old_workspace_path_c,new_workspace_path_c)
+            except BaseException as err:
+                logger.error('ERROR: %s %s',err.message, err.args)
 
 def main():
     logger.info('Starting...')
@@ -138,7 +130,7 @@ def main():
 
     moves_data = read_csv_map(moves_db)
 
-    mover(moves_data)
+    mover(moves_data, remote_server)
 
     logger.info('Done!')
     logging.shutdown()
