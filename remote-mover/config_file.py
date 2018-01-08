@@ -9,7 +9,7 @@ Format: timestamp|old_workspace_path|old_workspace_type|old_dataset_name|old_dat
 moves_db = 'X:\GIS\ThemeMgr\DataMoves.csv'
 
 """
-Location of reference (last run) timestamp file
+Reference (last run) timestamp
 """
 ref_timestamp = None
 
