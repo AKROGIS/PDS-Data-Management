@@ -19,6 +19,6 @@ Remote server X drive path: UNC path or symbolic link to location where moves ar
 remote_server = None
 
 """
-Log file location and name
+Time stamp and log file name
 """
-log_file = '.\remote-mover.log'
+name = None

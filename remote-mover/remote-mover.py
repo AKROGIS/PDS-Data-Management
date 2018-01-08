@@ -22,7 +22,7 @@ def read_csv_map(csvpath):
         logger.info('Iterating moves database')
         for row in csv.reader(fh, delimiter ='|'):
             unicode_row = [unicode(item, 'utf-8') if item else None for item in row]
-            timestamp = unicode_row[0]
+            move_timestamp = unicode_row[0]
             old_workspace_path = unicode_row[1]
             old_workspace_type = unicode_row[2]
             old_dataset_name = unicode_row[3]
@@ -31,16 +31,17 @@ def read_csv_map(csvpath):
             new_workspace_type = unicode_row[6]
             new_dataset_name = unicode_row[7]
             new_dataset_type = unicode_row[8]
-            records.append((old_workspace_path,old_workspace_type,old_dataset_name,old_dataset_type,new_workspace_path,new_workspace_type,new_dataset_name,new_dataset_type))
+            records.append((move_timestamp,old_workspace_path,old_workspace_type,old_dataset_name,old_dataset_type,new_workspace_path,new_workspace_type,new_dataset_name,new_dataset_type))
     logger.info('Returning moves data.')
     return records
 
 def mover(moves_data, remote_server):
-    for move in moves_data: 
+    for row in moves_data: 
+        move_timestamp,old_workspace_path,old_workspace_type,old_dataset_name,old_dataset_type,new_workspace_path,new_workspace_type,new_dataset_name,new_dataset_type = row
         old_workspace_path_c = os.path.join(remote_server,old_workspace_path)
         new_workspace_path_c = os.path.join(remote_server,new_workspace_path)
 
-        if timestamp > reference_timestamp and \
+        if move_timestamp > since and \
         old_workspace_path <> new_workspace_path and \
         new_workspace_path is not null and \
         old_workspace_path is not null and \
@@ -93,9 +94,9 @@ def main():
                         help=('The reference (last run) timestamp file location. '
                               'No timestamp will consider all valid moves from database. '
                               'The default is {0}').format(config_file.ref_timestamp))
-    parser.add_argument('-l', '--logfile', default=config_file.log_file,
-                        help=('The log file location. '
-                              'The default is {0}').format(config_file.log_file))
+    parser.add_argument('-n', '--name', default=config_file.name,
+                        help=('The short name for the time stamp and log files. '
+                              'The default is {0}').format(config_file.name))
     parser.add_argument('-v', '--verbose', action='store_true', help='Show informational messages. ')
     parser.add_argument('--debug', action='store_true', help='Show extensive debugging messages. ')
 
@@ -113,23 +114,24 @@ def main():
     # Log the command line arguments
     logger.debug("Command line argument %s", args)
 
-    config = Config(db,
-                    moves_db = args.moves_db,
+    config = Config(moves_db = args.moves_db,
                     ref_timestamp = args.ref_timestamp,
                     remote_server = args.remote_server,
-                    log_file = args.log_file)
+                    name = args.name)
 
     # Finally we are ready to start!
 
     if args.moves_db is None:
         logger.error('No moves database specified.')
         exit
-    else if args.remote_server is None:
+    if args.remote_server is None:
         logger.error('No server path specified.')
         exit
 
     moves_data = read_csv_map(moves_db)
 
+    operation_params = {moves_data, remote_server}
+    #date_limited.timestamped_operation(mover, operation_params, prefix=name, timestamp_override=args.since)
     mover(moves_data, remote_server)
 
     logger.info('Done!')
