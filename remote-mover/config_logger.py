@@ -29,8 +29,8 @@ config = {
             'filename':  'remote-mover.log'
         },
         'email': {
-            # ??????????????????????'class':    'BufferingSMTPHandler.BufferingSMTPHandler',  # Bundle 100 messages into a single email
-            'class':    'logging.handlers.SMTPHandler',  # Separate email for each message
+            'class':    'BufferingSMTPHandler.BufferingSMTPHandler',  # Bundle 100 messages into a single email
+            # 'class':    'logging.handlers.SMTPHandler',  # Separate email for each message
             'level':     'ERROR',
             'formatter': 'detailed',
             'mailhost': 'mailer.itc.nps.gov',
