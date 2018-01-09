@@ -35,21 +35,21 @@ def read_csv_map(csvpath):
     logger.info('Returning moves data.')
     return records
 
-def mover(moves_data, remote_server):
+def mover(moves_data, config):
     for row in moves_data: 
         move_timestamp,old_workspace_path,old_workspace_type,old_dataset_name,old_dataset_type,new_workspace_path,new_workspace_type,new_dataset_name,new_dataset_type = row
-        old_workspace_path_c = os.path.join(remote_server,old_workspace_path)
-        new_workspace_path_c = os.path.join(remote_server,new_workspace_path)
+        old_workspace_path_c = os.path.join(config.remote_server,old_workspace_path)
+        new_workspace_path_c = os.path.join(config.remote_server,new_workspace_path)
 
-        if move_timestamp > since and \
+        if (move_timestamp is None or config.ref_timestamp is None or move_timestamp > config.ref_timestamp) and \
         old_workspace_path <> new_workspace_path and \
-        new_workspace_path is not null and \
-        old_workspace_path is not null and \
+        new_workspace_path is not None and \
+        old_workspace_path is not None and \
         os.path.exists(old_workspace_path_c) and \
         not os.path.exists(new_workspace_path_c) and \
-        new_workspace_type is null and \
-        old_workspace_type is null and \
-        old_dataset_name is null:
+        new_workspace_type is None and \
+        old_workspace_type is None and \
+        old_dataset_name is None:
             try:
                 # find parent (lost child?)
                 new_workspace_path_parent_c = os.path.abspath(os.path.join(new_workspace_path_c, os.pardir))
@@ -91,7 +91,7 @@ def main():
                         help=('Path to server location where moves are to occur. '
                               'The default is {0}').format(config_file.remote_server))
     parser.add_argument('-t', '--timestamp', default=config_file.ref_timestamp,
-                        help=('The reference (last run) timestamp file location. '
+                        help=('The reference (last run) timestamp. '
                               'No timestamp will consider all valid moves from database. '
                               'The default is {0}').format(config_file.ref_timestamp))
     parser.add_argument('-n', '--name', default=config_file.name,
@@ -130,9 +130,9 @@ def main():
 
     moves_data = read_csv_map(moves_db)
 
-    operation_params = {moves_data, remote_server}
-    #date_limited.timestamped_operation(mover, operation_params, prefix=name, timestamp_override=args.since)
-    mover(moves_data, remote_server)
+    # operation_params = {moves_data, remote_server}
+    # date_limited.timestamped_operation(mover, operation_params, prefix=name, timestamp_override=args.since)
+    mover(moves_data, config)
 
     logger.info('Done!')
     logging.shutdown()
