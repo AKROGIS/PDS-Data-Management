@@ -36,14 +36,14 @@ class Config(object):
     """
     @property
     def remote_server(self):
-        return self.remote_server
+        return self.__remote_server
 
     """
     Short name, e.g. KEFJ
     """
     @property
     def name(self):
-        return self.name
+        return self.__name
 
     def __str__(self):
         text = ("<moves_db: {0}, ref_timestamp: {1}, remote_server: {2}, name: {3}>")
