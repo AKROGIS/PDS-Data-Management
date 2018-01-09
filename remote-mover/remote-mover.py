@@ -20,7 +20,7 @@ def read_csv_map(csvpath):
         # ignore the first record (header)
         fh.readline()
         logger.info('Iterating moves database')
-        for row in csv.reader(fh, delimiter ='|'):
+        for row in csv.reader(fh, delimiter=str(u'|').encode('utf-8')):
             unicode_row = [unicode(item, 'utf-8') if item else None for item in row]
             move_timestamp = unicode_row[0]
             old_workspace_path = unicode_row[1]
@@ -36,12 +36,13 @@ def read_csv_map(csvpath):
     return records
 
 def mover(moves_data, config):
-    for row in moves_data: 
+    logger.info('Begin moves...')
+    for row in moves_data:
         move_timestamp,old_workspace_path,old_workspace_type,old_dataset_name,old_dataset_type,new_workspace_path,new_workspace_type,new_dataset_name,new_dataset_type = row
         old_workspace_path_c = os.path.join(config.remote_server,old_workspace_path)
         new_workspace_path_c = os.path.join(config.remote_server,new_workspace_path)
 
-        if (move_timestamp is None or config.ref_timestamp is None or move_timestamp > config.ref_timestamp) and \
+        if (move_timestamp is None or config.ref_timestamp is None or move_timestamp >= config.ref_timestamp) and \
         old_workspace_path <> new_workspace_path and \
         new_workspace_path is not None and \
         old_workspace_path is not None and \
@@ -114,25 +115,17 @@ def main():
     # Log the command line arguments
     logger.debug("Command line argument %s", args)
 
-    config = Config(moves_db = args.moves_db,
-                    ref_timestamp = args.ref_timestamp,
-                    remote_server = args.remote_server,
+    config = Config(moves_db = args.database,
+                    remote_server = args.server,
+                    ref_timestamp = args.timestamp,
                     name = args.name)
 
     # Finally we are ready to start!
-
-    if args.moves_db is None:
-        logger.error('No moves database specified.')
-        exit
-    if args.remote_server is None:
-        logger.error('No server path specified.')
-        exit
-
-    moves_data = read_csv_map(moves_db)
-
-    # operation_params = {moves_data, remote_server}
-    # date_limited.timestamped_operation(mover, operation_params, prefix=name, timestamp_override=args.since)
-    mover(moves_data, config)
+    if config.moves_db is None or config.remote_server is None:
+        logger.error('Must specify moves database and remote server paths.')
+    else:
+        moves_data = read_csv_map(config.moves_db)
+        mover(moves_data, config)
 
     logger.info('Done!')
     logging.shutdown()
