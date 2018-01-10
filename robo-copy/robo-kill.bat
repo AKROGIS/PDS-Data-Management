@@ -10,4 +10,4 @@ set "YY=%dt:~2,2%" & set "YYYY=%dt:~0,4%" & set "MM=%dt:~4,2%" & set "DD=%dt:~6,
 set "HH=%dt:~8,2%" & set "Min=%dt:~10,2%" & set "Sec=%dt:~12,2%"
 set "fullstamp=%YYYY%-%MM%-%DD%_%HH%-%Min%-%Sec%"
 
-taskkill /f /im Robocopy.exe > C:\Xdrive\Logs\%fullstamp%-robo-morning-kill.log 2>&1
+taskkill /f /im Robocopy.exe > E:\Xdrive\Logs\%fullstamp%-robo-morning-kill.log 2>&1

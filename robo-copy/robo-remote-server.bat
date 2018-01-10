@@ -13,3 +13,4 @@ REM Usage: robo-remote-server.bat REMOTE-UNC(destination) PATH (for log file) UN
 
 robocopy \\inpakrovmdist\GISData2 %1 %~4 /XD "$RECYCLE.BIN" "System Volume Information" /LOG:%2\%fullstamp%-%3-update-x-drive.log > %2\%fullstamp%-%3-update-x-drive-output.log 2>&1
 
+
