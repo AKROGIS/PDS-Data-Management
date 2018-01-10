@@ -15,6 +15,7 @@ class Config(object):
         self.__ref_timestamp = ref_timestamp if ref_timestamp is not None else config_file.ref_timestamp
         self.__remote_server = remote_server if remote_server is not None else config_file.remote_server
         self.__name = name if name is not None else config_file.name
+        self.__check_only = None
         logger.debug("Initialized Config: %s", self)
 
     """
@@ -45,7 +46,14 @@ class Config(object):
     def name(self):
         return self.__name
 
+    """
+    Check-only/test mode
+    """
+    @property
+    def check-only(self):
+        return self.__check_only
+
     def __str__(self):
-        text = ("<moves_db: {0}, ref_timestamp: {1}, remote_server: {2}, name: {3}>")
-        text = text.format(self.moves_db, self.ref_timestamp, self.remote_server, self.name)
+        text = ("<moves_db: {0}, ref_timestamp: {1}, remote_server: {2}, name: {3}, check_only: {4}>")
+        text = text.format(self.moves_db, self.ref_timestamp, self.remote_server, self.name, self.check_only)
         return text

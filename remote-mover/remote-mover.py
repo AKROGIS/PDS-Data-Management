@@ -36,7 +36,10 @@ def read_csv_map(csvpath):
     return records
 
 def mover(moves_data, config):
-    logger.info('Begin moves...')
+    logger.info('Begin searching moves database.')
+    if config.check_only:
+        logger.info('Running in check_only mode.')
+
     for row in moves_data:
         move_timestamp,old_workspace_path,old_workspace_type,old_dataset_name,old_dataset_type,new_workspace_path,new_workspace_type,new_dataset_name,new_dataset_type = row
         old_workspace_path_c = os.path.join(config.remote_server,old_workspace_path)
@@ -51,18 +54,21 @@ def mover(moves_data, config):
         new_workspace_type is None and \
         old_workspace_type is None and \
         old_dataset_name is None:
-            try:
-                # find parent (lost child?)
-                new_workspace_path_parent_c = os.path.abspath(os.path.join(new_workspace_path_c, os.pardir))
-                # if parent folder does not exist create necessary folder structure through parent folder
-                if not os.path.exists(new_workspace_path_parent_c):
-                    os.makedirs(new_workspace_path_parent_c)
-                    logger.info('Created %s',new_workspace_path_parent_c)
-                # move: rename folder
-                os.rename(old_workspace_path_c,new_workspace_path_c)
-                logger.info('Success: moved %s to %s',old_workspace_path_c,new_workspace_path_c)
-            except BaseException as err:
-                logger.error('ERROR: %s %s',err.message, err.args)
+            if config.check_only:
+                logger.info('Match found for %s to %s',old_workspace_path_c,new_workspace_path_c)
+            else:
+                try:
+                    # find parent (lost child?)
+                    new_workspace_path_parent_c = os.path.abspath(os.path.join(new_workspace_path_c, os.pardir))
+                    # if parent folder does not exist create necessary folder structure through parent folder
+                    if not os.path.exists(new_workspace_path_parent_c):
+                        os.makedirs(new_workspace_path_parent_c)
+                        logger.info('Created %s',new_workspace_path_parent_c)
+                    # move: rename folder - note, need to copy to parent, but report folder to folder as result
+                    os.rename(old_workspace_path_c,new_workspace_path_parent_c)
+                    logger.info('Success: moved %s to %s',old_workspace_path_c,new_workspace_path_c)
+                except BaseException as err:
+                    logger.error('ERROR: %s %s',err.message, err.args)
 
 def main():
     logger.info('Starting...')
@@ -98,6 +104,7 @@ def main():
     parser.add_argument('-n', '--name', default=config_file.name,
                         help=('The short name for the time stamp and log files. '
                               'The default is {0}').format(config_file.name))
+    parser.add_argument('--check_only', action='store_true', help='Check/test mode - log only, will not move folders. ')
     parser.add_argument('-v', '--verbose', action='store_true', help='Show informational messages. ')
     parser.add_argument('--debug', action='store_true', help='Show extensive debugging messages. ')
 
@@ -118,7 +125,8 @@ def main():
     config = Config(moves_db = args.database,
                     remote_server = args.server,
                     ref_timestamp = args.timestamp,
-                    name = args.name)
+                    name = args.name,
+                    check_only = args.check_only)
 
     # Finally we are ready to start!
     if config.moves_db is None or config.remote_server is None:
