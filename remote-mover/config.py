@@ -8,14 +8,14 @@ class Config(object):
     A collection of readonly properties that are initialized at application startup, and passed
     to the various objects and functions to avoid reliance on global variables.
     """
-    def __init__(self, moves_db='X:\GIS\ThemeMgr\DataMoves.csv', ref_timestamp=None, remote_server=None, name=None):
+    def __init__(self, moves_db='X:\GIS\ThemeMgr\DataMoves.csv', ref_timestamp=None, remote_server=None, name=None, check_only=None):
         logger.debug("Initializing Config...")
         import config_file
         self.__moves_db = moves_db if moves_db is not None else config_file.moves_db
         self.__ref_timestamp = ref_timestamp if ref_timestamp is not None else config_file.ref_timestamp
         self.__remote_server = remote_server if remote_server is not None else config_file.remote_server
         self.__name = name if name is not None else config_file.name
-        self.__check_only = None
+        self.__check_only = check_only
         logger.debug("Initialized Config: %s", self)
 
     """
@@ -50,7 +50,7 @@ class Config(object):
     Check-only/test mode
     """
     @property
-    def check-only(self):
+    def check_only(self):
         return self.__check_only
 
     def __str__(self):
