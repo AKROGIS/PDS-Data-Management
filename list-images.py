@@ -51,4 +51,5 @@ if __name__ == '__main__':
     # main('Z:\\IFSAR', '.tif', 'data/ifsar_images_z.csv')
     # main('Y:\\Extras\\AKR\\Statewide\\DEM\\SDMI_IFSAR', 'tif', 'data/spot_images_y.csv')  # Duplicate of Z:\IFSAR
     # IKONOS
-    main(r'X:\IKONOS\LACL\BGRN', '.tif')
+    # main(r'X:\IKONOS\LACL\BGRN', '.tif')
+    main(r'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR', '.bil', 'c:/Users/RESarwas/Documents/GitHub/pds-reorg/data/ifsar_bil_new_x.csv')
