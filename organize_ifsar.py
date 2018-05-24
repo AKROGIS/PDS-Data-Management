@@ -6,6 +6,8 @@ Need to save results with just LF (not CRLF) before importing to SQL Server
 from __future__ import absolute_import, division, print_function, unicode_literals
 import re
 import csv
+import os
+import glob
 
 # must run this from a folder with a data directory
 
@@ -14,7 +16,9 @@ out_file = 'data/ifsar_tif_new_x_supp.csv'
 
 with open(out_file, 'w') as o:
     csv_writer = csv.writer(o)
-    csv_writer.writerow(['folder', 'filename', 'ext', 'size','legacy', 'nga', 'kind','edge','cell','lat','lon'])
+    csv_writer.writerow(['folder', 'filename', 'ext', 'size', 'legacy', 'nga', 'kind', 'edge',
+                         'cell', 'lat', 'lon', 'tfw', 'xml', 'html', 'txt', 'tif_xml', 'ovr',
+                         'aux', 'rrd', 'aux_old', 'crc', 'extras'])
     with open(csv_file, 'r') as f:
         f.readline() # remove header
         csv_reader = csv.reader(f)
@@ -50,4 +54,35 @@ with open(out_file, 'w') as o:
             m = re.search(r'_n(\d*)w(\d*)', n)
             if m:
                 lat,lon = int(m.group(1))/100,int(m.group(2))/100
-            csv_writer.writerow([path,name,ext,size,legacy,nga,kind,edge,cell,lat,lon])
+            #
+            # Check for supplemental *.html, *.aux.xml, etc files
+            #
+            f = os.path.join(path,name)
+            exts_found = [sup.replace(f, '').lower() for sup in glob.glob(f+'.*')]
+            # exts_possible = ['.tif', '.tfw','.xml','.html','.txt','.tif.xml',
+            #                  '.tif.ovr','.tif.aux.xml', '.rrd', '.aux', '.tif.crc']
+            tfw, xml, html, txt, tif_xml, ovr, aux, rrd, aux_old, crc = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
+            if '.tfw' in exts_found:
+                tfw = 1
+            if '.xml' in exts_found:
+                xml = 1
+            if '.html' in exts_found:
+                html = 1
+            if '.txt' in exts_found:
+                txt = 1
+            if '.tif.xml' in exts_found:
+                tif_xml = 1
+            if '.tif.ovr' in exts_found:
+                ovr = 1
+            if '.tif.aux.xml' in exts_found:
+                aux = 1
+            if '.rrd' in exts_found:
+                rrd = 1
+            if '.aux' in exts_found:
+                aux_old = 1
+            if '.tif.crc' in exts_found:
+                crc = 1
+            extras = len(exts_found)-1-tfw-xml-html-txt-tif_xml-ovr-aux-rrd-aux_old-crc # 1 for the tif that must exist
+            csv_writer.writerow([path, name, ext, size, legacy, nga, kind, edge, cell,
+                                 lat, lon, tfw, xml, html, txt, tif_xml, ovr, aux,
+                                 rrd, aux_old, crc, extras])
