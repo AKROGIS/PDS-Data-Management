@@ -137,3 +137,20 @@ select filename, folder from ifsar_tif_new_x_supp2 where skip = 'N' and aux = 0 
 -- verify ovr/rrd and aux/aux_old are exclusive
 --   48 FEDI ORI and 1 intermap DSM have old style and new style stats.
 select * from ifsar_tif_new_x_supp2 where (ovr = 1 and rrd = 1) or (aux = 1 and aux_old = 1)
+
+
+select folder + '\' + filename + ext as path from ifsar_tif_new_x_supp2 where kind = 'dtm' and skip = 'N' and aux_old = 0 and aux = 1 order by cell, lat, lon
+
+select folder + '\' + filename + ext as path from ifsar_tif_new_x_supp2 where skip <> 'N' and aux_old = 1 order by cell, lat, lon
+
+select * from ifsar_tif_new_x_supp2 where rrd = 1 and tif_xml = 1
+
+select folder + '\' + filename + ext as path from ifsar_tif_new_x_supp2 where skip = 'O'
+
+-- List of Summer_2016_Lot1 to be replaced
+select old.folder + '\' + old.filename + old.ext as old_path , new.folder + '\' + new.filename + new.ext as new_path
+from (select * from ifsar_tif_new_x_supp2 where kind in ('DSM','DTM') and folder like '%Summer_2016_Lot1%' and skip = 'O') as old
+join (select * from ifsar_tif_new_x_supp2 where kind in ('DSM','DTM') and folder like '%Summer_2016_Lot1%' and skip = 'N') as new
+on old.kind = new.kind and old.lat = new.lat and old.lon = new.lon
+
+select * from ifsar_tif_new_x_supp2 where cell = 319
