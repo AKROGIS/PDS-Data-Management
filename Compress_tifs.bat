@@ -18,6 +18,7 @@ FOR %%f in (*.tif) DO (
     SET "dest=new\%%f"
 
     REM remove the alpha band, define the no data value, use internal tiling (to load only portion of image) and compress (lossless)
+    REM sometimes compression (especially LZW on natural color images) is larger (and slower), so compare
     gdal_translate -of GTIFF -b 1 -b 2 -b 3 -a_nodata 65535 -co COMPRESS=LZW -co TILED=YES !src! !dest!
 
     REM add internal overviews The mumber of levels depends on how many pixels are in the image.  The smallest overview should be ~ 256x256
