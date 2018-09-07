@@ -18,9 +18,10 @@ fgdb_extension = '.gdb'
 working_folder = r'C:\tmp\pds\facility-sync'
 xdrive_folder = r'X:\AKR\Statewide\cultural'
 connection_file = r'Database Connections\inpakrovmais - facilities as akr_reader_web.sde'
-sde_schema = 'akr_facility.GIS.'
-tables = ['FMSSExport', 'LCSExport', 'TRAILS_OHV_Data', 'TRAILS_Photos', 'Photos']
-fcs = ['PARKLOTS_py', 'ROADS_ln', 'TRAILS_ln', 'TRAILS_Photos_pt', 'Trails_Attribute_Pt', 'TRAILS_Feature_pt', 'Building_Photo_Points']
+sde_schema = 'akr_facility2.'
+tables = ['dbo.FMSSExport', 'dbo.FMSSExport_Asset', 'gis.AKR_ATTACH']
+fcs = ['dbo.AKR_BLDG_PT', 'dbo.AKR_BLDG_PY', 'gis.AKR_ATTACH_PT', 'gis.PARKLOTS_PY', 'gis.ROADS_LN', 
+       'gis.TRAILS_ATTRIBUTE_PT', 'gis.TRAILS_FEATURE_PT', 'gis.TRAILS_LN']
 
 
 # derived variables
@@ -31,13 +32,10 @@ saved_fgdb = os.path.join(working_folder, fgdb_name + "_" + datestamp + fgdb_ext
 sde_tables = [os.path.join(connection_file, sde_schema + table) for table in tables]
 sde_fcs = [os.path.join(connection_file, sde_schema + fc) for fc in fcs]
 
-sde_building = os.path.join(connection_file, sde_schema + 'Building')
-FMSSExport = os.path.join(new_fgdb, 'FMSSExport')
-Building_Polygon = os.path.join(new_fgdb, 'Building_Polygon')
-PARKLOTS_py = os.path.join(new_fgdb, 'PARKLOTS_py')
-Building = os.path.join(new_fgdb, 'Building')
-ROADS_ln = os.path.join(new_fgdb, 'ROADS_ln')
-TRAILS_ln = os.path.join(new_fgdb, 'TRAILS_ln')
+Building_Polygon = os.path.join(new_fgdb, 'AKR_BLDG_PY')
+PARKLOTS_py = os.path.join(new_fgdb, 'PARKLOTS_PY')
+ROADS_ln = os.path.join(new_fgdb, 'ROADS_LN')
+TRAILS_ln = os.path.join(new_fgdb, 'TRAILS_LN')
 
 
 # Process: Delete
@@ -53,16 +51,11 @@ folder, fgdb = os.path.split(new_fgdb)
 arcpy.CreateFileGDB_management(folder, fgdb, "CURRENT")
 
 
-# Process: Copy Buildings (this will copy all related tables and relationships)
-arcpy.Copy_management(sde_building, Building, "Table")
 # Process: Table To Geodatabase (multiple)
 arcpy.TableToGeodatabase_conversion(sde_tables, new_fgdb)
 # Process: Feature Class to Geodatabase (multiple)
 arcpy.FeatureClassToGeodatabase_conversion(sde_fcs, new_fgdb)
 
-
-# Process: Alter Field
-arcpy.AlterField_management(FMSSExport, "FACLOCID", "Location", "", "", "10", "NON_NULLABLE", "false")
 
 # Process: Add Field
 arcpy.AddField_management(PARKLOTS_py, "Perim_Feet", "DOUBLE", "", "", "", "", "NULLABLE", "NON_REQUIRED", "")
