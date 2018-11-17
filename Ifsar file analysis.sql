@@ -10,9 +10,11 @@
 -- skip dups for cell 150
 --   update ifsar_tif_new_x_supp2 set skip = 'O' where cell = 150 and folder like '%Summer_2016_Lot4_Cell_150%'
 -- skip edges
---   update en set skip = 'E' from (select * from ifsar_tif_new_x_supp2 where edge = 'Y') as ey
---   left join (select * from ifsar_tif_new_x_supp2 where edge = 'N') as en
---   on ey.lat = en.lat and ey.lon = en.lon and ey.kind = en.kind
+/*
+   update en set skip = 'E' from (select * from ifsar_tif_new_x_supp2 where edge = 'Y') as ey
+   left join (select * from ifsar_tif_new_x_supp2 where edge = 'N') as en
+   on ey.lat = en.lat and ey.lon = en.lon and ey.kind = en.kind
+*/
 
 -- Check list of tiles skipped and not skipped
 select skip, kind, count(*) from ifsar_tif_new_x_supp2 where skip <> 'N' group by skip, kind order by skip, kind
@@ -124,12 +126,25 @@ select cell, lat, lon, count(*) from [reorg].[dbo].[ifsar_tif_new_x_supp2] where
 select folder + '\' + filename + ext as path from ifsar_tif_new_x_supp2 where kind = 'dtm' and skip = 'N' order by cell, lat, lon
 select folder + '\' + filename + ext as path from ifsar_tif_new_x_supp2 where kind = 'dsm' and skip = 'N' order by cell, lat, lon
 select folder + '\' + filename + ext as path from ifsar_tif_new_x_supp2 where kind = 'ori' and skip = 'N' order by cell, lat, lon
+select folder + '\' + filename + ext as path from ifsar_tif_new_x_supp2 where kind = 'ori_sup' and skip = 'N' order by cell, lat, lon
 
 
 --  Summary of side car files
 select kind, count(*) as total, sum(tfw) as tfw, sum(xml) as xml, sum(html) as html, sum(txt) as txt, 
        sum(tif_xml) as tif_xml, sum(ovr) as ovr, sum(aux) as aux, sum(rrd) as rrd, sum(aux_old) as aux_old, sum(crc) as crc  
 from ifsar_tif_new_x_supp2 where skip = 'N' group by kind order by kind
+
+
+-- remove old aux files to delete: 3283 (1425 dtm, 1426 dsm, 388 ori, 44 ori_sup)
+---------------------------------
+select folder + '\' + filename + '.aux' from ifsar_tif_new_x_supp2 where aux_old = 1 and skip = 'N'
+-- which kinds of files have aux files?
+select kind, count(*) from ifsar_tif_new_x_supp2 where aux_old = 1 and skip = 'N' group by kind
+-- Which skipped files have aux (315)
+select folder + '\' + filename + '.aux' from ifsar_tif_new_x_supp2 where aux_old = 1 and skip <> 'N'
+-- list folders with aux files (FEDI_Data, Intermap_Data, and EdgeMatched)
+select left(folder, len(folder)-24), count(*) as cnt from ifsar_tif_new_x_supp2 where aux_old = 1 and skip = 'N' group by left(folder, len(folder)-24)
+
 
 -- dtm for mosaic without stats (434)
 select filename, folder from ifsar_tif_new_x_supp2 where skip = 'N' and aux = 0 and aux_old = 0 and kind = 'dtm'
