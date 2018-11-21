@@ -96,3 +96,8 @@ arcpy.CalculateField_management(TRAILS_ln, "Length_Feet", "!shape.length@feet!",
 arcpy.AddField_management(TRAILS_ln, "Length_Miles", "DOUBLE", "", "", "", "", "NULLABLE", "NON_REQUIRED", "")
 # Process: Calculate Field (7)
 arcpy.CalculateField_management(TRAILS_ln, "Length_Miles", "!shape.length@miles!", "PYTHON_9.3", "")
+# Process: Add Attachment Indexes
+arcpy.AddIndex_management ("AKR_ATTACH", "FACLOCID", "FACLOCID_IDX", "#", "#")
+arcpy.AddIndex_management ("AKR_ATTACH", "FACASSETID", "FACASSETID_IDX", "#", "#")
+arcpy.AddIndex_management ("AKR_ATTACH", "FEATUREID", "FEATUREID_IDX", "#", "#")
+arcpy.AddIndex_management ("AKR_ATTACH", "GEOMETRYID", "GEOMETRYID_IDX", "#", "#")
