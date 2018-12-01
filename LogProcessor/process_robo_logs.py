@@ -72,6 +72,9 @@ def process_error(line, errors, park):
         if 5 not in errors:
             errors.append(5)
             logger.error('%s: Access is denied.', park)
+    # ERROR 19 (0x00000013) The media is write protected.
+    # TODO: if we do not find 'ERROR: RETRY LIMIT EXCEEDED.' in a future line, then ignore
+    # The happened on a KENNECOTT few files, then we got error 53 (unreachable)
     elif 'ERROR 21 (0x00000015)' in line:
         #TODO: if we do not find 'ERROR: RETRY LIMIT EXCEEDED.' in a future line, then ignore
         if 21 not in errors:
@@ -90,6 +93,11 @@ def process_error(line, errors, park):
         if 59 not in errors:
             errors.append(59)
             logger.warning('%s: An unexpected network error occurred.', park)
+    # ERROR 64 (0x00000040) The specified network name is no longer available.
+    # Happened once at DENA (5/15/18) could not find folder.  Retried a few times, then ok
+    # ERROR 67 (0x00000043) The network name cannot be found.
+    # TODO: if we do not find 'ERROR: RETRY LIMIT EXCEEDED.' in a future line, then ignore
+    # Happened when KLGO renamed the server without telling us.  Junction point had bad server name
     elif 'ERROR 121 (0x00000079)' in line:
         #TODO: if we do not find 'ERROR: RETRY LIMIT EXCEEDED.' in a future line, then ignore
         #TODO: This is often found with Error 32, consolidate, and write file name to log
@@ -214,14 +222,14 @@ def get_files(dir,year,month,day):
     return park_files
 
 
-def main(db_name):
+def main(db_name, log_folder):
     # TODO: if yesterdays logs are not found, then log an email error
     # import glob
     # filelist = glob.glob('data/Logs/*-update-x-drive.log')
     # today = datetime.date.today()
     # filelist = get_files('./LogProcessor/Logs', today.year, today.month, today.day-1)
     # filelist = ['data/Logs/2018-02-12_22-00-01-DENA-update-x-drive.log']
-    filelist = glob.glob('./LogProcessor/Logs/2018-10-*-update-x-drive.log')
+    filelist = glob.glob(os.path.join(log_folder, '*-update-x-drive.log'))
     with sqlite3.connect(db_name) as conn:
         for filename in filelist:
             print(filename)
@@ -264,9 +272,16 @@ def main(db_name):
                     # TODO protect against DB errors
                     db_write_stats(conn, stats)
                 else:
-                    print("EEK!  Not stats for this file.")
+                    print("EEK!  No stats for this file.")
                     # Example in ./LogProcessor/Logs/2018-11-07_22-00-02-KLGO-update-x-drive.log
                     # ./LogProcessor/Logs/2018-10-02_22-00-03-NOME-update-x-drive.log
+                    # data/Logs/Old/2018-10-01_22-00-07-KATM-update-x-drive.log
+                    # data/Logs/Old/2018-05-14_22-00-02-KATM-update-x-drive.log
+                    # data/Logs/Old/2018-09-28_22-00-04-NOME-update-x-drive.log
+                    # data/Logs/Old/2018-03-27_22-00-02-KOTZ-update-x-drive.log
+                    # data/Logs/Old/2018-05-16_22-00-03-KATM-update-x-drive.log
+                    # data/Logs/Old/2018-03-26_22-00-02-NOME-update-x-drive.log
+                    #
                     #TODO: log an email error
 
 
@@ -298,18 +313,40 @@ def db_testing(db_name):
 
 
 def test_queries(db_name):
+    # Current Status
+    # Last error by Park
+    # All Errors by Park
+    # Speed Statistics by Park, last week, month, year, arbitrary period
+    # Speed Comparison by Park, no updates, small, medium and large updates
+    # Files updated per date
+    # ...
+
     q1 = "select l.park, l.date, s.* from stats as s join logs as l on l.log_id = s.log_id where s.stat = 'dirs' and l.park = 'DENA' and l.errors is null order by l.date;"
     q2 = "select date, count(*) from logs group by date order by date;"
     q3 = "select park,date,errors from logs where errors is not null order by park,date;"
     q4 = "select park,date,errors from logs where finished = 0 order by park,date;"
     q5 = "select l.date, s.total, count(*), min(l.park), max(l.park) from stats as s join logs as l on l.log_id = s.log_id where s.stat = 'files' group by l.date, s.total;"
+    q6 = """select l.date, max(s.copied) as copied, max(s.extra) as deleted, max(s.failed) as failed,
+            max(s.mismatch) as mismatch, count(*)
+            from stats as s join logs as l on l.log_id = s.log_id
+            where s.stat = 'files' and errors is null and finished = 1 group by l.date;"""
+    q7 = """select l.date, l.park, l.finished, s.failed, s.mismatch, l.errors
+            from stats as s join logs as l on l.log_id = s.log_id
+            where s.stat = 'files' and (s.failed > 0 OR s.mismatch > 0) order by l.date, l.park;"""
     with sqlite3.connect(db_name) as conn:
-        for q in [q1,q2,q3,q4]:
+        for q in [q1, q2, q3, q4, q5]:
             print(db_get_rows(conn, q))
 
 
 if __name__ == '__main__':
     #db_testing(':memory:')
     #clean('logs.db')
-    main('logs.db')
+    main('data/logs.db', 'data/Logs/Old')
     #print(process_park('./LogProcessor/Logs/2018-11-07_22-00-02-KLGO-update-x-drive.log'))
+
+    # TODO: Add Logging
+    # TODO: add all error cases
+    # TODO: collect additional error details
+    # TODO: collect log file name (for backup and error details)
+    # TODO: Re-run data collection, check logging
+    # TODO: Option to clear/reprocess  a given day or day/park
