@@ -68,9 +68,20 @@ def process_summary_line(line, sentinal, filename, line_num):
 
 
 def process_error(errors, line, file_handle, filename, line_num):
-    # TODO, Simplify this with a list of potential errors, not a switch
-    # TODO, Take as a configuration option, then number of retries, record if failed retries
+    # TODO, rmove the switch.  Get the error number and the name from the input
     # TODO, Get the file name as part of the error
+    # TODO, ignore all the retires.  If we get a 'RETRY LIMIT EXCEEDED.' Then record failure ane return
+    """
+
+Waiting 5 seconds... Retrying...
+2018/11/25 22:00:30 ERROR 21 (0x00000015) Accessing Destination Directory E:\XDrive\RemoteServers\XDrive-KLGO\
+The device is not ready.
+
+
+ERROR: RETRY LIMIT EXCEEDED.
+"""
+    # TODO: if the error does not repeat (ignore date/time) after the retry, then the record no failure and return.
+
     if 'ERROR 2 (0x00000002)' in line:
         errors.append({'error_code': 2, 'failed': True,
             'error_name': 'The system cannot find the file specified.',
@@ -195,7 +206,6 @@ def db_write_errors(db, errors):
         INSERT OR IGNORE INTO error_codes(error_code, error_name)
         VALUES(:error_code, :error_name)
     """, errors)
-    # TODO: if error_code not in error_codes, then add it
     cursor.executemany('''
         INSERT INTO errors (error_code, log_id, line_num, failed, filename)
         VALUES (:error_code, :log, :line_num, :failed, :filename)
@@ -380,6 +390,5 @@ if __name__ == '__main__':
     main('data/logs.db', 'data/Logs/old')
     #print(process_park('./LogProcessor/Logs/2018-11-07_22-00-02-KLGO-update-x-drive.log'))
 
-    # TODO: collect log file name (for backup and error details)
-    # TODO: Re-run data collection, check logging
     # TODO: Option to clear/reprocess  a given day or day/park
+    # TODO: Add command line options ?
