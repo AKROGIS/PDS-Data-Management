@@ -67,69 +67,80 @@ def process_summary_line(line, sentinal, filename, line_num):
     return count_obj
 
 
-def process_error(errors, line, file_handle, filename, line_num):
-    # TODO, rmove the switch.  Get the error number and the name from the input
-    # TODO, Get the file name as part of the error
-    # TODO, ignore all the retires.  If we get a 'RETRY LIMIT EXCEEDED.' Then record failure ane return
-    """
+def parse_error_line(line, filename, line_num):
+    code = 0
+    message = 'Message not defined'
+    try:
+        code = int(line.split(' ERROR ')[1].split()[0])
+        message = line.split(') ')[1].strip()
+    except Exception as ex:
+        # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
+        logger.error('Parsing error in log file: %s, line#: %d, line: %s, exception: %s',
+            filename, line_num, line, ex)
+    return code, message
 
-Waiting 5 seconds... Retrying...
-2018/11/25 22:00:30 ERROR 21 (0x00000015) Accessing Destination Directory E:\XDrive\RemoteServers\XDrive-KLGO\
-The device is not ready.
 
+def process_error(file_handle, filename, line, line_num):
+    code, message = parse_error_line(line, filename, line_num)
+    name = 'Name of error not defined'
+    failed = None # True if all the retries failed, False if retry succeeds, None if unable to determine due to unexpected input
+    done = False
+    while not done and not code:
+        try:
+            # read name of error
+            line = file_handle.next()
+            line_num += 1
+            name = line.strip()
+            # read blank line
+            line = file_handle.next()
+            line_num += 1
+            content = line.strip()
+            if content:
+                logger.error('Unexpected data on blank line after error in log file: %s, line#: %d, line: %s',
+                    filename, line_num, line)
+                done = True
+                continue
+            # read retry line; could be blank if followed with RETRY FAILED
+            line = file_handle.next()
+            line_num += 1
+            retry = line.strip()
+            if retry.endswith('... Retrying...'):
+                # Next line should be a task (skip it), then next line should be the same error, or the retry worked.
+                # The task must be the same as the task before the errror, but there is no way to check it now.
+                line = file_handle.next()
+                line_num += 1
+                task = line.strip()
+                if not task:
+                    logger.error('Unexpected blank line when expecting retry of failed task in log file: %s, line#: %d, line: %s',
+                        filename, line_num, line)
+                    done = True
+                else:
+                    line = file_handle.next()
+                    line_num += 1
+                    code, message = parse_error_line(line, filename, line_num)
+                    # repeat while loop
+            elif not retry:
+                # blank line is ok, but next line must be ERROR: RETRY LIMIT EXCEEDED.
+                line = file_handle.next()
+                line_num += 1
+                if line.strip() == 'ERROR: RETRY LIMIT EXCEEDED.':
+                    failed = True
+                else:
+                    logger.error('Unexpected data on blank line after error in log file: %s, line#: %d, line: %s',
+                        filename, line_num, line)
+                done = True
+            else:
+                # Not blank or Retry
+                logger.error('Unexpected data on retry line after error in log file: %s, line#: %d, line: %s',
+                    filename, line_num, line)
+                done = True
+        except Exception as ex:
+            # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue\
+            logger.error('Unexpected exception processing summary, file: %s, line#: %d, line: %s, exception: %s',
+                    filename, line_num, line, ex)
 
-ERROR: RETRY LIMIT EXCEEDED.
-"""
-    # TODO: if the error does not repeat (ignore date/time) after the retry, then the record no failure and return.
-
-    if 'ERROR 2 (0x00000002)' in line:
-        errors.append({'error_code': 2, 'failed': True,
-            'error_name': 'The system cannot find the file specified.',
-            'line_num': line_num, 'filename': line})
-    elif 'ERROR 5 (0x00000005)' in line:
-        errors.append({'error_code': 5, 'failed': True,
-            'error_name': 'Access is denied.',
-            'line_num': line_num, 'filename': line})
-    elif 'ERROR 19 (0x00000013)' in line:
-        errors.append({'error_code': 19, 'failed': True,
-            'error_name': 'The media is write protected.',
-            'line_num': line_num, 'filename': line})
-        # The happened on a KENNECOTT few files, then we got error 53 (unreachable)
-    elif 'ERROR 21 (0x00000015)' in line:
-        errors.append({'error_code': 21, 'failed': True,
-            'error_name': 'The device is not ready.',
-            'line_num': line_num, 'filename': line})
-    elif 'ERROR 32 (0x00000020)' in line:
-        errors.append({'error_code': 32, 'failed': True,
-            'error_name': 'File is locked.',
-            'line_num': line_num, 'filename': line})
-    elif 'ERROR 53 (0x00000035)' in line:
-        errors.append({'error_code': 53, 'failed': True,
-            'error_name': 'Remote server unreachable.',
-            'line_num': line_num, 'filename': line})
-    elif 'ERROR 59 (0x0000003B)' in line:
-        errors.append({'error_code': 59, 'failed': True,
-            'error_name': 'An unexpected network error occurred.',
-            'line_num': line_num, 'filename': line})
-    elif 'ERROR 64 (0x00000040)' in line:
-        errors.append({'error_code': 64, 'failed': True,
-            'error_name': 'The specified network name is no longer available.',
-            'line_num': line_num, 'filename': line})
-        # Happened once at DENA (5/15/18) could not find folder.  Retried a few times, then ok
-    elif 'ERROR 67 (0x00000043)' in line:
-        errors.append({'error_code': 67, 'failed': True,
-            'error_name': 'The network name cannot be found.',
-            'line_num': line_num, 'filename': line})
-        # Happened when KLGO renamed the server without telling us.  Junction point had bad server name
-    elif 'ERROR 121 (0x00000079)' in line:
-        errors.append({'error_code': 121, 'failed': True,
-            'error_name': 'The semaphore timeout period has expired.',
-            'line_num': line_num, 'filename': line})
-    else:
-        errors.append({'error_code': 0, 'failed': True,
-            'error_name': 'Unknown Error.',
-            'line_num': line_num, 'filename': line})
-    return errors, line_num
+    error = {'code': code, 'failed': failed, 'name': name, 'line_num': line_num, 'message': message}
+    return error, line, line_num
 
 
 def process_park(file_name):
@@ -151,13 +162,16 @@ def process_park(file_name):
         for line in file_handle:
             try:
                 line_num += 1
+                if error_sentinal in line:
+                    error, line, line_num = process_error(file_handle, file_name, line, line_num)
+                    results['errors'].append(error)
+                    if error['failed'] is not None:
+                        continue
                 if line == summary_header:
                     summary, line_num = process_summary(file_handle, file_name, line_num)
                     results['stats'] = summary
                 elif line.startswith(finished_sentinal):
                     results['finished'] = True
-                elif error_sentinal in line:
-                    results['errors'], line_num = process_error(results['errors'], line, file_handle, file_name, line_num)
                 elif line.startswith(paused_sentinal):
                     logger.warning('%s: Robo copy not finished', park)
                     results['finished'] = False
@@ -204,11 +218,11 @@ def db_write_errors(db, errors):
     cursor = db.cursor()
     cursor.executemany("""
         INSERT OR IGNORE INTO error_codes(error_code, error_name)
-        VALUES(:error_code, :error_name)
+        VALUES(:code, :name)
     """, errors)
     cursor.executemany('''
-        INSERT INTO errors (error_code, log_id, line_num, failed, filename)
-        VALUES (:error_code, :log, :line_num, :failed, :filename)
+        INSERT INTO errors (error_code, log_id, line_num, failed, message)
+        VALUES (:code, :log, :line_num, :failed, :message)
     ''', errors)
     db.commit()
 
@@ -263,7 +277,7 @@ def db_create(db):
             log_id INTEGER NOT NULL,
             line_num INTEGER,
             failed INTEGER,
-            filename TEXT,
+            message TEXT,
             FOREIGN KEY(error_code) REFERENCES error_codes(error_code),
             FOREIGN KEY(log_id) REFERENCES logs(log_id));
     ''')
@@ -299,6 +313,10 @@ def main(db_name, log_folder):
                 if 'errors' in log:
                     for error in log['errors']:
                         error['log'] = log_id
+                        for attrib in ['code', 'failed', 'name', 'line_num', 'message']:
+                            if attrib not in error:
+                                logger.error('Bad errors object in log file %s, missing: %s in %s', filename, attrib, str(error))
+                                continue
                     try:
                         db_write_errors(conn, log['errors'])
                     except sqlite3.Error as ex:
@@ -379,15 +397,23 @@ def test_queries(db_name):
     q7 = """select l.date, l.park, l.finished, s.failed, s.mismatch, l.errors
             from stats as s join logs as l on l.log_id = s.log_id
             where s.stat = 'files' and (s.failed > 0 OR s.mismatch > 0) order by l.date, l.park;"""
+    q8 = "Select park, date, finished from logs where date = (SELECT max(date) from logs) ORDER BY Park;"
+    q9 = "select filename from errors;"
     with sqlite3.connect(db_name) as conn:
-        for q in [q1, q2, q3, q4, q5, q6, q7]:
-            print(db_get_rows(conn, q))
+        for q in [q9, q1, q2, q3, q4, q5, q6, q7, q8]:
+            for row in db_get_rows(conn, q):
+                # error = row[0].split(') ')[1].strip()
+                # code = int(row[0].split(' ERROR ')[1].split()[0])
+                # print('{0:3d}|{1}'.format(code,error))
+                print(row)
 
 
 if __name__ == '__main__':
     #db_testing(':memory:')
-    #clean('data/logs.db')
+    # clean('data/logs.db')
+    # main('data/logs.db', 'data/Logs')
     main('data/logs.db', 'data/Logs/old')
+    # test_queries('data/logs.db')
     #print(process_park('./LogProcessor/Logs/2018-11-07_22-00-02-KLGO-update-x-drive.log'))
 
     # TODO: Option to clear/reprocess  a given day or day/park
