@@ -6,24 +6,31 @@ import os
 import re
 import sqlite3
 import time
-# import logging.config
-# import config_logger
-# logging.config.dictConfig(config_logger.config)
+import logging.config
+import config_logger
+
+logging.config.dictConfig(config_logger.config)
+# Comment the next line during testing, uncomment in production
 # logging.raiseExceptions = False # Ignore errors in the logging system
 logger = logging.getLogger('main')
 logger.info("Logging Started")
 
 
-def process_summary(file_handle, errors):
+def process_summary(file_handle, filename, line_num):
     results = {}
-    results['dirs'], errors = process_summary_line(file_handle.next(), 'Dirs :', errors)
-    results['files'], errors = process_summary_line(file_handle.next(), 'Files :', errors)
-    results['bytes'], errors = process_summary_line(file_handle.next(), 'Bytes :', errors)
-    results['times'], errors = process_summary_line(file_handle.next(), 'Times :', errors)
-    return results, errors
+    for key,text in [('dirs','Dirs :'), ('files', 'Files :'), ('bytes', 'Bytes :'), ('times', 'Times :')]:
+        try:
+            line = file_handle.next()
+            line_num += 1
+            results[key] = process_summary_line(line, text, filename, line_num)
+        except Exception as ex:
+            # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue\
+            logger.error('Unexpected exception processing summary, file: %s, line#: %d, key: %s, text: %s, line: %s, exception: %s',
+                    filename, line_num, key, text, line, ex)
+    return results,line_num
 
 
-def process_summary_line(line, sentinal, errors):
+def process_summary_line(line, sentinal, filename, line_num):
     count_obj = {}
     count_obj['total'] = -1
     count_obj['copied'] = -1
@@ -33,9 +40,8 @@ def process_summary_line(line, sentinal, errors):
     count_obj['extra'] = -1
 
     if sentinal not in line:
-        logger.error('Error Sentinal missing from summary line; sentinal: %s; line: %s', sentinal, line)
-        errors.append('Summary Parsing Error')
-        return count_obj, errors
+        logger.error('Summary for "%s" is missing in line: %s, file: %s, line#: %d', sentinal, line, filename, line_num)
+        return count_obj
 
     try:
         clean_line = line.replace(sentinal, '')
@@ -56,87 +62,100 @@ def process_summary_line(line, sentinal, errors):
         count_obj['failed'] = counts[4]
         count_obj['extra'] = counts[5]
     except Exception as ex:
-        errors.append('Summary Parsing Error')
-        logger.error('Exception in Summary: %s; sentinal: %s; line: %s', ex, sentinal, line)
+        logger.error('Parsing summary for %s in line: %s, file: %s, line#: %d, excpetion: %s', sentinal, line, filename, line_num,  ex)
 
-    return count_obj, errors
+    return count_obj
 
 
-def process_error(line, errors, park):
+def process_error(errors, line, file_handle, filename, line_num):
+    # TODO, Simplify this with a list of potential errors, not a switch
+    # TODO, Take as a configuration option, then number of retries, record if failed retries
+    # TODO, Get the file name as part of the error
     if 'ERROR 2 (0x00000002)' in line:
-        if 2 not in errors:
-            errors.append(2)
-            logger.error('%s: The system cannot find the file specified.', park)
+        errors.append({'error_code': 2, 'failed': True,
+            'error_name': 'The system cannot find the file specified.',
+            'line_num': line_num, 'filename': line})
     elif 'ERROR 5 (0x00000005)' in line:
-        #TODO: if we do not find 'ERROR: RETRY LIMIT EXCEEDED.' in a future line, then ignore
-        if 5 not in errors:
-            errors.append(5)
-            logger.error('%s: Access is denied.', park)
-    # ERROR 19 (0x00000013) The media is write protected.
-    # TODO: if we do not find 'ERROR: RETRY LIMIT EXCEEDED.' in a future line, then ignore
-    # The happened on a KENNECOTT few files, then we got error 53 (unreachable)
+        errors.append({'error_code': 5, 'failed': True,
+            'error_name': 'Access is denied.',
+            'line_num': line_num, 'filename': line})
+    elif 'ERROR 19 (0x00000013)' in line:
+        errors.append({'error_code': 19, 'failed': True,
+            'error_name': 'The media is write protected.',
+            'line_num': line_num, 'filename': line})
+        # The happened on a KENNECOTT few files, then we got error 53 (unreachable)
     elif 'ERROR 21 (0x00000015)' in line:
-        #TODO: if we do not find 'ERROR: RETRY LIMIT EXCEEDED.' in a future line, then ignore
-        if 21 not in errors:
-            errors.append(21)
-            logger.error('%s: The device is not ready.', park)
+        errors.append({'error_code': 21, 'failed': True,
+            'error_name': 'The device is not ready.',
+            'line_num': line_num, 'filename': line})
     elif 'ERROR 32 (0x00000020)' in line:
-        if 32 not in errors:
-            errors.append(32)
-            logger.warning('%s: File is locked', park)
+        errors.append({'error_code': 32, 'failed': True,
+            'error_name': 'File is locked.',
+            'line_num': line_num, 'filename': line})
     elif 'ERROR 53 (0x00000035)' in line:
-        #TODO: if we do not find 'ERROR: RETRY LIMIT EXCEEDED.' in a future line, then ignore
-        if 53 not in errors:
-            errors.append(53)
-            logger.error('Remote server %s unreachable', park)
+        errors.append({'error_code': 53, 'failed': True,
+            'error_name': 'Remote server unreachable.',
+            'line_num': line_num, 'filename': line})
     elif 'ERROR 59 (0x0000003B)' in line:
-        if 59 not in errors:
-            errors.append(59)
-            logger.warning('%s: An unexpected network error occurred.', park)
-    # ERROR 64 (0x00000040) The specified network name is no longer available.
-    # Happened once at DENA (5/15/18) could not find folder.  Retried a few times, then ok
-    # ERROR 67 (0x00000043) The network name cannot be found.
-    # TODO: if we do not find 'ERROR: RETRY LIMIT EXCEEDED.' in a future line, then ignore
-    # Happened when KLGO renamed the server without telling us.  Junction point had bad server name
+        errors.append({'error_code': 59, 'failed': True,
+            'error_name': 'An unexpected network error occurred.',
+            'line_num': line_num, 'filename': line})
+    elif 'ERROR 64 (0x00000040)' in line:
+        errors.append({'error_code': 64, 'failed': True,
+            'error_name': 'The specified network name is no longer available.',
+            'line_num': line_num, 'filename': line})
+        # Happened once at DENA (5/15/18) could not find folder.  Retried a few times, then ok
+    elif 'ERROR 67 (0x00000043)' in line:
+        errors.append({'error_code': 67, 'failed': True,
+            'error_name': 'The network name cannot be found.',
+            'line_num': line_num, 'filename': line})
+        # Happened when KLGO renamed the server without telling us.  Junction point had bad server name
     elif 'ERROR 121 (0x00000079)' in line:
-        #TODO: if we do not find 'ERROR: RETRY LIMIT EXCEEDED.' in a future line, then ignore
-        #TODO: This is often found with Error 32, consolidate, and write file name to log
-        if 121 not in errors:
-            errors.append(121)
-            logger.warning('%s: The semaphore timeout period has expired.', park)
+        errors.append({'error_code': 121, 'failed': True,
+            'error_name': 'The semaphore timeout period has expired.',
+            'line_num': line_num, 'filename': line})
     else:
-        logger.error('%s: Unexpected Error: %s', park, line)
-        errors.append('Unknown ERROR')
-    return errors
+        errors.append({'error_code': 0, 'failed': True,
+            'error_name': 'Unknown Error.',
+            'line_num': line_num, 'filename': line})
+    return errors, line_num
 
 
 def process_park(file_name):
     summary_header = '               Total    Copied   Skipped  Mismatch    FAILED    Extras\r\n'
+    error_sentinal = ' ERROR '
+    finished_sentinal = '   Ended : '
+    paused_sentinal = '    Hours : Paused at '
+
     results = {}
     basename = os.path.basename(file_name)
-    results['name'] = basename[20:24]
+    park = basename[20:24]
+    results['park'] = park
     results['date'] = basename[:10]
-    results['finished'] = True
-    errors = []
-    results['errors'] = errors
+    results['filename'] = file_name
+    results['finished'] = None
+    results['errors'] = []
     line_num = 0
-    try:
-        file_handle = open(file_name)
+    with open(file_name, 'r') as file_handle:
         for line in file_handle:
-            line_num += 1
-            if line == summary_header:
-                summary, errors = process_summary(file_handle, errors)
-                results['stats'] = summary
-            elif ' ERROR ' in line:
-                errors = process_error(line, errors, results['name'])
-            elif 'Hours : Paused at ' in line:
-                logger.warning('%s: Robo copy not finished', results['name'])
-                results['finished'] = False
-    except Exception as ex:
-        logger.error('Unexpected exception processing log file %s, on line %d, exception: %s', file_name, line_num, ex)
-    finally:
-        file_handle.close()
+            try:
+                line_num += 1
+                if line == summary_header:
+                    summary, line_num = process_summary(file_handle, file_name, line_num)
+                    results['stats'] = summary
+                elif line.startswith(finished_sentinal):
+                    results['finished'] = True
+                elif error_sentinal in line:
+                    results['errors'], line_num = process_error(results['errors'], line, file_handle, file_name, line_num)
+                elif line.startswith(paused_sentinal):
+                    logger.warning('%s: Robo copy not finished', park)
+                    results['finished'] = False
+            except Exception as ex:
+                # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
+                logger.error('Unexpected exception processing log, file: %s, line#: %d, line: %s, exception: %s',
+                    file_name, line_num, line, ex)
     return results
+
 
 def db_clear(db, drop=True):
     try:
@@ -145,12 +164,20 @@ def db_clear(db, drop=True):
             cursor.execute('DROP INDEX IF EXISTS logs_date_ix')
             cursor.execute('DROP TABLE IF EXISTS logs')
             cursor.execute('DROP TABLE IF EXISTS stats')
+            cursor.execute('DROP TABLE IF EXISTS errors')
         else:
             cursor.execute('DELETE FROM logs')
             cursor.execute('DELETE FROM stats')
+            cursor.execute('DELETE FROM errors')
         db.commit()
     except sqlite3.OperationalError:
         pass
+
+
+def db_get_rows(db, sql):
+    cursor = db.cursor()
+    rows = cursor.execute(sql).fetchall()
+    return rows
 
 
 def db_write_stats(db, stats):
@@ -162,21 +189,29 @@ def db_write_stats(db, stats):
     db.commit()
 
 
+def db_write_errors(db, errors):
+    cursor = db.cursor()
+    cursor.executemany("""
+        INSERT OR IGNORE INTO error_codes(error_code, error_name)
+        VALUES(:error_code, :error_name)
+    """, errors)
+    # TODO: if error_code not in error_codes, then add it
+    cursor.executemany('''
+        INSERT INTO errors (error_code, log_id, line_num, failed, filename)
+        VALUES (:error_code, :log, :line_num, :failed, :filename)
+    ''', errors)
+    db.commit()
+
+
 def db_write_log(db, log):
     cursor = db.cursor()
     cursor.execute('''
-        INSERT INTO logs (park, date, finished, errors)
-        VALUES (:name, :date, :finished, :errors)
+        INSERT INTO logs (park, date, filename, finished)
+        VALUES (:park, :date, :filename, :finished)
     ''', log)
     log_id = cursor.lastrowid
     db.commit()
     return log_id
-
-
-def db_get_rows(db, sql):
-    cursor = db.cursor()
-    rows = cursor.execute(sql).fetchall()
-    return rows
 
 
 def db_create(db):
@@ -186,8 +221,8 @@ def db_create(db):
             log_id INTEGER PRIMARY KEY,
             park TEXT,
             date TEXT,
-            finished INTEGER,
-            errors TEXT);
+            filename TEXT,
+            finished INTEGER);
     ''')
     cursor.execute('''
         CREATE INDEX IF NOT EXISTS logs_date_ix ON logs(date);
@@ -203,86 +238,87 @@ def db_create(db):
             mismatch INTEGER,
             skipped INTEGER,
             total INTEGER,
-            FOREIGN KEY(log_id) REFERENCES logs(artistid));
+            FOREIGN KEY(log_id) REFERENCES logs(log_id));
+    ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS error_codes(
+            error_code INTEGER NOT NULL,
+            error_name TEXT,
+            UNIQUE(error_code));
+    ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS errors(
+            error_id INTEGER PRIMARY KEY,
+            error_code INTEGER NOT NULL,
+            log_id INTEGER NOT NULL,
+            line_num INTEGER,
+            failed INTEGER,
+            filename TEXT,
+            FOREIGN KEY(error_code) REFERENCES error_codes(error_code),
+            FOREIGN KEY(log_id) REFERENCES logs(log_id));
     ''')
     db.commit()
 
 
-def park(filename):
-    pattern = '([A-Z]{4})'
-    return re.search(pattern, filename).group()
-
-
-def get_files(dir,year,month,day):
-    template = '{0}-{1:02d}-{2:02d}*-update-x-drive.log'
-    pattern = os.path.join(dir, template.format(year, month, day))
-    #print(pattern)
-    files = glob.glob(pattern)
-    park_files = [(park(name), name) for name in files]
-    return park_files
-
-
 def main(db_name, log_folder):
     # TODO: if yesterdays logs are not found, then log an email error
-    # import glob
-    # filelist = glob.glob('data/Logs/*-update-x-drive.log')
-    # today = datetime.date.today()
-    # filelist = get_files('./LogProcessor/Logs', today.year, today.month, today.day-1)
-    # filelist = ['data/Logs/2018-02-12_22-00-01-DENA-update-x-drive.log']
+    #filelist = ['data/Logs/old/2018-02-12_22-00-01-DENA-update-x-drive.log']
     filelist = glob.glob(os.path.join(log_folder, '*-update-x-drive.log'))
     with sqlite3.connect(db_name) as conn:
         for filename in filelist:
-            print(filename)
-            # TODO protect against Parsing errors
-            log = process_park(filename)
-            if not log:
-                print("EEK, Programming Error! The log object is empty")
-                #TODO email log
-                continue
-            for item in ['name', 'date', 'finished', 'errors']:
-                if item not in log:
-                    print("EEK, Programmingh Error! we got a bad log object " + item + " is missing")
-                    #TODO email log
+            try:
+                logger.info("Processing %s", filename)
+                log = process_park(filename)
+                # TODO: Move file into archive directory
+                if not log:
+                    logger.error('The log object for %s is empty', filename)
                     continue
-            log['errors'] = str(log['errors']) if log['errors'] else None
-            # TODO protect against DB errors
-            log_id = db_write_log(conn, log)
-            if not log_id:
-                print("EEK, unable to write log to database")
-                #TODO email log
-                continue
-            if log['finished']:
-                # We do not expect to get stats when the robo didn't finish
+                for item in ['park', 'date', 'filename', 'finished']:
+                    if item not in log:
+                        logger.error('The log object for %s is bad; "%s" is missing', filename, item)
+                        continue
+                if log['finished'] is None:
+                    logger.error('Unexpected end to logfile %s (not finished or paused)', filename)
+                try:
+                    log_id = db_write_log(conn, log)
+                except sqlite3.Error as ex:
+                    logger.error('Writing log %s to DB; %s', filename, ex)
+                if not log_id:
+                    logger.error("No Log ID returned from DB for log file %s", filename)
+                    continue
+                if 'errors' in log:
+                    for error in log['errors']:
+                        error['log'] = log_id
+                    try:
+                        db_write_errors(conn, log['errors'])
+                    except sqlite3.Error as ex:
+                        logger.error('Writing errors for log %s to DB; %s', filename, ex)
                 if 'stats' in log:
                     stats = []
                     for stat in ['dirs','files','bytes','times']:
                         if stat not in log['stats']:
-                            print("EEK, Programming Error! We got a bad stats object, missing: " + stat)
-                            #TODO email log
+                            logger.error('Bad stats object in log file %s, missing: %s', filename, stat)
                             continue
                         obj = log['stats'][stat]
                         for item in ['copied', 'extra', 'failed', 'mismatch', 'skipped', 'total']:
                             if item not in obj:
-                                print("EEK, Programming Error! we got a bad stats object " + stat + "/" + item + " is missing")
-                                #TODO email log
+                                logger.error('Bad stats object in log file %s, missing: %s/%s', filename, stat, item)
                                 continue
                         obj['log'] = log_id
                         obj['stat'] = stat
                         stats.append(obj)
-                    # TODO protect against DB errors
-                    db_write_stats(conn, stats)
+                    try:
+                        db_write_stats(conn, stats)
+                    except sqlite3.Error as ex:
+                        logger.error('Writing stats for log %s to DB; %s', filename, ex)
                 else:
-                    print("EEK!  No stats for this file.")
-                    # Example in ./LogProcessor/Logs/2018-11-07_22-00-02-KLGO-update-x-drive.log
-                    # ./LogProcessor/Logs/2018-10-02_22-00-03-NOME-update-x-drive.log
-                    # data/Logs/Old/2018-10-01_22-00-07-KATM-update-x-drive.log
-                    # data/Logs/Old/2018-05-14_22-00-02-KATM-update-x-drive.log
-                    # data/Logs/Old/2018-09-28_22-00-04-NOME-update-x-drive.log
-                    # data/Logs/Old/2018-03-27_22-00-02-KOTZ-update-x-drive.log
-                    # data/Logs/Old/2018-05-16_22-00-03-KATM-update-x-drive.log
-                    # data/Logs/Old/2018-03-26_22-00-02-NOME-update-x-drive.log
-                    #
-                    #TODO: log an email error
+                    # We do not expect to get stats when robo didn't finish
+                    if log['finished'] or log['finished'] is None:
+                        logger.error('No stats for log %s', filename)
+            except Exception as ex:
+                # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
+                logger.error('Unexpected exception processing log file: %s, exception: %s',
+                    filename, ex)
 
 
 def clean(db_name):
@@ -334,19 +370,16 @@ def test_queries(db_name):
             from stats as s join logs as l on l.log_id = s.log_id
             where s.stat = 'files' and (s.failed > 0 OR s.mismatch > 0) order by l.date, l.park;"""
     with sqlite3.connect(db_name) as conn:
-        for q in [q1, q2, q3, q4, q5]:
+        for q in [q1, q2, q3, q4, q5, q6, q7]:
             print(db_get_rows(conn, q))
 
 
 if __name__ == '__main__':
     #db_testing(':memory:')
-    #clean('logs.db')
-    main('data/logs.db', 'data/Logs/Old')
+    #clean('data/logs.db')
+    main('data/logs.db', 'data/Logs/old')
     #print(process_park('./LogProcessor/Logs/2018-11-07_22-00-02-KLGO-update-x-drive.log'))
 
-    # TODO: Add Logging
-    # TODO: add all error cases
-    # TODO: collect additional error details
     # TODO: collect log file name (for backup and error details)
     # TODO: Re-run data collection, check logging
     # TODO: Option to clear/reprocess  a given day or day/park
