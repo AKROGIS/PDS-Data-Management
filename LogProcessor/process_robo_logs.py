@@ -81,35 +81,50 @@ def parse_error_line(line, filename, line_num):
 
 
 def process_error(file_handle, filename, line, line_num):
+    #TODO: Always check for error in new line
+    error_sentinal = ' ERROR '
+#    print(line_num, '|'+line+'|')
     code, message = parse_error_line(line, filename, line_num)
     name = 'Name of error not defined'
     failed = None # True if all the retries failed, False if retry succeeds, None if unable to determine due to unexpected input
     done = False
-    while not done and not code:
+#    last_line_num = None # used to check for infinite loops
+    while not done and code:
         try:
             # read name of error
+            # The name line ends with 0x0D0D0A (\r\r\n), which python interprets as one line
+            # but most text editors interpret as two lines
             line = file_handle.next()
             line_num += 1
+#            print(line_num, '|'+line+'|')
             name = line.strip()
+#            print('name |'+name+'|')
             # read blank line
-            line = file_handle.next()
+#            line = file_handle.next()
             line_num += 1
-            content = line.strip()
-            if content:
-                logger.error('Unexpected data on blank line after error in log file: %s, line#: %d, line: %s',
-                    filename, line_num, line)
-                done = True
-                continue
+#            print(line_num, '|'+line+'|')
+#            content = line.strip()
+#            print('content |'+content+'|',len(content))
+#            if content:
+#                print('WTF!!!!')
+#                logger.error('Unexpected data on blank line after error in log file: %s, line#: %d, line: %s',
+#                    filename, line_num, line)
+#                done = True
+#                continue
             # read retry line; could be blank if followed with RETRY FAILED
             line = file_handle.next()
             line_num += 1
+#            print(line_num, '|'+line+'|')
             retry = line.strip()
+#            print('retry |'+retry+'|')
             if retry.endswith('... Retrying...'):
                 # Next line should be a task (skip it), then next line should be the same error, or the retry worked.
                 # The task must be the same as the task before the errror, but there is no way to check it now.
                 line = file_handle.next()
                 line_num += 1
+#                print(line_num, '|'+line+'|')
                 task = line.strip()
+#                print('task |'+task+'|')
                 if not task:
                     logger.error('Unexpected blank line when expecting retry of failed task in log file: %s, line#: %d, line: %s',
                         filename, line_num, line)
@@ -117,16 +132,24 @@ def process_error(file_handle, filename, line, line_num):
                 else:
                     line = file_handle.next()
                     line_num += 1
-                    code, message = parse_error_line(line, filename, line_num)
+#                    print(line_num, '|'+line+'|')
+                    if error_sentinal in line:
+                        code, message = parse_error_line(line, filename, line_num)
+                    else:
+                        done = True
+                        failed = False
                     # repeat while loop
             elif not retry:
                 # blank line is ok, but next line must be ERROR: RETRY LIMIT EXCEEDED.
                 line = file_handle.next()
                 line_num += 1
-                if line.strip() == 'ERROR: RETRY LIMIT EXCEEDED.':
+#                print(line_num, '|'+line+'|')
+                limit = line.strip()
+#                print('limit |'+limit+'|')
+                if limit == 'ERROR: RETRY LIMIT EXCEEDED.':
                     failed = True
                 else:
-                    logger.error('Unexpected data on blank line after error in log file: %s, line#: %d, line: %s',
+                    logger.error('Unexpected data on blank line after retry in log file: %s, line#: %d, line: %s',
                         filename, line_num, line)
                 done = True
             else:
@@ -134,12 +157,27 @@ def process_error(file_handle, filename, line, line_num):
                 logger.error('Unexpected data on retry line after error in log file: %s, line#: %d, line: %s',
                     filename, line_num, line)
                 done = True
+        except StopIteration:
+            # WARNING, it is possible that the robocopy may be killed while retrying a failure
+            #          for example, see 2018-11-07_22-00-02-KLGO-update-x-drive.log
+            done = True
+            failed = False
         except Exception as ex:
             # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue\
-            logger.error('Unexpected exception processing summary, file: %s, line#: %d, line: %s, exception: %s',
+            logger.error('Unexpected exception processing error, file: %s, line#: %d, line: %s, exception: %s',
                     filename, line_num, line, ex)
+    """
+                if last_line_num is None:
+                    last_line_num = line_num
+                else:
+                    if last_line_num == line_num:
+                        done = True
+                    else:
+                        last_line_num = line_num
+    """
 
     error = {'code': code, 'failed': failed, 'name': name, 'line_num': line_num, 'message': message}
+#    print(error, line, line_num)
     return error, line, line_num
 
 
@@ -410,11 +448,23 @@ def test_queries(db_name):
 
 if __name__ == '__main__':
     #db_testing(':memory:')
-    # clean('data/logs.db')
-    # main('data/logs.db', 'data/Logs')
-    main('data/logs.db', 'data/Logs/old')
+    #clean('data/logs.db')
+    #main('data/logs.db', 'data/Logs')
+    # main('data/logs.db', 'data/Logs/old')
     # test_queries('data/logs.db')
-    #print(process_park('./LogProcessor/Logs/2018-11-07_22-00-02-KLGO-update-x-drive.log'))
+    #print(process_park('data/Logs/2018-11-07_22-00-02-KLGO-update-x-drive.log'))
+    #res = process_park('data/Logs/2018-11-17_22-00-02-KLGO-update-x-drive.log')
+    #res = process_park('data/Logs/2018-11-07_22-00-02-KLGO-update-x-drive.log')
+    # process_park('data/Logs/2018-11-20_22-00-02-KLGO-update-x-drive.log')  # No retry after error, then success.
+    # process_park('data/Logs/2018-10-25_22-00-02-KLGO-update-x-drive.log')  # retrying... Then stats (successful retry on last file))
+    process_park('data/Logs/2018-10-17_22-00-13-DENA-update-x-drive.log')
+    #process_park('data/Logs/2018-10-10_22-00-04-DENA-update-x-drive.log')
+    #process_park('data/Logs/2018-10-16_22-00-03-KLGO-update-x-drive.log')
+    #process_park('data/Logs/2018-10-11_22-00-03-DENA-update-x-drive.log')
+    #process_park('data/Logs/2018-11-28_22-00-04-DENA-update-x-drive.log')
+    #process_park('data/Logs/2018-10-02_22-00-03-DENA-update-x-drive.log')
+    #process_park('data/Logs/2018-11-22_22-00-02-KLGO-update-x-drive.log')
+    #print(res)
 
     # TODO: Option to clear/reprocess  a given day or day/park
     # TODO: Add command line options ?
