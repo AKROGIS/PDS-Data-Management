@@ -237,10 +237,13 @@ def db_clear(db, drop=True):
         pass
 
 
-def db_get_rows(db, sql):
+def db_get_rows(db, sql, header=True):
     cursor = db.cursor()
     rows = cursor.execute(sql).fetchall()
-    return rows
+    if header:
+        return [[item[0] for item in cursor.description]] + rows
+    else:
+        return rows
 
 
 def db_write_stats(db, stats):
@@ -415,30 +418,68 @@ def db_testing(db_name):
 
 
 def test_queries(db_name):
-    # Current Status
-    # Last error by Park
-    # All Errors by Park
-    # Speed Statistics by Park, last week, month, year, arbitrary period
-    # Speed Comparison by Park, no updates, small, medium and large updates
-    # Files updated per date
-    # ...
+    # Date of last scan
+    q1 = "select max(date) as last_run from logs;"
+    # Summary of last days scan
+    #  NOTE: DENA typically differs from all other parks in counts, so it is omitted
+    #  NOTE: the error/finished counts may be wrong if more than a single date is considered
+    q2 = """
+SELECT l.date,
+  max(sf.total) as files_scanned, max(sd.total) as dirs_scanned,
+  max(sf.copied) as files_copied, max(sf.extra) as files_removed,
+  max(sb.copied) as bytes_copied, max(sb.extra) as bytes_removed,
+  sum(e.count_errors) as total_errors,
+  count(l1.park) as count_complete,
+  count(l2.park) as count_incomplete,
+  count(l3.park) as count_unfinished
+from logs as l
+left join stats as sf on l.log_id = sf.log_id and sf.stat = 'files' AND l.park <> 'DENA'
+left join stats as sd on l.log_id = sd.log_id and sd.stat = 'dirs' AND l.park <> 'DENA'
+left join stats as st on l.log_id = st.log_id and st.stat = 'times' AND l.park <> 'DENA'
+left join stats as sb on l.log_id = sb.log_id and sb.stat = 'bytes' AND l.park <> 'DENA'
+left join logs as l1 on l.log_id = l1.log_id and l1.finished = 1
+left join logs as l2 on l.log_id = l2.log_id and l2.finished = 0
+left join logs as l3 on l.log_id = l3.log_id and l3.finished IS NULL
+left join (select log_id, count(*) as count_errors from errors group by log_id) as e on l.log_id = e.log_id
+where l.date = (SELECT max(date) from logs)
+GROUP BY l.date;
+    """
+    # Park details
+    #   Could include some more failure stats, see q7 below
+    q3 = """
+select l.park, l.date, l.finished, e.count_errors,
+  sf.copied as files_copied, sf.extra as files_removed, sf.total as files_scanned,
+  st.copied as time_copying, st.extra as time_scanning, sb.copied as bytes_copied
+from logs as l
+left join stats as sf on l.log_id = sf.log_id and sf.stat = 'files'
+left join stats as st on l.log_id = st.log_id and st.stat = 'times'
+left join stats as sb on l.log_id = sb.log_id and sb.stat = 'bytes'
+left join (select log_id, count(*) as count_errors from errors group by log_id) as e on l.log_id = e.log_id
+where date = (SELECT max(date) from logs) ORDER BY Park;
+"""
+    # Logs that did not finish normally
+    q4 = "select park, date from logs where finished = 0 or finished IS NULL order by date, park;"
+    # Number of errors per log file
+    q5 = "select log_id, count(*) as count_errors from errors group by log_id;"
+    # Mismatch and Failed Stats per log file
+    q6 = """
+select l.date, l.park, l.finished, e.count_errors, s.stat, s.failed, s.mismatch
+from stats as s
+left join logs as l on l.log_id = s.log_id
+left join (select log_id, count(*) as count_errors from errors group by log_id) as e on l.log_id = e.log_id
+where (s.failed > 0 OR s.mismatch > 0)
+order by l.date, l.park, s.stat;
+    """
+    # Count of logs per day
+    q7 = "select date, count(*) from logs group by date order by date;"
+    # Other query ideas:
+    #   Last error by Park
+    #   All Errors by Park
+    #   Speed Statistics by Park, last week, month, year, arbitrary period
+    #   Speed Comparison by Park, no updates, small, medium and large updates
 
-    q1 = "select l.park, l.date, s.* from stats as s join logs as l on l.log_id = s.log_id where s.stat = 'dirs' and l.park = 'DENA' and l.errors is null order by l.date;"
-    q2 = "select date, count(*) from logs group by date order by date;"
-    q3 = "select park,date,errors from logs where errors is not null order by park,date;"
-    q4 = "select park,date,errors from logs where finished = 0 order by park,date;"
-    q5 = "select l.date, s.total, count(*), min(l.park), max(l.park) from stats as s join logs as l on l.log_id = s.log_id where s.stat = 'files' group by l.date, s.total;"
-    q6 = """select l.date, max(s.copied) as copied, max(s.extra) as deleted, max(s.failed) as failed,
-            max(s.mismatch) as mismatch, count(*)
-            from stats as s join logs as l on l.log_id = s.log_id
-            where s.stat = 'files' and errors is null and finished = 1 group by l.date;"""
-    q7 = """select l.date, l.park, l.finished, s.failed, s.mismatch, l.errors
-            from stats as s join logs as l on l.log_id = s.log_id
-            where s.stat = 'files' and (s.failed > 0 OR s.mismatch > 0) order by l.date, l.park;"""
-    q8 = "Select park, date, finished from logs where date = (SELECT max(date) from logs) ORDER BY Park;"
-    q9 = "select filename from errors;"
     with sqlite3.connect(db_name) as conn:
-        for q in [q9, q1, q2, q3, q4, q5, q6, q7, q8]:
+        for q in [q1, q2, q3, q4, q5, q6, q7]:
             for row in db_get_rows(conn, q):
                 # error = row[0].split(') ')[1].strip()
                 # code = int(row[0].split(' ERROR ')[1].split()[0])
@@ -451,13 +492,13 @@ if __name__ == '__main__':
     #clean('data/logs.db')
     #main('data/logs.db', 'data/Logs')
     # main('data/logs.db', 'data/Logs/old')
-    # test_queries('data/logs.db')
+    test_queries('data/logs.db')
     #print(process_park('data/Logs/2018-11-07_22-00-02-KLGO-update-x-drive.log'))
     #res = process_park('data/Logs/2018-11-17_22-00-02-KLGO-update-x-drive.log')
     #res = process_park('data/Logs/2018-11-07_22-00-02-KLGO-update-x-drive.log')
     # process_park('data/Logs/2018-11-20_22-00-02-KLGO-update-x-drive.log')  # No retry after error, then success.
     # process_park('data/Logs/2018-10-25_22-00-02-KLGO-update-x-drive.log')  # retrying... Then stats (successful retry on last file))
-    process_park('data/Logs/2018-10-17_22-00-13-DENA-update-x-drive.log')
+    #   process_park('data/Logs/2018-10-17_22-00-13-DENA-update-x-drive.log')
     #process_park('data/Logs/2018-10-10_22-00-04-DENA-update-x-drive.log')
     #process_park('data/Logs/2018-10-16_22-00-03-KLGO-update-x-drive.log')
     #process_park('data/Logs/2018-10-11_22-00-03-DENA-update-x-drive.log')
