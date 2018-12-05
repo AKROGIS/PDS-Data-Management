@@ -1,9 +1,9 @@
-__author__ = 'RESarwas'
-
+from __future__ import absolute_import, division, print_function, unicode_literals
+import datetime
+import json
 import sqlite3
 # import ssl
-import json
-
+import urlparse
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
 
@@ -18,36 +18,78 @@ class SyncHandler(BaseHTTPRequestHandler):
             "\tGET with /help for this message\n"
 
     def do_GET(self):
-        if self.path == '/summary':
+        path_parts = urlparse.urlparse(self.path)
+        params = urlparse.parse_qs(path_parts.query)
+        sql_params = []
+        if path_parts.path == '/summary':
             sql = """
                 SELECT l.date,
-                max(sf.total) as files_scanned, max(sd.total) as dirs_scanned,
-                max(sf.copied) as files_copied, max(sf.extra) as files_removed,
-                max(sb.copied) as bytes_copied, max(sb.extra) as bytes_removed,
-                sum(e.count_errors) as total_errors,
-                count(l1.park) as count_complete,
-                count(l2.park) as count_incomplete,
-                count(l3.park) as count_unfinished
-                from logs as l
-                left join stats as sf on l.log_id = sf.log_id and sf.stat = 'files' AND l.park <> 'DENA'
-                left join stats as sd on l.log_id = sd.log_id and sd.stat = 'dirs' AND l.park <> 'DENA'
-                left join stats as st on l.log_id = st.log_id and st.stat = 'times' AND l.park <> 'DENA'
-                left join stats as sb on l.log_id = sb.log_id and sb.stat = 'bytes' AND l.park <> 'DENA'
-                left join logs as l1 on l.log_id = l1.log_id and l1.finished = 1
-                left join logs as l2 on l.log_id = l2.log_id and l2.finished = 0
-                left join logs as l3 on l.log_id = l3.log_id and l3.finished IS NULL
-                left join (select log_id, count(*) as count_errors from errors group by log_id) as e on l.log_id = e.log_id
-                where l.date = (SELECT max(date) from logs)
+                MAX(sf.total) AS files_scanned, MAX(sd.total) AS dirs_scanned,
+                MAX(sf.copied) AS files_copied, MAX(sf.extra) AS files_removed,
+                MAX(sb.copied) AS bytes_copied, MAX(sb.extra) AS bytes_removed,
+                SUM(e.count_errors) AS total_errors,
+                COUNT(l1.park) AS count_complete,
+                COUNT(l2.park) AS count_incomplete,
+                COUNT(l3.park) AS count_unfinished
+                FROM logs AS l
+                LEFT JOIN stats AS sf ON l.log_id = sf.log_id and sf.stat = 'files' AND l.park <> 'DENA'
+                LEFT JOIN stats AS sd ON l.log_id = sd.log_id and sd.stat = 'dirs' AND l.park <> 'DENA'
+                LEFT JOIN stats AS st ON l.log_id = st.log_id and st.stat = 'times' AND l.park <> 'DENA'
+                LEFT JOIN stats AS sb ON l.log_id = sb.log_id and sb.stat = 'bytes' AND l.park <> 'DENA'
+                LEFT JOIN logs AS l1 ON l.log_id = l1.log_id and l1.finished = 1
+                LEFT JOIN logs AS l2 ON l.log_id = l2.log_id and l2.finished = 0
+                LEFT JOIN logs AS l3 ON l.log_id = l3.log_id and l3.finished IS NULL
+                LEFT JOIN (SELECT log_id, COUNT(*) AS count_errors FROM errors GROUP BY log_id) AS e ON l.log_id = e.log_id
+                WHERE l.date = (SELECT MAX(date) FROM logs)
                 GROUP BY l.date;
             """
+            if 'date' in params and len(params['date']) == 1:
+                date = params['date'][0]
+                date = self.sanitize_date(date)
+                if date:
+                    sql = sql.replace('WHERE l.date = (SELECT MAX(date) FROM logs)','WHERE l.date = ?')
+                    sql_params = [date]
+                else:
+                    self.err_response('Bad date request')
+                    return
             with sqlite3.connect(self.db_name) as db:
                 try:
-                    resp = self.db_get_one(db, sql)
+                    resp = self.db_get_one(db, sql, sql_params)
                     self.std_response(resp)
                 except Exception as ex:
                     self.err_response(ex.message)
 
-        elif self.path == '/help':
+        elif path_parts.path == '/parks':
+            sql = """
+                SELECT l.park, l.date, l.finished,
+                COALESCE(e.count_errors, 0) AS count_errors,
+                sf.copied AS files_copied, sf.extra AS files_removed, sf.total AS files_scanned,
+                st.copied AS time_copying, st.extra AS time_scanning, sb.copied AS bytes_copied
+                FROM logs AS l
+                LEFT JOIN stats AS sf ON l.log_id = sf.log_id and sf.stat = 'files'
+                LEFT JOIN stats AS st ON l.log_id = st.log_id and st.stat = 'times'
+                LEFT JOIN stats AS sb ON l.log_id = sb.log_id and sb.stat = 'bytes'
+                LEFT JOIN (select log_id, COUNT(*) AS count_errors FROM errors group by log_id) AS e ON l.log_id = e.log_id
+                WHERE l.date = (SELECT MAX(date) FROM logs)
+                ORDER BY l.park;
+            """
+            if 'date' in params and len(params['date']) == 1:
+                date = params['date'][0]
+                date = self.sanitize_date(date)
+                if date:
+                    sql = sql.replace('WHERE l.date = (SELECT MAX(date) FROM logs)','WHERE l.date = ?')
+                    sql_params = [date]
+                else:
+                    self.err_response('Bad date request')
+                    return
+            with sqlite3.connect(self.db_name) as db:
+                try:
+                    resp = self.db_get_rows(db, sql, sql_params)
+                    self.std_response(resp)
+                except Exception as ex:
+                    self.err_response(ex.message)
+
+        elif path_parts.path == '/help':
             self.std_response({'help': self.usage})
         else:
             self.err_response(self.usage)
@@ -73,23 +115,32 @@ class SyncHandler(BaseHTTPRequestHandler):
         if self.path == '/sync':
             self.err_response("not implemented")
 
-    def db_get_rows(self, db, sql, header=True):
+    def db_get_rows(self, db, sql, params, header=True):
         cursor = db.cursor()
-        rows = cursor.execute(sql).fetchall()
+        rows = cursor.execute(sql, params).fetchall()
         if header:
             return [[item[0] for item in cursor.description]] + rows
         else:
             return rows
 
-    def db_get_one(self, db, sql):
+    def db_get_one(self, db, sql,params=[]):
         cursor = db.cursor()
-        row = cursor.execute(sql).fetchone()
+        row = cursor.execute(sql, params).fetchone()
         header = [item[0] for item in cursor.description]
         # types = [item[1] for item in cursor.description]
         results = {}
-        for i in range(len(row)):
-            results[header[i]] = row[i]
+        if row:
+            for i in range(len(row)):
+                results[header[i]] = row[i]
         return results
+
+
+    def sanitize_date(self, s):
+        try:
+            date = datetime.datetime.strptime(s,'%Y-%m-%d')
+        except ValueError:
+            return None
+        return date.strftime('%Y-%m-%d')
 
 
 # Next line is for an insecure (http) service
