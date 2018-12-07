@@ -89,6 +89,20 @@ class SyncHandler(BaseHTTPRequestHandler):
                 except Exception as ex:
                     self.err_response(ex.message)
 
+        elif path_parts.path == '/dates':
+            sql = """
+                SELECT
+                MIN(date) as first_date,
+                MAX(date) as last_date
+                FROM logs;
+            """
+            with sqlite3.connect(self.db_name) as db:
+                try:
+                    resp = self.db_get_one(db, sql)
+                    self.std_response(resp)
+                except Exception as ex:
+                    self.err_response(ex.message)
+
         elif path_parts.path == '/help':
             self.std_response({'help': self.usage})
         else:
