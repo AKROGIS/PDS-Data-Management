@@ -7,15 +7,17 @@
 	<!-- This page was adapted from a template at html5-templates.com -->
     <link rel="canonical" href="https://html5-templates.com/" />
     <title>Robocopy Status</title>
-    <meta name="description" content="Status report on the region to park GIS robocopy.">
+	<meta name="description" content="Status report on the region to park GIS robocopy.">
+	<!--
 	<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
 	<link rel="stylesheet" href="style.css">
+	-->
     <script defer src="script.js"></script>
 </head>
 
 <body>
 	<header>
-		<div id="logo"><img src="./logo.png">NPS Alaska GIS</div>
+		<div id="logo"><img src="./logo.png" alt="Logo for AKRO GIS Team" height="80" width="80">NPS Alaska GIS</div>
 		<nav>
 			<ul class="pure-menu pure-menu-horizontal pure-menu-list">
 				<li class="pure-menu-item"><a href="/" class="pure-menu-link">Home</a></li>
@@ -30,12 +32,30 @@
 	</section>
 	<section id="pageContent">
 		<main role="main">
-			<article>
-				<h2 id='h2'>Stet facilis ius te</h2>
-				<p id="p2">Lorem ipsum dolor sit amet, nonumes voluptatum mel ea, cu case ceteros cum. Novum commodo malorum vix ut. Dolores consequuntur in ius, sale electram dissentiunt quo te. Cu duo omnes invidunt, eos eu mucius fabellas. Stet facilis ius te, quando voluptatibus eos in. Ad vix mundi alterum, integre urbanitas intellegam vix in.</p>
+			<article id=summary>
+				<h2 id='summary_heading'>Summary</h2>
+				<p id=summary_fail></p>
+				<div id=summary_card>
+					<span id=summary_date></span>
+					<p>Ran Robocopy on <span id='count_total_parks'>?</span> Parks.  See details below.</p>
+					<dl>
+						<dt>Scanned</dt>
+						<dd><span id='files_scanned'>?</span> files in <span id='dirs_scanned'>?</span> folders</dd>
+						<dt>Copied</dt>
+						<dd><span id='files_copied'>?</span> files (<span id='bytes_copied'>? Bytes</span>)</dd>
+						<dt>Removed</dt>
+						<dd><span id='files_removed'>?</span> files (<span id='bytes_removed'>? Bytes</span>)</dd>
+						<dt>Issues</dt>
+						<dd>
+							<span id='no_issues'>No Issues.</span>
+							<span id='summary_incomplete' hidden><span id='count_not_finished'>?</span> Parks did not finish. </span>
+							<span id='summary_errors' hidden><span id='total_errors'>?</span> Errors encountered.</span>
+						</dd>
+					</dl>
+				</div>
 			</article>
 			<article>
-				<h2>Illud mollis moderatius</h2>
+				<h2 id='h2_test'>Illud mollis moderatius</h2>
 				<p>Eum facete intellegat ei, ut mazim melius usu. Has elit simul primis ne, regione minimum id cum. Sea deleniti dissentiet ea. Illud mollis moderatius ut per, at qui ubique populo. Eum ad cibo legimus, vim ei quidam fastidii.</p>
 			</article>
 			<article>

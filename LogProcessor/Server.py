@@ -23,7 +23,7 @@ class SyncHandler(BaseHTTPRequestHandler):
         sql_params = []
         if path_parts.path == '/summary':
             sql = """
-                SELECT l.date,
+                SELECT l.date AS summary_date,
                 MAX(sf.total) AS files_scanned, MAX(sd.total) AS dirs_scanned,
                 MAX(sf.copied) AS files_copied, MAX(sf.extra) AS files_removed,
                 MAX(sb.copied) AS bytes_copied, MAX(sb.extra) AS bytes_removed,
