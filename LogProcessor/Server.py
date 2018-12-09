@@ -103,6 +103,34 @@ class SyncHandler(BaseHTTPRequestHandler):
                 except Exception as ex:
                     self.err_response(ex.message)
 
+        elif path_parts.path == '/plot1':
+            sql = """
+                SELECT l.park,
+                COALESCE(round(1.0*sf.total/st.extra, 1), 0) AS scan_speed,
+                COALESCE(round(sb.copied/st.copied/1000.0, 1), 0) AS copy_speed
+                FROM logs AS l
+                LEFT JOIN stats AS sf ON l.log_id = sf.log_id and sf.stat = 'files'
+                LEFT JOIN stats AS st ON l.log_id = st.log_id and st.stat = 'times'
+                LEFT JOIN stats AS sb ON l.log_id = sb.log_id and sb.stat = 'bytes'
+                WHERE l.date = (SELECT MAX(date) FROM logs)
+                ORDER BY l.park;
+            """
+            if 'date' in params and len(params['date']) == 1:
+                date = params['date'][0]
+                date = self.sanitize_date(date)
+                if date:
+                    sql = sql.replace('WHERE l.date = (SELECT MAX(date) FROM logs)','WHERE l.date = ?')
+                    sql_params = [date]
+                else:
+                    self.err_response('Bad date request')
+                    return
+            with sqlite3.connect(self.db_name) as db:
+                try:
+                    resp = self.db_get_rows(db, sql, sql_params, False)
+                    self.std_response(resp)
+                except Exception as ex:
+                    self.err_response(ex.message)
+
         elif path_parts.path == '/help':
             self.std_response({'help': self.usage})
         else:

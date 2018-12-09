@@ -12,7 +12,8 @@
 	<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
 	<link rel="stylesheet" href="style.css">
 	-->
-    <script defer src="script.js"></script>
+	<script defer src="script.js"></script>
+	<script defer src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 
 <body>
@@ -32,12 +33,12 @@
 	</section>
 	<section id="pageContent">
 		<main role="main">
-			<article id=summary>
+			<article id="summary">
 				<h2 id='summary_heading'>Summary</h2>
-				<p id=summary_fail></p>
-				<div id=summary_card>
+				<p id="summary_fail"></p>
+				<div id="summary_card">
 					<button id="previous_date" data-limit="" data-destination="" aria-label="previous date" onclick=previous_date()><<</button>
-					<span id=summary_date></span>
+					<span id="summary_date"></span>
 					<button id="next_date" data-limit="" data-destination="" aria-label="next date" onclick=next_date()>>></button>
 					<p>Ran Robocopy on <span id='count_total_parks'>?</span> Parks.  See details below.</p>
 					<dl>
@@ -56,17 +57,14 @@
 					</dl>
 				</div>
 			</article>
-			<article>
-				<h2 id='h2_test'>Illud mollis moderatius</h2>
+			<article id="park_details">
+				<h2 id="park_heading">Park Details</h2>
+				<button id="show_graph" onclick=plot_parks1()>plot</button>
 				<p>Eum facete intellegat ei, ut mazim melius usu. Has elit simul primis ne, regione minimum id cum. Sea deleniti dissentiet ea. Illud mollis moderatius ut per, at qui ubique populo. Eum ad cibo legimus, vim ei quidam fastidii.</p>
 			</article>
-			<article>
-				<h2>Ex ignota epicurei quo</h2>
-				<p>Quo debet vivendo ex. Qui ut admodum senserit partiendo. Id adipiscing disputando eam, sea id magna pertinax concludaturque. Ex ignota epicurei quo, his ex doctus delenit fabellas, erat timeam cotidieque sit in. Vel eu soleat voluptatibus, cum cu exerci mediocritatem. Malis legere at per, has brute putant animal et, in consul utamur usu.</p>
-			</article>
-			<article>
-				<h2>His at autem inani volutpat</h2>
-				<p>Te has amet modo perfecto, te eum mucius conclusionemque, mel te erat deterruisset. Duo ceteros phaedrum id, ornatus postulant in sea. His at autem inani volutpat. Tollit possit in pri, platonem persecuti ad vix, vel nisl albucius gloriatur no.</p>
+			<article id="graphs">
+				<h2 id="park_heading">Graphs</h2>
+				<div id="graph_div"></div>
 			</article>
 		</main>
 		<aside>

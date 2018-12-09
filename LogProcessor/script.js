@@ -149,6 +149,41 @@ function is_valid_date(date) {
 	return date !== null;
 }
 
+function plot_2bars(x, l1, y1, l2, y2) {
+	var trace1 = {
+		x: x,
+		y: y1,
+		name: l1,
+		type: 'bar'
+	};
+
+	var trace2 = {
+		x: x,
+		y: y2,
+		name: l2,
+		type: 'bar'
+	};
+	var layout = {barmode: 'group'};
+	Plotly.newPlot("graph_div", [trace1, trace2], layout);
+}
+function unpack(rows, key) {
+	return rows.map(function(row) { return row[key]; });
+}
+
+function plot1(data) {
+	plot_2bars(
+		unpack(data,0),
+		'Copy Speed (kB/s)',
+		unpack(data,2),
+		'Scan Speed (files/s)',
+		unpack(data,1)
+	)
+}
+
+function get_plot_data_fail(err) {
+	console.log(err)
+}
+
 // ===========
 // DOM Events
 // ===========
@@ -161,6 +196,12 @@ function next_date() {
 function previous_date() {
 	var destination = document.getElementById('previous_date').dataset.destination;
 	location.href = UpdateQueryString('date', destination);
+}
+
+function plot_parks1() {
+	var date = document.getElementById('summary_date').textContent;
+	var url = '/robodata/plot1?date=' + date;
+	getJSON(url, plot1, get_plot_data_fail)
 }
 
 // Get data from the services and update the page
