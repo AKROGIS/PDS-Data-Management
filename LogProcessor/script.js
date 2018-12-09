@@ -16,6 +16,12 @@ function humanFileSize(bytes, si) {
     return bytes.toFixed(1)+' '+units[u];
 }
 
+//rounds a number to a specified number of decimal digits
+//credit: http://www.jacklmoore.com/notes/rounding-in-javascript/
+function round(value, decimals) {
+	return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+  }
+
 // Adds or updates the parameter in a query string
 // credit: https://stackoverflow.com/a/11654596
 function UpdateQueryString(key, value, url) {
@@ -82,25 +88,75 @@ function post_summary(data) {
 	document.getElementById('bytes_removed').textContent = humanFileSize(data['bytes_removed'],true);
 	var count_not_finished = data['count_incomplete'] + data['count_unfinished'];
 	var count_total_parks = data['count_complete'] + count_not_finished;
-	var total_errors = data['total_errors']
+	var total_errors = data['total_errors'] || 0;
 	var issues = total_errors > 0 || count_not_finished > 0;
 	document.getElementById('count_total_parks').textContent = count_total_parks;
 	document.getElementById('count_not_finished').textContent = count_not_finished;
 	if (issues) {
 		document.getElementById('no_issues').hidden = true;
+		if (total_errors == 0) {
+			document.getElementById('summary_card').classList.replace('nominal', 'warning');
+		} else {
+			document.getElementById('summary_card').classList.replace('nominal', 'error');
+		}
 	}
 	if (count_not_finished > 0) {
 		document.getElementById('summary_incomplete').hidden = false;
-		document.getElementById('summary_card').style.cssText = 'background-color: #ffffdd;';;
 	}
 	if (total_errors > 0) {
 		document.getElementById('summary_errors').hidden = false;
-		document.getElementById('summary_card').style.cssText = 'background-color: #ffdddd;';;
 	}
 	fix_button_state();
 }
 
-// Success callback for adding date limitsto the web page
+// Success callback for adding park details to the web page
+function post_park_details(data) {
+	//["park","date","finished","count_errors","files_copied","files_removed","files_scanned","time_copying","time_scanning","bytes_copied"]
+	//Ignore the first row (header), assume there are no more then 20 parks
+	html = '';
+	data.slice(1, 20).forEach((row) => {
+		var park = row[0];
+		var bytes_copied = row[9];
+		var size_copied = humanFileSize(bytes_copied,true);
+		var time_copying = row[7];
+		var copy_speed = round(bytes_copied/time_copying/1000.0,1);
+		var copy_text = time_copying == 0 ? 'Nothing copied.' : `${size_copied} in ${time_copying} seconds => ${copy_speed} kB/second`;
+		var files_scanned = row[6];
+		var time_scanning = row[8];
+		var scan_speed = round(files_scanned/time_scanning,1);
+		var files_removed = row[5];
+		var finished = row[2];
+		var count_errors = row[3];
+		var status = count_errors == 0 ? (finished == 1 ? 'nominal' : 'warning') : 'error';
+		var error_str = count_errors == 0 ? '' : `${count_errors} Errors.`;
+		var finish_str = finished == 1 ? '' : 'Robocopy did not finish (no timing statistics).';
+		var issues = 'No Issues.';
+		if (error_str == '' && finish_str != '') {
+			issues = finish_str;
+		} else if (error_str != '' && finish_str == '') {
+			issues = error_str;
+		} else if (error_str != '' && finish_str != '') {
+			issues = error_str + ' ' + finish_str;
+		}
+		var card_str = `
+			<div class='card ${status}'>
+				<h3>${park}</h3>
+				<dt>Copying</dt>
+				<dd>${copy_text}</dd>
+				<dt>Scanned</dt>
+				<dd>${files_scanned} files in ${time_scanning} seconds => ${scan_speed} files/second</dd>
+				<dt>Removed</dt>
+				<dd>${files_removed} files</dd>
+				<dt>Issues</dt>
+				<dd>${issues}</dd>
+			</div>
+		`
+		html += card_str
+	});
+	document.getElementById('park_cards').innerHTML = html;
+}
+
+// Success callback for adding date limits to the web page
 function post_dates(data) {
 	document.getElementById('previous_date').dataset.limit = data['first_date'];
 	document.getElementById('next_date').dataset.limit = data['last_date'];
@@ -116,6 +172,13 @@ function summary_failed(message) {
 	} else {
 		ele.textContent = message;
 	}
+	ele.style.cssText = 'color: #990000; background-color: #ffdddd;';
+}
+
+// Error callback for adding park details error to the web page
+function parks_failed(message) {
+	ele = document.getElementById('parks_fail');
+	ele.textContent = message;
 	ele.style.cssText = 'color: #990000; background-color: #ffdddd;';
 }
 
@@ -208,13 +271,14 @@ function plot_parks1() {
 function get_data() {
 	let params = new URLSearchParams(document.location.search.substring(1));
 	let date = params.get("date");
-	var url = '/robodata/summary';
+	var query = '';
 	if (is_valid_date(date)) {
-		url += '?date=' + date;
+		query += '?date=' + date;
 	}
-	getJSON(url, post_summary, summary_failed)
+	getJSON('/robodata/summary' + query, post_summary, summary_failed)
 	//TODO: if date not provided, check if returned date is within 24 hours, otherwise we have a problem
 	getJSON('/robodata/dates', post_dates)
+	getJSON('/robodata/parks' + query, post_park_details, parks_failed)
 }
 
 get_data();

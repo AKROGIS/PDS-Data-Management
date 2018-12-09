@@ -8,10 +8,8 @@
     <link rel="canonical" href="https://html5-templates.com/" />
     <title>Robocopy Status</title>
 	<meta name="description" content="Status report on the region to park GIS robocopy.">
-	<!--
 	<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
 	<link rel="stylesheet" href="style.css">
-	-->
 	<script defer src="script.js"></script>
 	<script defer src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
@@ -35,8 +33,8 @@
 		<main role="main">
 			<article id="summary">
 				<h2 id='summary_heading'>Summary</h2>
-				<p id="summary_fail"></p>
-				<div id="summary_card">
+				<p id="summary_fail" class="error"></p>
+				<div id="summary_card" class="nominal">
 					<button id="previous_date" data-limit="" data-destination="" aria-label="previous date" onclick=previous_date()><<</button>
 					<span id="summary_date"></span>
 					<button id="next_date" data-limit="" data-destination="" aria-label="next date" onclick=next_date()>>></button>
@@ -59,8 +57,9 @@
 			</article>
 			<article id="park_details">
 				<h2 id="park_heading">Park Details</h2>
+				<p id="parks_fail"></p>
+				<div id='park_cards'></div>
 				<button id="show_graph" onclick=plot_parks1()>plot</button>
-				<p>Eum facete intellegat ei, ut mazim melius usu. Has elit simul primis ne, regione minimum id cum. Sea deleniti dissentiet ea. Illud mollis moderatius ut per, at qui ubique populo. Eum ad cibo legimus, vim ei quidam fastidii.</p>
 			</article>
 			<article id="graphs">
 				<h2 id="park_heading">Graphs</h2>
