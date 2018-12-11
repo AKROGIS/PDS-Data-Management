@@ -182,7 +182,7 @@ def process_error(file_handle, filename, line, line_num):
 
 
 def process_park(file_name):
-    summary_header = '               Total    Copied   Skipped  Mismatch    FAILED    Extras\r\n'
+    summary_header = 'Total    Copied   Skipped  Mismatch    FAILED    Extras'
     error_sentinal = ' ERROR '
     finished_sentinal = '   Ended : '
     paused_sentinal = '    Hours : Paused at '
@@ -205,7 +205,7 @@ def process_park(file_name):
                     results['errors'].append(error)
                     if error['failed'] is not None:
                         continue
-                if line == summary_header:
+                if line.strip() == summary_header:
                     summary, line_num = process_summary(file_handle, file_name, line_num)
                     results['stats'] = summary
                 elif line.startswith(finished_sentinal):
