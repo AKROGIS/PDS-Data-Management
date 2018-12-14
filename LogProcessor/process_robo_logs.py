@@ -308,6 +308,9 @@ def main(db_name, log_folder):
     with sqlite3.connect(db_name) as conn:
         for filename in filelist:
             try:
+                no_errors = True
+                no_fails = True
+                no_mismatch = True
                 logger.info("Processing %s", filename)
                 log = process_park(filename)
                 # TODO: Move file into archive directory
@@ -334,6 +337,7 @@ def main(db_name, log_folder):
                             if attrib not in error:
                                 logger.error('Bad errors object in log file %s, missing: %s in %s', filename, attrib, str(error))
                                 continue
+                        no_errors = False
                     try:
                         db_write_errors(conn, log['errors'])
                     except sqlite3.Error as ex:
@@ -352,6 +356,10 @@ def main(db_name, log_folder):
                         obj['log'] = log_id
                         obj['stat'] = stat
                         stats.append(obj)
+                        if obj['failed']:
+                            no_fails = False
+                        if obj['mismatch']:
+                            no_mismatch = False
                     try:
                         db_write_stats(conn, stats)
                     except sqlite3.Error as ex:
@@ -363,11 +371,9 @@ def main(db_name, log_folder):
 
                 # In daily processing, I want an error email when there are issues in a log file
                 #  currently even recovered errors send an error
-                # TODO: uncomment after backlog is parsed
-#                if 'errors' in log or ('stats' in log and (
-#                        log['stats']['files']['failed'] or log['stats']['dirs']['failed'] or log['stats']['bytes']['failed'] or
-#                        log['stats']['files']['mismatch'] or log['stats']['dirs']['mismatch'] or log['stats']['bytes']['mismatch'])):
-#                    logger.warning('The log file %s has errors', filename)
+                if not no_errors or not no_fails or not no_mismatch:
+                    print(no_errors, no_fails, no_mismatch)
+                    logger.warning('The log file %s has errors', filename)
 
             except Exception as ex:
                 # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
