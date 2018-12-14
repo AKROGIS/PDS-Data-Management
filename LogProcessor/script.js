@@ -263,7 +263,7 @@ function previous_date() {
 
 function plot_parks1() {
 	var date = document.getElementById('summary_date').textContent;
-	var url = '/robodata/plot1?date=' + date;
+	var url = '//inpakrovmais:8080/plot1?date=' + date;
 	getJSON(url, plot1, get_plot_data_fail)
 }
 
@@ -275,10 +275,10 @@ function get_data() {
 	if (is_valid_date(date)) {
 		query += '?date=' + date;
 	}
-	getJSON('/robodata/summary' + query, post_summary, summary_failed)
+	getJSON('//inpakrovmais:8080/summary' + query, post_summary, summary_failed)
 	//TODO: if date not provided, check if returned date is within 24 hours, otherwise we have a problem
-	getJSON('/robodata/dates', post_dates)
-	getJSON('/robodata/parks' + query, post_park_details, parks_failed)
+	getJSON('//inpakrovmais:8080/dates', post_dates)
+	getJSON('//inpakrovmais:8080/parks' + query, post_park_details, parks_failed)
 }
 
 get_data();

@@ -157,6 +157,10 @@ class SyncHandler(BaseHTTPRequestHandler):
         if self.path == '/sync':
             self.err_response("not implemented")
 
+    def end_headers (self):
+        self.send_header('Access-Control-Allow-Origin', '*')
+        BaseHTTPRequestHandler.end_headers(self)
+
     def db_get_rows(self, db, sql, params, header=True):
         cursor = db.cursor()
         rows = cursor.execute(sql, params).fetchall()
