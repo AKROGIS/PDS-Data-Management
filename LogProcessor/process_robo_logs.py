@@ -379,6 +379,37 @@ def main(db_name, log_folder):
                 # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
                 logger.error('Unexpected exception processing log file: %s, exception: %s',
                     filename, ex)
+    clean_folder(log_folder)
+
+def clean_folder(folder):
+    year = datetime.date.today().year
+    archive = str(year) + 'archive'
+    archive_path = os.path.join(folder, archive)
+    if not os.path.exists(archive_path):
+        os.mkdir(archive_path)
+    filelist = glob.glob(os.path.join(folder, '*-update-x-drive.log'))
+    filelist += glob.glob(os.path.join(folder, '*-update-x-drive-output.log'))
+    filelist += glob.glob(os.path.join(folder, '*-robo-morning-kill.log'))
+    for filename in filelist:
+        try:
+            new_name = os.path.join(archive_path, os.path.basename(filename))
+            os.rename(filename,new_name)
+        except Exception as ex:
+            # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
+            logger.error('Unexpected exception moving log file: %s to archive %s, exception: %s',
+                filename, new_name, ex)
+    # These log files do not have a date stamp, so be sure to remove the previous copy
+    filelist = glob.glob(os.path.join(folder, '*-cmd.log'))
+    for filename in filelist:
+        try:
+            new_name = os.path.join(archive_path, os.path.basename(filename))
+            if os.path.exists(new_name):
+                os.remove(new_name)
+            os.rename(filename,new_name)
+        except Exception as ex:
+            # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
+            logger.error('Unexpected exception moving log file: %s to archive %s, exception: %s',
+                filename, new_name, ex)
 
 
 def clean(db_name):
