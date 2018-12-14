@@ -6,15 +6,16 @@ import sqlite3
 import urlparse
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
+LOG_DB = 'E:/XDrive/Logs/logs.db'
 
 class SyncHandler(BaseHTTPRequestHandler):
-    db_name = 'data/logs.db'
+    db_name = LOG_DB
     name = "Xdrive RoboCopy Log Details"
     usage = "Usage:\n" + \
-            "\tPOST with /sync with a zip containing the protocol and CSV files\n" + \
-            "\tGET with /dir to list the databases\n" + \
-            "\tGET with /load to show a form to upload a zip file\n" + \
-            "\tGET with /error to list the error log file\n" +\
+            "\tGET with /summary or summary?date=YYYY-MM-DD to get the log summary\n" + \
+            "\tGET with /parks or parks?date=YYYY-MM-DD to get the log details for all parks\n" + \
+            "\tGET with /plot1 or plot1?date=YYYY-MM-DD to get data for a speed comparison of all parks\n" + \
+            "\tGET with /dates to get the min and max date of the logs in the database\n" +\
             "\tGET with /help for this message\n"
 
     def do_GET(self):
