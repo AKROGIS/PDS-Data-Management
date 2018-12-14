@@ -25,8 +25,7 @@ config = {
             'class':     'logging.FileHandler',
             'level':     'INFO',
             'formatter': 'detailed',
-            # note to self, want to move this to args if possible
-            'filename':  'LogProcessor.log'
+            'filename':  'E:/Xdrive/Logs/LogProcessor.log'
         },
         'email': {
             'class':    'BufferingSMTPHandler.BufferingSMTPHandler',  # Bundle 100 messages into a single email
@@ -36,12 +35,12 @@ config = {
             'mailhost': 'mailer.itc.nps.gov',
             'fromaddr': 'regan_sarwas@nps.gov',
             'toaddrs':  ['regan_sarwas@nps.gov'],
-            'subject':  'Error running Robocopy Log Processer'
+            'subject':  'Error running Robocopy Log Processor'
         }
     },
     'root': {
         'level': 'NOTSET',
-        'handlers': ['console', 'file']  # Do not send emails when testing
-        # 'handlers': ['console', 'file', 'email']  # Send emails in production
+        # 'handlers': ['console', 'file']  # Do not send emails when testing
+        'handlers': ['console', 'file', 'email']  # Send emails in production
     }
 }

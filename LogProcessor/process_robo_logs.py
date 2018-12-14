@@ -14,6 +14,8 @@ import time
 import logging.config
 import config_logger
 
+LOG_ROOT = 'E:/XDrive/Logs'
+
 logging.config.dictConfig(config_logger.config)
 # Comment the next line during testing, uncomment in production
 # logging.raiseExceptions = False # Ignore errors in the logging system
@@ -526,19 +528,29 @@ group by l.park order by l.park;
 
 
 if __name__ == '__main__':
+    try:
+        db = LOG_ROOT + '/logs.db'
+        folder = LOG_ROOT
+        main(db, folder)
+        #test_queries(db)
+    except Exception as ex:
+        # overly broad ecception catching.  I don't care what happened, I need to log the exception for debugging
+        logger.error('Unexpected exception: %s', ex)
+
     #db_testing(':memory:')
-    clean('data/logs.db')
-    main('data/logs.db', 'data/Logs')
+    #clean(db)
     # main('data/logs.db', 'data/Logs/old')
     # test_queries('data/logs.db')
     #process_park('data/Logs/2018-11-22_22-00-02-KLGO-update-x-drive.log')
 
+    # TODO: read head of \\inpakrovmdist\GISData2\GIS\ThemeMgr\PDS_ChangeLog.txt to get last update
     # TODO: Option to clear/reprocess  a given day or day/park
     # TODO: Add command line options ?
 
     # Weird Files:
     # Parsing errors:
-    #   018-10-22_22-00-02-KLGO-update-x-drive.log: line 23 was retying a semaphore error, and then printed stats
+    #   2018-10-22_22-00-02-KLGO-update-x-drive.log: line 23 was retying a semaphore error, and then printed stats
+    #   2018-10-25_22-00-02-KLGO-update-x-drive.log: line 720 was retying a semaphore error, and then printed stats
     # When robocopy fail file count does not equal my failed error count:
     #     All but the following cases are with error 32 not being counted as a fail by robocopy,
     #     but I count it (a remote file that can't be deleted); mostly this is lock files at DENA,
