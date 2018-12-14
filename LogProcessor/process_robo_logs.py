@@ -1,4 +1,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
+"""
+Reads the log file from robo copy and summerizes the log in a database
+Emails an admin when issues are found in the log file
+"""
+
 import datetime
 import glob
 import logging
@@ -67,11 +72,11 @@ def process_summary_line(line, sentinal, filename, line_num):
     return count_obj
 
 
-def parse_error_line(line, filename, line_num):
+def parse_error_line(line, filename, line_num, error_sentinal):
     code = 0
     message = 'Message not defined'
     try:
-        code = int(line.split(' ERROR ')[1].split()[0])
+        code = int(line.split(error_sentinal)[1].split()[0])
         message = line.split(') ')[1].strip()
     except Exception as ex:
         # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
@@ -80,15 +85,14 @@ def parse_error_line(line, filename, line_num):
     return code, message
 
 
-def process_error(file_handle, filename, line, line_num):
-    #TODO: Always check for error in new line
-    error_sentinal = ' ERROR '
-#    print(line_num, '|'+line+'|')
-    code, message = parse_error_line(line, filename, line_num)
+def process_error(file_handle, filename, line, line_num, error_sentinal):
+    code, message = parse_error_line(line, filename, line_num, error_sentinal)
+    if not code:
+        logger.error('Unable to get the error code from an error line, file: %s, line#: %d, line: %s',
+                    filename, line_num, line)
     name = 'Name of error not defined'
     failed = None # True if all the retries failed, False if retry succeeds, None if unable to determine due to unexpected input
     done = False
-#    last_line_num = None # used to check for infinite loops
     while not done and code:
         try:
             # read name of error
@@ -96,35 +100,19 @@ def process_error(file_handle, filename, line, line_num):
             # but most text editors interpret as two lines
             line = file_handle.next()
             line_num += 1
-#            print(line_num, '|'+line+'|')
             name = line.strip()
-#            print('name |'+name+'|')
             # read blank line
-#            line = file_handle.next()
             line_num += 1
-#            print(line_num, '|'+line+'|')
-#            content = line.strip()
-#            print('content |'+content+'|',len(content))
-#            if content:
-#                print('WTF!!!!')
-#                logger.error('Unexpected data on blank line after error in log file: %s, line#: %d, line: %s',
-#                    filename, line_num, line)
-#                done = True
-#                continue
             # read retry line; could be blank if followed with RETRY FAILED
             line = file_handle.next()
             line_num += 1
-#            print(line_num, '|'+line+'|')
             retry = line.strip()
-#            print('retry |'+retry+'|')
             if retry.endswith('... Retrying...'):
                 # Next line should be a task (skip it), then next line should be the same error, or the retry worked.
                 # The task must be the same as the task before the errror, but there is no way to check it now.
                 line = file_handle.next()
                 line_num += 1
-#                print(line_num, '|'+line+'|')
                 task = line.strip()
-#                print('task |'+task+'|')
                 if not task:
                     logger.error('Unexpected blank line when expecting retry of failed task in log file: %s, line#: %d, line: %s',
                         filename, line_num, line)
@@ -132,25 +120,22 @@ def process_error(file_handle, filename, line, line_num):
                 else:
                     line = file_handle.next()
                     line_num += 1
-#                    print(line_num, '|'+line+'|')
                     if error_sentinal in line:
-                        code, message = parse_error_line(line, filename, line_num)
+                        code, message = parse_error_line(line, filename, line_num, error_sentinal)
                     else:
                         done = True
                         failed = False
                     # repeat while loop
             elif not retry:
-                # blank line is ok, but next line must be ERROR: RETRY LIMIT EXCEEDED.
+                # blank line is ok, but next line must be ERROR: RETRY LIMIT EXCEEDED,
+                #   or what appears to be a blank line(0x0D0D0A (\r\r\n)) - automatic fail (no retry)
+                #   actually anything implies that the error has failed and we are done.
                 line = file_handle.next()
                 line_num += 1
-#                print(line_num, '|'+line+'|')
-                limit = line.strip()
-#                print('limit |'+limit+'|')
-                if limit == 'ERROR: RETRY LIMIT EXCEEDED.':
-                    failed = True
-                else:
-                    logger.error('Unexpected data on blank line after retry in log file: %s, line#: %d, line: %s',
-                        filename, line_num, line)
+                # limit = line.strip()
+                # if limit == 'ERROR: RETRY LIMIT EXCEEDED.' or not limit:
+                #     failed = True
+                failed = True
                 done = True
             else:
                 # Not blank or Retry
@@ -166,18 +151,8 @@ def process_error(file_handle, filename, line, line_num):
             # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue\
             logger.error('Unexpected exception processing error, file: %s, line#: %d, line: %s, exception: %s',
                     filename, line_num, line, ex)
-    """
-                if last_line_num is None:
-                    last_line_num = line_num
-                else:
-                    if last_line_num == line_num:
-                        done = True
-                    else:
-                        last_line_num = line_num
-    """
 
     error = {'code': code, 'failed': failed, 'name': name, 'line_num': line_num, 'message': message}
-#    print(error, line, line_num)
     return error, line, line_num
 
 
@@ -190,8 +165,9 @@ def process_park(file_name):
     results = {}
     basename = os.path.basename(file_name)
     park = basename[20:24]
+    date = basename[:10]
     results['park'] = park
-    results['date'] = basename[:10]
+    results['date'] = date
     results['filename'] = file_name
     results['finished'] = None
     results['errors'] = []
@@ -201,7 +177,7 @@ def process_park(file_name):
             try:
                 line_num += 1
                 if error_sentinal in line:
-                    error, line, line_num = process_error(file_handle, file_name, line, line_num)
+                    error, line, line_num = process_error(file_handle, file_name, line, line_num, error_sentinal)
                     results['errors'].append(error)
                     if error['failed'] is not None:
                         continue
@@ -211,7 +187,7 @@ def process_park(file_name):
                 elif line.startswith(finished_sentinal):
                     results['finished'] = True
                 elif line.startswith(paused_sentinal):
-                    logger.warning('%s: Robo copy not finished', park)
+                    logger.warning('%s on %s: Robo copy not finished (paused then killed)', park, date)
                     results['finished'] = False
             except Exception as ex:
                 # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
@@ -343,7 +319,7 @@ def main(db_name, log_folder):
                         logger.error('The log object for %s is bad; "%s" is missing', filename, item)
                         continue
                 if log['finished'] is None:
-                    logger.error('Unexpected end to logfile %s (not finished or paused)', filename)
+                    logger.warning('%s on %s: Robo copy had to be killed (it was copying a very large file when asked to pause)', log['park'], log['date'])
                 try:
                     log_id = db_write_log(conn, log)
                 except sqlite3.Error as ex:
@@ -381,9 +357,18 @@ def main(db_name, log_folder):
                     except sqlite3.Error as ex:
                         logger.error('Writing stats for log %s to DB; %s', filename, ex)
                 else:
-                    # We do not expect to get stats when robo didn't finish
-                    if log['finished'] or log['finished'] is None:
+                    # We do not expect to get stats when robo didn't finish (finished == False or None)
+                    if log['finished']:
                         logger.error('No stats for log %s', filename)
+
+                # In daily processing, I want an error email when there are issues in a log file
+                #  currently even recovered errors send an error
+                # TODO: uncomment after backlog is parsed
+#                if 'errors' in log or ('stats' in log and (
+#                        log['stats']['files']['failed'] or log['stats']['dirs']['failed'] or log['stats']['bytes']['failed'] or
+#                        log['stats']['files']['mismatch'] or log['stats']['dirs']['mismatch'] or log['stats']['bytes']['mismatch'])):
+#                    logger.warning('The log file %s has errors', filename)
+
             except Exception as ex:
                 # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
                 logger.error('Unexpected exception processing log file: %s, exception: %s',
@@ -472,6 +457,22 @@ order by l.date, l.park, s.stat;
     """
     # Count of logs per day
     q7 = "select date, count(*) from logs group by date order by date;"
+    # When the robocopy fail count does not equal my failed error count
+    q8 = """
+select l.park, l.date, e.count, s.failed from logs as l
+left join (select log_id, count(*) as count from errors where failed group by log_id) as e on e.log_id = l.log_id
+--left join (select log_id, count(*) as count from errors where failed and error_code <> 32 group by log_id) as e on e.log_id = l.log_id
+left join stats as s on l.log_id = s.log_id
+where s.stat = 'files' and s.failed <> e.count
+order by l.date, l.park;
+    """
+    # for logs without a failure, copied + extra times = total time, mismatch and skipped = 0
+    q9 = """
+select l.park, count(*), avg(s.copied), avg(s.extra), avg(s.skipped), avg(failed), avg(s.total), avg(s.copied)+avg(s.extra) from stats as s
+left join logs as l on s.log_id = l.log_id
+where s.stat = 'times' -- and s.log_id in (select log_id from stats where stat = 'bytes' and failed = 0)
+group by l.park order by l.park;
+    """
     # Other query ideas:
     #   Last error by Park
     #   All Errors by Park
@@ -479,7 +480,7 @@ order by l.date, l.park, s.stat;
     #   Speed Comparison by Park, no updates, small, medium and large updates
 
     with sqlite3.connect(db_name) as conn:
-        for q in [q1, q2, q3, q4, q5, q6, q7]:
+        for q in [q1, q2, q3, q4, q5, q6, q7, q8, q9]:
             for row in db_get_rows(conn, q):
                 # error = row[0].split(') ')[1].strip()
                 # code = int(row[0].split(' ERROR ')[1].split()[0])
@@ -489,23 +490,23 @@ order by l.date, l.park, s.stat;
 
 if __name__ == '__main__':
     #db_testing(':memory:')
-    #clean('data/logs.db')
-    #main('data/logs.db', 'data/Logs')
+    clean('data/logs.db')
+    main('data/logs.db', 'data/Logs')
     # main('data/logs.db', 'data/Logs/old')
-    test_queries('data/logs.db')
-    #print(process_park('data/Logs/2018-11-07_22-00-02-KLGO-update-x-drive.log'))
-    #res = process_park('data/Logs/2018-11-17_22-00-02-KLGO-update-x-drive.log')
-    #res = process_park('data/Logs/2018-11-07_22-00-02-KLGO-update-x-drive.log')
-    # process_park('data/Logs/2018-11-20_22-00-02-KLGO-update-x-drive.log')  # No retry after error, then success.
-    # process_park('data/Logs/2018-10-25_22-00-02-KLGO-update-x-drive.log')  # retrying... Then stats (successful retry on last file))
-    #   process_park('data/Logs/2018-10-17_22-00-13-DENA-update-x-drive.log')
-    #process_park('data/Logs/2018-10-10_22-00-04-DENA-update-x-drive.log')
-    #process_park('data/Logs/2018-10-16_22-00-03-KLGO-update-x-drive.log')
-    #process_park('data/Logs/2018-10-11_22-00-03-DENA-update-x-drive.log')
-    #process_park('data/Logs/2018-11-28_22-00-04-DENA-update-x-drive.log')
-    #process_park('data/Logs/2018-10-02_22-00-03-DENA-update-x-drive.log')
+    # test_queries('data/logs.db')
     #process_park('data/Logs/2018-11-22_22-00-02-KLGO-update-x-drive.log')
-    #print(res)
 
     # TODO: Option to clear/reprocess  a given day or day/park
     # TODO: Add command line options ?
+
+    # Weird Files:
+    # Parsing errors:
+    #   018-10-22_22-00-02-KLGO-update-x-drive.log: line 23 was retying a semaphore error, and then printed stats
+    # When robocopy fail file count does not equal my failed error count:
+    #     All but the following cases are with error 32 not being counted as a fail by robocopy,
+    #     but I count it (a remote file that can't be deleted); mostly this is lock files at DENA,
+    #     or files at KLGO after a semaphore (121) error
+    #   2018-11-20_22-00-02-KLGO-update-x-drive.log: line 147, a semaphore (121) error is not retried is not retired, so I call it a fail, robo does not
+    #   2018-11-22_22-00-02-KLGO-update-x-drive.log: Got 357 hard (ERROR: RETRY LIMIT EXCEEDED.) fails (I only couned 351), but robo only counted 76 (and 14 dirs)
+    #   NOME|2018-05-19|150|77
+    #   KOTZ|2018-07-02|9|8
