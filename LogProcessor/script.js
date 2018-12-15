@@ -144,7 +144,7 @@ function post_park_details(data) {
 			<div class='card ${status}'>
 				<h3>${park}</h3>
 				<a href='//inpakrovmais:8080/logfile?park=${park}&date=${date}'>Log file</a>
-				<dt>Copying</dt>
+				<dt>Copied</dt>
 				<dd>${copy_text}</dd>
 				<dt>Scanned</dt>
 				<dd>${files_scanned} files in ${time_scanning} seconds => ${scan_speed} files/second</dd>
