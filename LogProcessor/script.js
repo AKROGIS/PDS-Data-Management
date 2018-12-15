@@ -106,6 +106,7 @@ function post_summary(data) {
 	if (total_errors > 0) {
 		document.getElementById('summary_errors').hidden = false;
 	}
+	document.getElementById('changelog_link').href = 'PDS_ChangeLog.html#' + data['summary_date']
 	fix_button_state();
 }
 
@@ -116,6 +117,7 @@ function post_park_details(data) {
 	html = '';
 	data.slice(1, 20).forEach((row) => {
 		var park = row[0];
+		var date = row[1];
 		var bytes_copied = row[9];
 		var size_copied = humanFileSize(bytes_copied,true);
 		var time_copying = row[7];
@@ -141,6 +143,7 @@ function post_park_details(data) {
 		var card_str = `
 			<div class='card ${status}'>
 				<h3>${park}</h3>
+				<a href='//inpakrovmais:8080/logfile?park=${park}&date=${date}'>Log file</a>
 				<dt>Copying</dt>
 				<dd>${copy_text}</dd>
 				<dt>Scanned</dt>

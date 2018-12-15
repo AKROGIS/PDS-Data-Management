@@ -1,12 +1,14 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 import datetime
 import json
+import os
 import sqlite3
 # import ssl
 import urlparse
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
 LOG_DB = 'E:/XDrive/Logs/logs.db'
+#LOG_DB = r'\\inpakrovmais\XDrive\Logs\logs.db'
 
 class SyncHandler(BaseHTTPRequestHandler):
     db_name = LOG_DB
@@ -40,7 +42,7 @@ class SyncHandler(BaseHTTPRequestHandler):
                 LEFT JOIN logs AS l1 ON l.log_id = l1.log_id and l1.finished = 1
                 LEFT JOIN logs AS l2 ON l.log_id = l2.log_id and l2.finished = 0
                 LEFT JOIN logs AS l3 ON l.log_id = l3.log_id and l3.finished IS NULL
-                LEFT JOIN (SELECT log_id, COUNT(*) AS count_errors FROM errors GROUP BY log_id) AS e ON l.log_id = e.log_id
+                LEFT JOIN (SELECT log_id, COUNT(*) AS count_errors FROM errors where failed GROUP BY log_id) AS e ON l.log_id = e.log_id
                 WHERE l.date = (SELECT MAX(date) FROM logs)
                 GROUP BY l.date;
             """
@@ -70,7 +72,7 @@ class SyncHandler(BaseHTTPRequestHandler):
                 LEFT JOIN stats AS sf ON l.log_id = sf.log_id and sf.stat = 'files'
                 LEFT JOIN stats AS st ON l.log_id = st.log_id and st.stat = 'times'
                 LEFT JOIN stats AS sb ON l.log_id = sb.log_id and sb.stat = 'bytes'
-                LEFT JOIN (select log_id, COUNT(*) AS count_errors FROM errors group by log_id) AS e ON l.log_id = e.log_id
+                LEFT JOIN (select log_id, COUNT(*) AS count_errors FROM errors where failed group by log_id) AS e ON l.log_id = e.log_id
                 WHERE l.date = (SELECT MAX(date) FROM logs)
                 ORDER BY l.park;
             """
@@ -89,6 +91,40 @@ class SyncHandler(BaseHTTPRequestHandler):
                     self.std_response(resp)
                 except Exception as ex:
                     self.err_response(ex.message)
+
+        elif path_parts.path == '/logfile':
+            sql = "SELECT filename FROM logs WHERE date = ? AND park = ?"
+            date = None
+            if 'date' in params and len(params['date']) == 1:
+                date = params['date'][0]
+                date = self.sanitize_date(date)
+            park = None
+            if 'park' in params and len(params['park']) == 1:
+                park = params['park'][0]
+            filename = None
+            if park and date:
+                sql_params = [date, park]
+                with sqlite3.connect(self.db_name) as db:
+                    try:
+                        resp = self.db_get_one(db, sql, sql_params)
+                        if resp and 'filename' in resp:
+                            filename = resp['filename']
+                    except Exception as ex:
+                        self.err_response(ex.message)
+                        return
+            if filename:
+                filename = os.path.basename(filename)
+                folder = os.path.dirname(LOG_DB)
+                archive = date[:4] + 'archive'
+                filename = os.path.join(folder, archive, filename)
+                if os.path.exists(filename):
+                    self.file_response(filename)
+                else:
+                    msg = 'log file {0} not found'.format(filename)
+                    self.err_response(msg)
+            else:
+                msg = 'No log file for date {0}, park {1}'.format(date, park)
+                self.err_response(msg)
 
         elif path_parts.path == '/dates':
             sql = """
@@ -145,6 +181,17 @@ class SyncHandler(BaseHTTPRequestHandler):
         self.send_header('Content-length', len(data))
         self.end_headers()
         self.wfile.write(data)
+
+    def file_response(self, filename):
+        try:
+            f = open(filename, 'rb')
+            self.send_response(200)
+            self.send_header('Content-type',    'text')
+            self.end_headers()
+            self.wfile.write(f.read())
+            f.close()
+        except IOError:
+            self.send_error(404,'File Not Found: {0}'.format(filename))
 
     def err_response(self, message):
         data = json.dumps({'error': message})
