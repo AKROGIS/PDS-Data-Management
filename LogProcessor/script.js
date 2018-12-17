@@ -77,6 +77,12 @@ function getJSON(url, callback, errorback) {
 
 // Success callback for adding summary data to the web page
 function post_summary(data) {
+	if (Object.keys(data).length === 0 && data.constructor === Object) {
+		document.getElementById('summary').hidden = true;
+		document.getElementById('graphs').hidden = true;
+		document.getElementById('summary_fail').hidden = false;
+		return
+	}
 	var attr = Object.getOwnPropertyNames(data);
 	attr.forEach((key) => {
 		var ele = document.getElementById(key);
@@ -106,12 +112,15 @@ function post_summary(data) {
 	if (total_errors > 0) {
 		document.getElementById('summary_errors').hidden = false;
 	}
-	document.getElementById('changelog_link').href = 'PDS_ChangeLog.html#' + data['summary_date']
-	fix_button_state();
+	document.getElementById('changelog_link').href = 'PDS_ChangeLog.html#' + data['page_date']
 }
 
 // Success callback for adding park details to the web page
 function post_park_details(data) {
+	if (data.length === 1) {
+		document.getElementById('park_details').hidden = true;
+		return
+	}
 	//["park","date","finished","count_errors","files_copied","files_removed","files_scanned","time_copying","time_scanning","bytes_copied"]
 	//Ignore the first row (header), assume there are no more then 20 parks
 	html = '';
@@ -159,13 +168,6 @@ function post_park_details(data) {
 	document.getElementById('park_cards').innerHTML = html;
 }
 
-// Success callback for adding date limits to the web page
-function post_dates(data) {
-	document.getElementById('previous_date').dataset.limit = data['first_date'];
-	document.getElementById('next_date').dataset.limit = data['last_date'];
-	fix_button_state();
-}
-
 // Error callback for adding summary error to the web page
 function summary_failed(message) {
 	ele = document.getElementById('summary_fail');
@@ -185,14 +187,13 @@ function parks_failed(message) {
 	ele.style.cssText = 'color: #990000; background-color: #ffdddd;';
 }
 
-// Update the state of the next/previous date buttons
-// called both when date is updated and when the min/max dates are updated.
-function fix_button_state() {
-	var date = document.getElementById('summary_date').textContent;
+// Update the state of the date text and the next/previous date buttons
+function fix_date_button_state(date, min_date, max_date) {
+	document.getElementById('page_date').textContent = date;
 	var previous_button = document.getElementById('previous_date');
 	var next_button = document.getElementById('next_date');
-	var min_date = previous_button.dataset.limit;
-	var max_date = next_button.dataset.limit;
+	previous_button.dataset.limit = min_date;
+	next_button.dataset.limit = max_date;
 
 	//TODO: instantiating a new date with a string is discouraged due to browser differences
 	var next_date = new Date(date);
@@ -205,14 +206,15 @@ function fix_button_state() {
 	var previous_text = previous_date.toISOString().substring(0, 10);
 	previous_button.dataset.destination = previous_text;
 
-	previous_button.disabled = (date <= min_date);
-	next_button.disabled = (max_date <= date);
+	previous_button.hidden = (date <= min_date);
+	next_button.hidden = (max_date <= date);
 }
 
 // Validate a user provided iso date string
-function is_valid_date(date) {
+// Range is open, i.e. min_date and max_date are allowed, if null then no limit
+function is_valid_date(date, min_date, max_date) {
 	//TODO: validate date
-	return date !== null;
+	return date !== null && date !== undefined;
 }
 
 function plot_2bars(x, l1, y1, l2, y2) {
@@ -250,6 +252,13 @@ function get_plot_data_fail(err) {
 	console.log(err)
 }
 
+function get_last_night() {
+	today = new Date()
+	today.setDate(today.getDate() - 1)  //yesterday
+	date = today.toISOString().substring(0,10)
+	return date;
+}
+
 // ===========
 // DOM Events
 // ===========
@@ -265,23 +274,25 @@ function previous_date() {
 }
 
 function plot_parks1() {
-	var date = document.getElementById('summary_date').textContent;
+	var date = document.getElementById('page_date').textContent;
 	var url = '//inpakrovmais:8080/plot1?date=' + date;
 	getJSON(url, plot1, get_plot_data_fail)
 }
 
 // Get data from the services and update the page
-function get_data() {
+function setup_page() {
+	var last_night = get_last_night();
+	var first_night = '2018-01-22'
 	let params = new URLSearchParams(document.location.search.substring(1));
 	let date = params.get("date");
-	var query = '';
-	if (is_valid_date(date)) {
-		query += '?date=' + date;
+	if (!is_valid_date(date, first_night, last_night)) {
+		//TODO: show error, hide everything else and add 'goto last night' button
+		date = last_night
 	}
+	query = '?date=' + date;
+	fix_date_button_state(date, first_night, last_night);
 	getJSON('//inpakrovmais:8080/summary' + query, post_summary, summary_failed)
-	//TODO: if date not provided, check if returned date is within 24 hours, otherwise we have a problem
-	getJSON('//inpakrovmais:8080/dates', post_dates)
 	getJSON('//inpakrovmais:8080/parks' + query, post_park_details, parks_failed)
 }
 
-get_data();
+setup_page();
