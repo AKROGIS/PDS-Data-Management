@@ -1,3 +1,57 @@
-div.nominal {background-color:#ddffdd;}
-div.warning {background-color:#ffffdd;}
-div.error {background-color:#ffdddd;}
+header {
+    background-color:#000000;
+    color:#ffffff;
+    padding:8px;
+    padding-bottom:4px;
+}
+header .title {
+    position: absolute;
+    top: 8px;
+    left: 80px;
+    margin-bottom: 0px;
+}
+header h1 {
+    font-weight: normal;
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
+
+header .subtitle {
+    font-size: 0.8em;
+    margin-top: 0px;
+}
+main {
+    padding: 10px;
+}
+
+#date_control {
+    padding-left:20px;
+}
+
+#page_date {
+    font-size: 3em;
+    vertical-align: middle;
+    margin: 15px;
+}
+
+.card {
+    margin: 10px;
+    padding: 5px;
+    outline-style: solid;
+    outline-width: thin;
+    display: table;
+    box-shadow: 5px 5px 5px #dddddd;
+}
+.nominal {
+    outline-color: green;
+    background-color:#ddffdd;
+}
+.warning {
+    outline-color: rgb(182, 156, 12);
+    background-color:#ffffdd;
+}
+.error {
+    outline-color: #880000;
+    color:#880000;
+    background-color:#ffdddd;
+}

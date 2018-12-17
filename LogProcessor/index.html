@@ -4,8 +4,6 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<!-- This page was adapted from a template at html5-templates.com -->
-    <link rel="canonical" href="https://html5-templates.com/" />
     <title>Robocopy Status</title>
 	<meta name="description" content="Status report on the region to park GIS robocopy.">
 	<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
@@ -16,63 +14,68 @@
 
 <body>
 	<header>
-		<div id="logo"><img src="./logo.png" alt="Logo for AKRO GIS Team" height="80" width="80">NPS Alaska GIS</div>
-		<nav>
-			<ul class="pure-menu pure-menu-horizontal pure-menu-list">
-				<li class="pure-menu-item"><a href="/" class="pure-menu-link">Home</a></li>
-				<li class="pure-menu-item"><a href="#" class="pure-menu-link">Maps</a></li>
-				<li class="pure-menu-item"><a href="#" class="pure-menu-link">Data</a></li>
-				<li class="pure-menu-item"><a href="#" class="pure-menu-link">Support</a></li>
-			</ul>
-		</nav>
+		<a href="/"><img src="./ah_medium_black.gif" alt="Logo for AKRO GIS Team" height="71" width="55"></a>
+		<div class="title">
+			<h1>GIS Robocopy Status</h1>
+			<p class="subtitle">NPS Alaska Region GIS Team</p>
+		</div>
 	</header>
-	<section>
-		<strong>Status of the AKR park GIS server update.</strong>
-	</section>
-	<section id="pageContent">
-		<main role="main">
-			<article id="summary">
-				<h2 id='summary_heading'>Summary</h2>
-				<p id="summary_fail" class="error"></p>
-				<div id="summary_card" class="nominal">
-					<button id="previous_date" data-limit="" data-destination="" aria-label="previous date" onclick=previous_date()><<</button>
-					<span id="summary_date"></span>
-					<button id="next_date" data-limit="" data-destination="" aria-label="next date" onclick=next_date()>>></button>
-					<p>Ran Robocopy on <span id='count_total_parks'>?</span> Parks.  See details below.
-					<a id=changelog_link href='#'>Changelog details</a> </p>
-					<dl>
-						<dt>Scanned</dt>
-						<dd><span id='files_scanned'>?</span> files in <span id='dirs_scanned'>?</span> folders</dd>
-						<dt>Copied</dt>
-						<dd><span id='files_copied'>?</span> files (<span id='bytes_copied'>? Bytes</span>)</dd>
-						<dt>Removed</dt>
-						<dd><span id='files_removed'>?</span> files (<span id='bytes_removed'>? Bytes</span>)</dd>
-						<dt>Issues</dt>
-						<dd>
-							<span id='no_issues'>No Issues.</span>
-							<span id='summary_incomplete' hidden><span id='count_not_finished'>?</span> Parks did not finish. </span>
-							<span id='summary_errors' hidden><span id='total_errors'>?</span> Errors encountered.</span>
-						</dd>
-					</dl>
-				</div>
-			</article>
-			<article id="park_details">
-				<h2 id="park_heading">Park Details</h2>
-				<p id="parks_fail"></p>
-				<div id='park_cards'></div>
-				<button id="show_graph" onclick=plot_parks1()>plot</button>
-			</article>
-			<article id="graphs">
-				<h2 id="park_heading">Graphs</h2>
-				<div id="graph_div"></div>
-			</article>
-		</main>
+	<!--
+	<nav>
+		<ul class="pure-menu pure-menu-horizontal pure-menu-list">
+			<li class="pure-menu-item"><a href="/" class="pure-menu-link">Home</a></li>
+			<li class="pure-menu-item"><a href="#" class="pure-menu-link">Maps</a></li>
+			<li class="pure-menu-item"><a href="#" class="pure-menu-link">Data</a></li>
+			<li class="pure-menu-item"><a href="#" class="pure-menu-link">Support</a></li>
+		</ul>
+	</nav>
+	-->
+	<main role="main">
+		<section id=date_control>
+			<button id="previous_date" data-limit="" data-destination="" aria-label="previous date" onclick=previous_date()><<</button>
+			<span id="page_date"></span>
+			<button id="next_date" data-limit="" data-destination="" aria-label="next date" onclick=next_date()>>></button>
+			<p id="summary_fail" class="card error" hidden>No robocopy results for this date; Contact PDS data manager</p>
+		</section>
+		<section id="summary">
+			<h2 id='summary_heading'>Summary</h2>
+			<div id="summary_card" class="card nominal">
+				<p>Ran Robocopy on <span id='count_total_parks'>?</span> Parks.  See details below.
+				<a id=changelog_link href='#'>Changelog details</a> </p>
+				<dl>
+					<dt>Scanned</dt>
+					<dd><span id='files_scanned'>?</span> files in <span id='dirs_scanned'>?</span> folders</dd>
+					<dt>Copied</dt>
+					<dd><span id='files_copied'>?</span> files (<span id='bytes_copied'>? Bytes</span>)</dd>
+					<dt>Removed</dt>
+					<dd><span id='files_removed'>?</span> files (<span id='bytes_removed'>? Bytes</span>)</dd>
+					<dt>Issues</dt>
+					<dd>
+						<span id='no_issues'>No Issues.</span>
+						<span id='summary_incomplete' hidden><span id='count_not_finished'>?</span> Parks did not finish. </span>
+						<span id='summary_errors' hidden><span id='total_errors'>?</span> Errors encountered.</span>
+					</dd>
+				</dl>
+			</div>
+		</section>
+		<section id="park_details">
+			<h2 id="park_heading">Park Details</h2>
+			<p id="parks_fail"></p>
+			<div id='park_cards'></div>
+			<button id="show_graph" onclick=plot_parks1()>plot</button>
+		</section>
+		<section id="graphs">
+			<h2 id="park_heading">Graphs</h2>
+			<div id="graph_div"></div>
+		</section>
 		<aside>
-			<div>Sidebar 1</div>
-			<div>Sidebar 2</div>
-			<div>Sidebar 3</div>
+			<h2>Graphs</h2>
+			<ul>
+				<li>Speed Comparison</li>
+				<li>30 Day History</li>
+			</ul>
 		</aside>
-	</section>
+	</main>
 	<footer>
 		<p>Brought to you by the Alaska Region GIS Team</p>
 		<address>
@@ -80,7 +83,5 @@
 		</address>
 	</footer>
 
-
 </body>
-
 </html>
