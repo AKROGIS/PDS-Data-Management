@@ -162,7 +162,7 @@ def process_park(file_name):
     summary_header = 'Total    Copied   Skipped  Mismatch    FAILED    Extras'
     error_sentinal = ' ERROR '
     finished_sentinal = '   Ended : '
-    paused_sentinal = '    Hours : Paused at '
+    paused_sentinal = '    Hours : Paused at 06:'
 
     results = {}
     basename = os.path.basename(file_name)
@@ -544,6 +544,7 @@ if __name__ == '__main__':
     #process_park('data/Logs/2018-11-22_22-00-02-KLGO-update-x-drive.log')
 
     # TODO: read head of \\inpakrovmdist\GISData2\GIS\ThemeMgr\PDS_ChangeLog.txt to get last update
+    # TODO: copy \\inpakrovmdist\GISData2\PDS_ChangeLog.html to \\inpakrovmgis\inetapps\robo
     # TODO: Option to clear/reprocess  a given day or day/park
     # TODO: Add command line options ?
 
