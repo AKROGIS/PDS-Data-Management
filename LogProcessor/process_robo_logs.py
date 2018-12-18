@@ -158,7 +158,7 @@ example: 2018-01-30_22-00-01-LACL-update-x-drive.log
 NOTE 6
 ======
 Error 53 (The network path was not found.) and 21 (The device is not ready.)
-have no File, and will retry, and if it fails it will try another set of retries before quiting with stats 
+have no File, and will retry, and if it fails it will try another set of retries before quiting with stats
 This should only be reported as a single error.
 example: 2018-02-06_22-00-02-LACL-update-x-drive.log
 example: 2018-03-31_22-00-02-DENA-update-x-drive.log
@@ -194,10 +194,10 @@ def process_error(file_handle, filename, line, line_num, error_sentinal):
             line = file_handle.next()
             line_num += 1
             name = line.strip()
-            # next line will be one of a) retry, or b) blank, 
+            # next line will be one of a) retry, or b) blank,
             # read retry line which ends with '... Retrying...'
             #   If we have exceeded the number of reties then it will be blank and followed with ERROR: RETRY LIMIT EXCEEDED.
-            #   It may be a nor-retryable error, and we will have 
+            #   It may be a nor-retryable error, and we will have
             line = file_handle.next()
             line_num += 1
             retry = line.strip()
@@ -490,30 +490,57 @@ Line types (in body, i.e. not header or stats):
 * divider: "--------------.... at end of header before stats (and around title)
     """
     errors = {}
-""" Expecting: {
-    32: 'The process cannot access the file because it is being used by another process.', 
-    64: 'The specified network name is no longer available.', 
-    2: 'The system cannot find the file specified.', 
-    67: 'The network name cannot be found.', 
-    5: 'Access is denied.', 
-    19: 'The media is write protected.', 
-    21: 'The device is not ready.', 
-    121: 'The semaphore timeout period has expired.', 
-    59: 'An unexpected network error occurred.', 
-    53: 'The network path was not found.'
-}"""
+    """ Expecting: {
+        2 => The system cannot find the file specified.
+        5 => Access is denied.
+        19 => The media is write protected.
+        21 => The device is not ready.
+        32 => The process cannot access the file because it is being used by another process.
+        53 => The network path was not found.
+        59 => An unexpected network error occurred.
+        64 => The specified network name is no longer available.
+        67 => The network name cannot be found.
+        121 => The semaphore timeout period has expired.
+    }"""
+    relations = {}
+    """Expecting:
+        (u'blank', u'blank') => 2520
+        (u'blank', u'divider2') => 3233
+        (u'blank', u'error') => 793
+        (u'blank', u'fail') => 1171
+        (u'blank', u'file') => 2151
+        (u'blank', u'pause') => 11
+        (u'blank', u'retry') => 73
+        (u'divider1', u'blank') => 3345
+        (u'divider2', u'EOF') => 3233
+        (u'error', u'EOF') => 1
+        (u'error', u'blank') => 2189
+        (u'error', u'retry') => 5868
+        (u'fail', u'blank') => 1171
+        (u'file', u'EOF') => 15
+        (u'file', u'blank') => 725
+        (u'file', u'error') => 4201
+        (u'file', u'file') => 291043
+        (u'file', u'pause') => 85
+        (u'pause', u'EOF') => 96
+        (u'retry', u'blank') => 2
+        (u'retry', u'error') => 3064
+        (u'retry', u'file') => 2875
+    """
     filelist = glob.glob(os.path.join(log_folder, '2018-*-update-x-drive.log'))
     for filename in filelist:
         try:
             with open(filename, 'r') as file_handle:
+                previous_line = 'unknown'
                 in_header = True
                 # first 3 lines are always the same
                 file_handle.readline()  #
                 file_handle.readline()  #-------------------------------------------------------------------------------
-                file_handle.readline()  #   ROBOCOPY     ::     Robust File Copy for Windows 
+                file_handle.readline()  #   ROBOCOPY     ::     Robust File Copy for Windows
                 file_handle.readline()  #-------------------------------------------------------------------------------
                 line_num = 3
                 for line in file_handle:
+                    line_type = 'unknown'
                     try:
                         line_num += 1
                         clean_line = line.strip()
@@ -522,6 +549,7 @@ Line types (in body, i.e. not header or stats):
                             continue  #skip the variable length header
                         if in_header and divider_line:
                             in_header = False
+                            previous_line = 'divider1'
                             continue
                         if not in_header and divider_line:
                             # start stats (verify)
@@ -529,14 +557,42 @@ Line types (in body, i.e. not header or stats):
                             stats_line = file_handle.next().strip()
                             if not stats_line.startswith('Total'):
                                 print('fail in stats in {0}'.format(filename))
+                            line_type = 'divider2'
+                            if (previous_line,line_type) not in relations:
+                                relations[(previous_line,line_type)] = 0
+                            relations[(previous_line,line_type)] += 1
+                            previous_line = line_type
                             break
                         blank_line = not clean_line
+                        if blank_line:
+                            if line_type != 'unknown':
+                                print('line is already defined {0} to {1} at {2} in {3}'.format(line_type, 'blank', line_num, filename))
+                            line_type = 'blank'
                         file_line = clean_line.startswith('E:\\') or clean_line.startswith(r'\\inpak')
-                        error_line = ' ERROR ' in clean_line
+                        if file_line:
+                            if line_type != 'unknown':
+                                print('line is already defined {0} to {1} at {2} in {3}'.format(line_type, 'file', line_num, filename))
+                            line_type = 'file'
                         retry_line = clean_line.endswith('... Retrying...')
-                        fail_line = clean_line = 'ERROR: RETRY LIMIT EXCEEDED.'
+                        if retry_line:
+                            if line_type != 'unknown':
+                                print('line is already defined {0} to {1} at {2} in {3}'.format(line_type, 'retry', line_num, filename))
+                            line_type = 'retry'
+                        fail_line = clean_line == 'ERROR: RETRY LIMIT EXCEEDED.'
+                        if fail_line:
+                            if line_type != 'unknown':
+                                print('line is already defined {0} to {1} at {2} in {3}'.format(line_type, 'fail', line_num, filename))
+                            line_type = 'fail'
                         pause_line = clean_line.startswith('Hours : Paused at')
+                        if pause_line:
+                            if line_type != 'unknown':
+                                print('line is already defined {0} to {1} at {2} in {3}'.format(line_type, 'pause', line_num, filename))
+                            line_type = 'pause'
+                        error_line = ' ERROR ' in clean_line
                         if error_line:
+                            if line_type != 'unknown':
+                                print('line is already defined {0} to {1} at {2} in {3}'.format(line_type, 'error', line_num, filename))
+                            line_type = 'error'
                             code = int(line.split(' ERROR ')[1].split()[0])
                             desc = file_handle.next().strip()
                             line_num += 1
@@ -545,14 +601,25 @@ Line types (in body, i.e. not header or stats):
                                     print('error code mismatch got {2} expecting {3} for {4} at line {0} in {1}'.format(line_num, filename, desc, errors[code], code))
                             else:
                                 errors[code] = desc
-                        if not (blank_line or file_line or error_line or retry_line or fail_line or pause_line):
-                            print 
+                        if line_type == 'unknown':
+                            print('Line type is unknown in {0}'.format(filename))
+                        if (previous_line,line_type) not in relations:
+                            relations[(previous_line,line_type)] = 0
+                        relations[(previous_line,line_type)] += 1
+                        previous_line = line_type
                     except Exception as ex:
                         print('exception {2} at line {0} in {1}'.format(line_num, filename, ex))
-
+                if (previous_line,'EOF') not in relations:
+                    relations[(previous_line,'EOF')] = 0
+                relations[(previous_line, 'EOF')] += 1
         except Exception as ex:
             print('exception {1} in {0}'.format(filename, ex))
-    print(errors)
+    keys = sorted(errors.keys())
+    for key in keys:
+        print('  {0} => {1}'.format(key, errors[key]))
+    keys = sorted(relations.keys())
+    for key in keys:
+        print('  {0} => {1}'.format(key, relations[key]))
 
 
 def clean_folder(folder):
@@ -709,7 +776,8 @@ if __name__ == '__main__':
         # overly broad ecception catching.  I don't care what happened, I need to log the exception for debugging
         logger.error('Unexpected exception: %s', ex)
 
-    test_file_structure(r"\\inpakrovmais\Xdrive\Logs\2018archive")
+    #test_file_structure(r"\\inpakrovmais\Xdrive\Logs\2018archive")
+    test_file_structure(r"data/Logs/old")
     #print(process_park(r"\\inpakrovmais\Xdrive\Logs\2018archive\2018-12-16_18-00-01-LACL-update-x-drive.log"))
     #db_testing(':memory:')
     #clean(db)
