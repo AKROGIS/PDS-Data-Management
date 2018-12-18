@@ -397,9 +397,9 @@ def db_create(db):
 
 
 def main(db_name, log_folder):
-    # TODO: if yesterdays logs are not found, then log an email error
-    #filelist = ['data/Logs/old/2018-02-12_22-00-01-DENA-update-x-drive.log']
     filelist = glob.glob(os.path.join(log_folder, '*-update-x-drive.log'))
+    if not filelist:
+        logger.error('No robocopy log files were found')
     with sqlite3.connect(db_name) as conn:
         for filename in filelist:
             try:
@@ -408,7 +408,6 @@ def main(db_name, log_folder):
                 no_mismatch = True
                 logger.info("Processing %s", filename)
                 log = process_park(filename)
-                # TODO: Move file into archive directory
                 if not log:
                     logger.error('The log object for %s is empty', filename)
                     continue
@@ -798,8 +797,6 @@ if __name__ == '__main__':
 
     # TODO: read head of \\inpakrovmdist\GISData2\GIS\ThemeMgr\PDS_ChangeLog.txt to get last update
     # TODO: copy \\inpakrovmdist\GISData2\PDS_ChangeLog.html to \\inpakrovmgis\inetapps\robo
-    # TODO: Option to clear/reprocess  a given day or day/park
-    # TODO: Add command line options ?
 
     # Weird Files:
     # Parsing errors:
