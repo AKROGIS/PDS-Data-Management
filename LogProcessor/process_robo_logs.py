@@ -73,6 +73,96 @@ def process_summary_line(line, sentinal, filename, line_num):
 
     return count_obj
 
+""" Error Formating
+
+NOMINAL (no error):
+===================
+
+	  			File1
+                File2
+                .....
+
+
+NON-RETRYABLE ERROR:
+====================
+example: 2018-01-31_22-00-02-DENA-update-x-drive.log  (typically error 32 at DENA)
+
+	  			File1
+Timestamp ERROR ## (0xNN) Error Message
+Error Code ## Description
+
+                File2
+                ....
+
+
+RETRYABLE ERROR (fail):
+=======================
+example: 2018-05-15_22-00-03-DENA-update-x-drive.log (line 43), example without file at line 25
+
+                File1
+Timestamp ERROR ## (0xNN) Error Message
+Error Code ## Description
+Waiting 5 seconds... Retrying...              (The retry group may be repeated N times)
+                File1
+Timestamp ERROR ## (0xNN) Error Message
+Error Code ## Description
+
+ERROR: RETRY LIMIT EXCEEDED.
+
+                File2
+
+
+RETRYABLE ERROR (success):
+==========================
+example: 2018-05-15_22-00-03-DENA-update-x-drive.log (line 145), example without file at line 25
+
+                File1
+Timestamp ERROR ## (0xNN) Error Message
+Error Code ## Description
+Waiting 5 seconds... Retrying...              (The retry group may be repeated N times)
+                File2
+
+
+NOTE 1
+======
+The "Error Code ## Description" line ends in \r\r\n
+  which results in an extra empty line in vscode, but not other text editors (that I tried)
+  Python on mac and windows converts \r\n to \n when reading lines. So these lines end in \r\n in python
+
+
+NOTE 2
+======
+The File may be missing for some errors,
+example: 2018-02-06_22-00-02-LACL-update-x-drive.log
+
+2018/02/08 22:00:51 ERROR 53 (0x00000035) Accessing Destination Directory E:\XDrive\RemoteServers\XDrive-LACL\
+The network path was not found.
+Waiting 5 seconds... Retrying...
+2018/02/08 22:01:18 ERROR 53 (0x00000035) Accessing Destination Directory E:\XDrive\RemoteServers\XDrive-LACL\
+
+
+NOTE 3
+======
+Robocopy may pause before finishing all error retries
+
+NOTE 4
+======
+Robocopy may hit a new error when retrying an different error
+example: 2018-03-28_22-00-02-NOME-update-x-drive.log
+
+NOTE 5
+======
+Some errors are terminal and there is nothing after the error code description
+example: 2018-01-30_22-00-01-LACL-update-x-drive.log
+
+NOTE 6
+======
+Error 53 (The network path was not found.) and 21 (The device is not ready.)
+have no File, and will retry, and if it fails it will try another set of retries before quiting with stats 
+This should only be reported as a single error.
+example: 2018-02-06_22-00-02-LACL-update-x-drive.log
+example: 2018-03-31_22-00-02-DENA-update-x-drive.log
+"""
 
 def parse_error_line(line, filename, line_num, error_sentinal):
     code = 0
@@ -99,13 +189,15 @@ def process_error(file_handle, filename, line, line_num, error_sentinal):
         try:
             # read name of error
             # The name line ends with 0x0D0D0A (\r\r\n), which python interprets as one line
+            # vscode interprets as 2 lines (for line counting), but notepad does not
             # but most text editors interpret as two lines
             line = file_handle.next()
             line_num += 1
             name = line.strip()
-            # read blank line
-            line_num += 1
-            # read retry line; could be blank if followed with RETRY FAILED
+            # next line will be one of a) retry, or b) blank, 
+            # read retry line which ends with '... Retrying...'
+            #   If we have exceeded the number of reties then it will be blank and followed with ERROR: RETRY LIMIT EXCEEDED.
+            #   It may be a nor-retryable error, and we will have 
             line = file_handle.next()
             line_num += 1
             retry = line.strip()
@@ -115,6 +207,7 @@ def process_error(file_handle, filename, line, line_num, error_sentinal):
                 line = file_handle.next()
                 line_num += 1
                 task = line.strip()
+                code, message = parse_error_line(line, filename, line_num, error_sentinal)
                 if not task:
                     logger.error('Unexpected blank line when expecting retry of failed task in log file: %s, line#: %d, line: %s',
                         filename, line_num, line)
@@ -383,6 +476,85 @@ def main(db_name, log_folder):
                     filename, ex)
     clean_folder(log_folder)
 
+
+def test_file_structure(log_folder):
+    """
+Line types (in body, i.e. not header or stats):
+* blank: not line.strip()
+* file: whitespace then either E:\.... or \\inpak....
+* error: contains ERROR sentinal
+* error name: follows error line
+* retry: ...retry...
+* retry fail:
+* pause: starts with "    Hours : Paused at"
+* divider: "--------------.... at end of header before stats (and around title)
+    """
+    errors = {}
+""" Expecting: {
+    32: 'The process cannot access the file because it is being used by another process.', 
+    64: 'The specified network name is no longer available.', 
+    2: 'The system cannot find the file specified.', 
+    67: 'The network name cannot be found.', 
+    5: 'Access is denied.', 
+    19: 'The media is write protected.', 
+    21: 'The device is not ready.', 
+    121: 'The semaphore timeout period has expired.', 
+    59: 'An unexpected network error occurred.', 
+    53: 'The network path was not found.'
+}"""
+    filelist = glob.glob(os.path.join(log_folder, '2018-*-update-x-drive.log'))
+    for filename in filelist:
+        try:
+            with open(filename, 'r') as file_handle:
+                in_header = True
+                # first 3 lines are always the same
+                file_handle.readline()  #
+                file_handle.readline()  #-------------------------------------------------------------------------------
+                file_handle.readline()  #   ROBOCOPY     ::     Robust File Copy for Windows 
+                file_handle.readline()  #-------------------------------------------------------------------------------
+                line_num = 3
+                for line in file_handle:
+                    try:
+                        line_num += 1
+                        clean_line = line.strip()
+                        divider_line = clean_line.startswith('-------------')
+                        if in_header and not divider_line:
+                            continue  #skip the variable length header
+                        if in_header and divider_line:
+                            in_header = False
+                            continue
+                        if not in_header and divider_line:
+                            # start stats (verify)
+                            file_handle.next() # blankline
+                            stats_line = file_handle.next().strip()
+                            if not stats_line.startswith('Total'):
+                                print('fail in stats in {0}'.format(filename))
+                            break
+                        blank_line = not clean_line
+                        file_line = clean_line.startswith('E:\\') or clean_line.startswith(r'\\inpak')
+                        error_line = ' ERROR ' in clean_line
+                        retry_line = clean_line.endswith('... Retrying...')
+                        fail_line = clean_line = 'ERROR: RETRY LIMIT EXCEEDED.'
+                        pause_line = clean_line.startswith('Hours : Paused at')
+                        if error_line:
+                            code = int(line.split(' ERROR ')[1].split()[0])
+                            desc = file_handle.next().strip()
+                            line_num += 1
+                            if code in errors:
+                                if errors[code] != desc:
+                                    print('error code mismatch got {2} expecting {3} for {4} at line {0} in {1}'.format(line_num, filename, desc, errors[code], code))
+                            else:
+                                errors[code] = desc
+                        if not (blank_line or file_line or error_line or retry_line or fail_line or pause_line):
+                            print 
+                    except Exception as ex:
+                        print('exception {2} at line {0} in {1}'.format(line_num, filename, ex))
+
+        except Exception as ex:
+            print('exception {1} in {0}'.format(filename, ex))
+    print(errors)
+
+
 def clean_folder(folder):
     year = datetime.date.today().year
     archive = str(year) + 'archive'
@@ -531,12 +703,14 @@ if __name__ == '__main__':
     try:
         db = LOG_ROOT + '/logs.db'
         folder = LOG_ROOT
-        main(db, folder)
+        #main(db, folder)
         #test_queries(db)
     except Exception as ex:
         # overly broad ecception catching.  I don't care what happened, I need to log the exception for debugging
         logger.error('Unexpected exception: %s', ex)
 
+    test_file_structure(r"\\inpakrovmais\Xdrive\Logs\2018archive")
+    #print(process_park(r"\\inpakrovmais\Xdrive\Logs\2018archive\2018-12-16_18-00-01-LACL-update-x-drive.log"))
     #db_testing(':memory:')
     #clean(db)
     # main('data/logs.db', 'data/Logs/old')
