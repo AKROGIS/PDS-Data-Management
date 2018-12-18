@@ -479,15 +479,16 @@ def main(db_name, log_folder):
 
 def test_file_structure(log_folder):
     """
-Line types (in body, i.e. not header or stats):
-* blank: not line.strip()
-* file: whitespace then either E:\.... or \\inpak....
-* error: contains ERROR sentinal
-* error name: follows error line
-* retry: ...retry...
-* retry fail:
-* pause: starts with "    Hours : Paused at"
-* divider: "--------------.... at end of header before stats (and around title)
+        Line types (in body, i.e. not header or stats):
+        clean_line = line.strip()
+        * blank: not clean_line
+        * file: clean_line.startswith('E:\\') or clean_line.startswith(r'\\inpak')
+        * error: ' ERROR ' in clean_line
+        * error name: always follows error line
+        * retry: clean_line.endswith('... Retrying...')
+        * fail: clean_line == 'ERROR: RETRY LIMIT EXCEEDED.'
+        * pause: clean_line.startswith('Hours : Paused at')
+        * divider: clean_line.startswith('-------------')  # at end of header before stats (and around title)
     """
     errors = {}
     """ Expecting: {
@@ -532,6 +533,7 @@ Line types (in body, i.e. not header or stats):
         try:
             with open(filename, 'r') as file_handle:
                 previous_line = 'unknown'
+                p2_line = previous_line
                 in_header = True
                 # first 3 lines are always the same
                 file_handle.readline()  #
@@ -549,6 +551,7 @@ Line types (in body, i.e. not header or stats):
                             continue  #skip the variable length header
                         if in_header and divider_line:
                             in_header = False
+                            p2_line = previous_line
                             previous_line = 'divider1'
                             continue
                         if not in_header and divider_line:
@@ -558,9 +561,12 @@ Line types (in body, i.e. not header or stats):
                             if not stats_line.startswith('Total'):
                                 print('fail in stats in {0}'.format(filename))
                             line_type = 'divider2'
-                            if (previous_line,line_type) not in relations:
-                                relations[(previous_line,line_type)] = 0
-                            relations[(previous_line,line_type)] += 1
+                            # key = (previous_line,line_type)
+                            key = (p2_line, previous_line,line_type)
+                            if key not in relations:
+                                relations[key] = 0
+                            relations[key] += 1
+                            p2_line = previous_line
                             previous_line = line_type
                             break
                         blank_line = not clean_line
@@ -603,15 +609,20 @@ Line types (in body, i.e. not header or stats):
                                 errors[code] = desc
                         if line_type == 'unknown':
                             print('Line type is unknown in {0}'.format(filename))
-                        if (previous_line,line_type) not in relations:
-                            relations[(previous_line,line_type)] = 0
-                        relations[(previous_line,line_type)] += 1
+                        # key = (previous_line,line_type)
+                        key = (p2_line, previous_line,line_type)
+                        if key not in relations:
+                            relations[key] = 0
+                        relations[key] += 1
+                        p2_line = previous_line
                         previous_line = line_type
                     except Exception as ex:
                         print('exception {2} at line {0} in {1}'.format(line_num, filename, ex))
-                if (previous_line,'EOF') not in relations:
-                    relations[(previous_line,'EOF')] = 0
-                relations[(previous_line, 'EOF')] += 1
+                # key = (previous_line, 'EOF')
+                key = (p2_line, previous_line, 'EOF')
+                if key not in relations:
+                    relations[key] = 0
+                relations[key] += 1
         except Exception as ex:
             print('exception {1} in {0}'.format(filename, ex))
     keys = sorted(errors.keys())
