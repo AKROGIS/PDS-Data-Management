@@ -131,7 +131,7 @@ function post_park_details(data) {
 		var size_copied = humanFileSize(bytes_copied,true);
 		var time_copying = row[7];
 		var copy_speed = round(bytes_copied/time_copying/1000.0,1);
-		var copy_text = time_copying == 0 ? 'Nothing copied.' : `${size_copied} in ${time_copying} seconds => ${copy_speed} kB/second`;
+		var copy_text = time_copying == 0 ? 'Nothing copied.' : `${size_copied} in ${time_copying} seconds (${copy_speed} kB/sec)`;
 		var files_scanned = row[6];
 		var time_scanning = row[8];
 		var scan_speed = round(files_scanned/time_scanning,1);
@@ -150,17 +150,17 @@ function post_park_details(data) {
 			issues = error_str + ' ' + finish_str;
 		}
 		var card_str = `
-			<div class='card ${status}'>
+			<div class='card ${status} inline'>
 				<h3>${park}</h3>
-				<a href='//inpakrovmais:8080/logfile?park=${park}&date=${date}'>Log file</a>
 				<dt>Copied</dt>
 				<dd>${copy_text}</dd>
 				<dt>Scanned</dt>
-				<dd>${files_scanned} files in ${time_scanning} seconds => ${scan_speed} files/second</dd>
+				<dd>${files_scanned} files in ${time_scanning} seconds (${scan_speed} files/sec)</dd>
 				<dt>Removed</dt>
 				<dd>${files_removed} files</dd>
 				<dt>Issues</dt>
 				<dd>${issues}</dd>
+				<a href='//inpakrovmais:8080/logfile?park=${park}&date=${date}'>Log file</a>
 			</div>
 		`
 		html += card_str
@@ -404,17 +404,17 @@ function plot_parks1() {
 }
 
 function plot_parks2() {
-	var url = '//localhost:8080/scanavg?date=2018-09-01';
+	var url = '//inpakrovmais:8080/scanavg?date=2018-09-01';
 	getJSON(url, plot2, get_plot_data_fail)
 }
 
 function plot_parks3() {
-	var url = '//localhost:8080/copyavg?date=2018-09-01';
+	var url = '//inpakrovmais:8080/copyavg?date=2018-09-01';
 	getJSON(url, plot3, get_plot_data_fail)
 }
 
 function plot_parks4() {
-	var url = '//localhost:8080/speed?park=YUGA&start=2018-07-01&end=2018-11-01';
+	var url = '//inpakrovmais:8080/speed?park=YUGA&start=2018-07-01&end=2018-11-01';
 	getJSON(url, plot4, get_plot_data_fail)
 }
 

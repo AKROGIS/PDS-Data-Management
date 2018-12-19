@@ -17,7 +17,7 @@
 		<a href="/"><img src="./ah_medium_black.gif" alt="Logo for AKRO GIS Team" height="71" width="55"></a>
 		<div class="title">
 			<h1>GIS Robocopy Status</h1>
-			<p class="subtitle">NPS Alaska Region GIS Team</p>
+			<p class="subtitle">Alaska Region GIS Team</p>
 		</div>
 	</header>
 	<!--
@@ -40,13 +40,12 @@
 		<section id="summary">
 			<h2 id='summary_heading'>Summary</h2>
 			<div id="summary_card" class="card nominal">
-				<p>Ran Robocopy on <span id='count_total_parks'>?</span> Parks.  See details below.
-				<a id=changelog_link href='#'>Changelog details</a> </p>
+				<p>Ran robocopy on <span id='count_total_parks'>?</span> parks.
 				<dl>
 					<dt>Scanned</dt>
-					<dd><span id='files_scanned'>?</span> files in <span id='dirs_scanned'>?</span> folders</dd>
+					<dd><span id='files_scanned'>?</span> files and <span id='dirs_scanned'>?</span> folders</dd>
 					<dt>Copied</dt>
-					<dd><span id='files_copied'>?</span> files (<span id='bytes_copied'>? Bytes</span>)</dd>
+					<dd><span id='files_copied'>?</span> files (<span id='bytes_copied'>? Bytes</span>) <a id=changelog_link href='#'>Changelog</a></dd>
 					<dt>Removed</dt>
 					<dd><span id='files_removed'>?</span> files (<span id='bytes_removed'>? Bytes</span>)</dd>
 					<dt>Issues</dt>
@@ -59,32 +58,27 @@
 			</div>
 		</section>
 		<section id="park_details">
-			<h2 id="park_heading">Park Details</h2>
+			<h2 id="park_heading">Details</h2>
 			<p id="parks_fail"></p>
 			<div id='park_cards'></div>
-			<button id="show_graph1" onclick="plot_parks1()">Speed Comparison</button>
-			<button id="show_graph2" onclick="plot_parks2()">Avg Scan Speed</button>
-			<button id="show_graph3" onclick="plot_parks3()">Avg Copy Speed</button>
-			<button id="show_graph4" onclick="plot_parks4()">Speed over time</button>
 		</section>
-		<section id="graphs">
-			<h2 id="park_heading">Graphs</h2>
+		<section id="graphs" style="clear:both;">
+			<h2>Graph</h2>
 			<div id="graph_div"></div>
 		</section>
 		<aside>
-			<h2>Graphs</h2>
+			<h2>Plots</h2>
 			<ul>
-				<li><a href="javascript:void(0)" onclick="plot_parks1()">Speed Comparison</a></li>
-				<li><a href="javascript:void(0)" onclick="plot_parks2()">Avg Scan Speed</a></li>
-				<li><a href="javascript:void(0)" onclick="plot_parks3()">Avg Copy Speed</a></li>
-				<li><a href="javascript:void(0)" onclick="plot_parks4()">Speed Over Time</a></li>
+				<li><a href="#graphs" onclick="plot_parks1()">Speed Comparison</a></li>
+				<li><a href="#graphs" onclick="plot_parks2()">Avg Scan Speed</a></li>
+				<li><a href="#graphs" onclick="plot_parks3()">Avg Copy Speed</a></li>
+				<li><a href="#graphs" onclick="plot_parks4()">Speed Over Time</a></li>
 			</ul>
 		</aside>
 	</main>
 	<footer>
-		<p>Brought to you by the Alaska Region GIS Team</p>
 		<address>
-			Contact: <a href="mailto:akro_gis_helpdesk">Contact Us</a>
+			Brought to you by the <a href="mailto:akro_gis_helpdesk@nps.gov">Alaska Region GIS Team</a>
 		</address>
 	</footer>
 

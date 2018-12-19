@@ -20,8 +20,19 @@ header .subtitle {
     font-size: 0.8em;
     margin-top: 0px;
 }
+
 main {
     padding: 10px;
+}
+
+footer {
+    background-color:#000000;
+    color:#dddddd;
+    padding:10px;
+}
+
+footer a {
+    color:#dddddd;
 }
 
 #date_control {
@@ -39,9 +50,24 @@ main {
     padding: 5px;
     outline-style: solid;
     outline-width: thin;
-    display: table;
+    display: inline-block;
     box-shadow: 5px 5px 5px #dddddd;
 }
+
+.card h3 {
+    font-size: 1.3em;
+    margin-top: 0;
+    margin-bottom: 0.5em;
+}
+
+dt {
+    font-weight: bold;
+}
+
+.inline {
+    float: left;
+}
+
 .nominal {
     outline-color: green;
     background-color:#ddffdd;
