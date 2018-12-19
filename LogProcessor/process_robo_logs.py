@@ -75,76 +75,46 @@ def process_summary_line(line, sentinal, filename, line_num):
 
 def process_error(file_handle, filename, line, line_num, error_sentinal):
     code, message = parse_error_line(line, filename, line_num, error_sentinal)
+    error_line_num = line_num
     if not code:
         logger.error('Unable to get the error code from an error line, file: %s, line#: %d, line: %s',
                     filename, line_num, line)
     name = 'Name of error not defined'
-    failed = None # True if all the retries failed, False if retry succeeds, None if unable to determine due to unexpected input
-    done = False
-    while not done and code:
+    retry = False
+    eof = False
+    try:
+        # next line is the name of the error (always valid in 1 year of log data)
+        # The name line ends with 0x0D0D0A (\r\r\n), which python (win and mac) interprets as one line
+        # vscode interprets as 2 lines (for line counting), but notepad and other editors do not
+        # we will not double count this line, so line numbers will NOT match vscode line numbers.
+        name = file_handle.next().strip()
+        line_num += 1
+        # From known log files: next lines will be one of a) retry, b) blank, or c) error (EOF)
+        #   EOF occurs if robocopy is killed while recovering/waiting for an error
+        #   for example, see 2018-11-07_22-00-02-KLGO-update-x-drive.log
+        # Use try/except to catch StopIteration exception (EOF)
         try:
-            # read name of error
-            # The name line ends with 0x0D0D0A (\r\r\n), which python interprets as one line
-            # vscode interprets as 2 lines (for line counting), but notepad does not
-            # but most text editors interpret as two lines
             line = file_handle.next()
             line_num += 1
-            name = line.strip()
-            # next line will be one of a) retry, or b) blank,
-            # read retry line which ends with '... Retrying...'
-            #   If we have exceeded the number of reties then it will be blank and followed with ERROR: RETRY LIMIT EXCEEDED.
-            #   It may be a nor-retryable error, and we will have
-            line = file_handle.next()
-            line_num += 1
-            retry = line.strip()
-            if retry.endswith('... Retrying...'):
-                # Next line should be a task (skip it), then next line should be the same error, or the retry worked.
-                # The task must be the same as the task before the errror, but there is no way to check it now.
-                line = file_handle.next()
-                line_num += 1
-                task = line.strip()
-                code, message = parse_error_line(line, filename, line_num, error_sentinal)
-                if not task:
-                    logger.error('Unexpected blank line when expecting retry of failed task in log file: %s, line#: %d, line: %s',
-                        filename, line_num, line)
-                    done = True
-                else:
-                    line = file_handle.next()
-                    line_num += 1
-                    if error_sentinal in line:
-                        code, message = parse_error_line(line, filename, line_num, error_sentinal)
-                    else:
-                        done = True
-                        failed = False
-                    # repeat while loop
-            elif not retry:
-                # blank line is ok, but next line must be ERROR: RETRY LIMIT EXCEEDED,
-                #   or what appears to be a blank line(0x0D0D0A (\r\r\n)) - automatic fail (no retry)
-                #   actually anything implies that the error has failed and we are done.
-                line = file_handle.next()
-                line_num += 1
-                # limit = line.strip()
-                # if limit == 'ERROR: RETRY LIMIT EXCEEDED.' or not limit:
-                #     failed = True
-                failed = True
-                done = True
-            else:
-                # Not blank or Retry
-                logger.error('Unexpected data on retry line after error in log file: %s, line#: %d, line: %s',
-                    filename, line_num, line)
-                done = True
         except StopIteration:
-            # WARNING, it is possible that the robocopy may be killed while retrying a failure
-            #          for example, see 2018-11-07_22-00-02-KLGO-update-x-drive.log
-            done = True
-            failed = False
-        except Exception as ex:
-            # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue\
-            logger.error('Unexpected exception processing error, file: %s, line#: %d, line: %s, exception: %s',
-                    filename, line_num, line, ex)
+            eof = True
+            line = ''
+        clean_line = line.strip()
+        if clean_line.endswith('... Retrying...'):
+            retry = True
+        elif clean_line:
+            # Not blank or Retry
+            # log as an error an treat as a blank line (throw this line away)
+            logger.error('Unexpected data on retry line after error in log file: %s, line#: %d, line: %s',
+                filename, line_num, line)
+    except Exception as ex:
+        # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue\
+        logger.error('Unexpected exception processing error lines in log file: %s, line#: %d, line: %s, exception: %s',
+                filename, line_num, line, ex)
 
-    error = {'code': code, 'failed': failed, 'name': name, 'line_num': line_num, 'message': message}
-    return error, line, line_num
+    # Error has failed unless we get a retry message
+    error = {'code': code, 'failed': not retry, 'name': name, 'line_num': error_line_num, 'message': message}
+    return error, eof, retry, line_num  # ignore the last line read (blank or retry), caller can read the next line to continue 
 
 
 def parse_error_line(line, filename, line_num, error_sentinal):
@@ -155,7 +125,7 @@ def parse_error_line(line, filename, line_num, error_sentinal):
         message = line.split(') ')[1].strip()
     except Exception as ex:
         # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
-        logger.error('Parsing error in log file: %s, line#: %d, line: %s, exception: %s',
+        logger.error('Parsing error line in log file: %s, line#: %d, line: %s, exception: %s',
             filename, line_num, line, ex)
     return code, message
 
@@ -176,27 +146,61 @@ def process_park(file_name):
     results['finished'] = None
     results['errors'] = []
     line_num = 0
+    error_line_num = line_num
+    saved_error = None   # used when we are retrying an error.
     with open(file_name, 'r') as file_handle:
         for line in file_handle:
             try:
                 line_num += 1
                 if error_sentinal in line:
-                    error, line, line_num = process_error(file_handle, file_name, line, line_num, error_sentinal)
-                    results['errors'].append(error)
-                    if error['failed'] is not None:
-                        continue
-                if line.strip() == summary_header:
-                    summary, line_num = process_summary(file_handle, file_name, line_num)
-                    results['stats'] = summary
-                elif line.startswith(finished_sentinal):
-                    results['finished'] = True
-                elif line.startswith(paused_sentinal):
-                    logger.warning('%s on %s: Robo copy not finished (paused then killed)', park, date)
-                    results['finished'] = False
+                    error, eof, retry, line_num = process_error(file_handle, file_name, line, line_num, error_sentinal)
+                    if saved_error and saved_error['message'] != error['message']:
+                        saved_error['failed'] = True
+                        results['errors'].append(saved_error)
+                        saved_error = None
+                    if eof:
+                        # Nothing comes next
+                        results['errors'].append(error)
+                        break
+                    if not retry:
+                        # We don't care what comes next, we will treat it all the same.
+                        # This includes the failing after the last retry (next line will be RETRY LIMIT EXCEEDED)
+                        saved_error = None  # this will only be non null when saved_error['message'] == error['message']
+                        results['errors'].append(error)
+                    else: # error is retrying
+                        # if not saved_error then saved_error['message'] == error['message'], so assigment is redundant but harmless
+                        saved_error = error
+                        error_line_num = line_num
+                        # Options for what comes next:
+                        #   1) same error repeats as a fail: clear saved_error, log new error, continue
+                        #   2) same error repeats with a new retry: (re)set saved_error, continue
+                        #   3) new error: save saved_error as fail, process new error based on retry status
+                        #   4) retry succeeds: log this error: status should be non-fail
+                    continue
+                else:
+                    if saved_error is not None:
+                        # this line is not an error and the last error we saw was retrying
+                        #   1) this is a repeat of the file name before the error, which means nothing, need to check following line
+                        #   2) this is a new filename
+                        retry_worked = (line_num - error_line_num > 1)
+                        if retry_worked:
+                            results['errors'].append(saved_error)  # logs a non-failing error
+                            saved_error = None
+                    if line.strip() == summary_header:
+                        summary, line_num = process_summary(file_handle, file_name, line_num)
+                        results['stats'] = summary
+                    elif line.startswith(finished_sentinal):
+                        results['finished'] = True
+                    elif line.startswith(paused_sentinal):
+                        logger.warning('%s on %s: Robo copy not finished (paused then killed)', park, date)
+                        results['finished'] = False
             except Exception as ex:
                 # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
                 logger.error('Unexpected exception processing log, file: %s, line#: %d, line: %s, exception: %s',
                     file_name, line_num, line, ex)
+        if saved_error:
+            # could happen if there was a error retrying that was not resolved before the file ended
+            results['errors'].append(saved_error)  # logs a non-failing error
     return results
 
 
@@ -422,8 +426,6 @@ if __name__ == '__main__':
     except Exception as ex:
         # overly broad ecception catching.  I don't care what happened, I need to log the exception for debugging
         logger.error('Unexpected exception: %s', ex)
-
-    print(process_park(r"\\inpakrovmais\Xdrive\Logs\2018archive\2018-12-16_18-00-01-LACL-update-x-drive.log"))
 
     # TODO: read head of \\inpakrovmdist\GISData2\GIS\ThemeMgr\PDS_ChangeLog.txt to get last update
     # TODO: copy \\inpakrovmdist\GISData2\PDS_ChangeLog.html to \\inpakrovmgis\inetapps\robo
