@@ -8,8 +8,17 @@ import os
 import sqlite3
 import process_robo_logs
 
+# Mac
+#LOG_ROOT = 'data/Logs/old'
+#DB = 'data/logs.db'
+
+# Workstation (PC)
+LOG_ROOT = r'\\inpakrovmais\Xdrive\Logs\2018archive'
+DB = r'\\inpakrovmais\Xdrive\Logs\logs.db'
+
+# Server
 #LOG_ROOT = 'E:/XDrive/Logs'
-LOG_ROOT = 'data/Logs/old'
+#DB = 'E:/XDrive/Logs/logs.db'
 
 r"""
 Error Formating
@@ -145,7 +154,7 @@ def test_file_structure(log_folder):
         121 => The semaphore timeout period has expired.
     }"""
     relations = {}
-    """Expecting:
+    """Expecting: on Mac log data (upto 11/28/2018)
         (u'blank', u'blank') => 2520
         (u'blank', u'divider2') => 3233
         (u'blank', u'error') => 793
@@ -168,6 +177,56 @@ def test_file_structure(log_folder):
         (u'retry', u'blank') => 2
         (u'retry', u'error') => 3064
         (u'retry', u'file') => 2875
+    """
+    """Expecting: on PC log data (on 12/18/2018)
+        (u'blank', u'blank', u'divider2') => 2667
+        (u'blank', u'divider2', u'EOF') => 3461
+        (u'blank', u'error', u'EOF') => 1
+        (u'blank', u'error', u'blank') => 177
+        (u'blank', u'error', u'retry') => 629
+        (u'blank', u'fail', u'blank') => 1189
+        (u'blank', u'file', u'blank') => 38
+        (u'blank', u'file', u'error') => 1216
+        (u'blank', u'file', u'file') => 949
+        (u'blank', u'pause', u'EOF') => 11
+        (u'blank', u'pause', u'blank') => 34
+        (u'blank', u'pause', u'error') => 4
+        (u'blank', u'pause', u'file') => 2
+        (u'divider1', u'blank', u'blank') => 2533
+        (u'divider1', u'blank', u'error') => 96
+        (u'divider1', u'blank', u'file') => 904
+        (u'divider1', u'blank', u'pause') => 40
+        (u'error', u'blank', u'blank') => 33
+        (u'error', u'blank', u'error') => 171
+        (u'error', u'blank', u'fail') => 1189
+        (u'error', u'blank', u'file') => 762
+        (u'error', u'retry', u'blank') => 2
+        (u'error', u'retry', u'error') => 3154
+        (u'error', u'retry', u'file') => 2875
+        (u'fail', u'blank', u'blank') => 101
+        (u'fail', u'blank', u'error') => 540
+        (u'fail', u'blank', u'file') => 537
+        (u'fail', u'blank', u'pause') => 11
+        (u'file', u'blank', u'divider2') => 758
+        (u'file', u'error', u'blank') => 1349
+        (u'file', u'error', u'retry') => 2873
+        (u'file', u'file', u'EOF') => 14
+        (u'file', u'file', u'blank') => 719
+        (u'file', u'file', u'error') => 161
+        (u'file', u'file', u'file') => 290747
+        (u'file', u'file', u'pause') => 85
+        (u'file', u'pause', u'EOF') => 85
+        (u'pause', u'blank', u'divider2') => 34
+        (u'pause', u'error', u'retry') => 4
+        (u'pause', u'file', u'file') => 2
+        (u'retry', u'blank', u'divider2') => 2
+        (u'retry', u'error', u'blank') => 629
+        (u'retry', u'error', u'retry') => 2525
+        (u'retry', u'file', u'EOF') => 1
+        (u'retry', u'file', u'blank') => 1
+        (u'retry', u'file', u'error') => 2845
+        (u'retry', u'file', u'file') => 28
+        (u'unknown', u'divider1', u'blank') => 3573
     """
     filelist = glob.glob(os.path.join(log_folder, '2018-*-update-x-drive.log'))
     for filename in filelist:
@@ -280,8 +339,8 @@ def db_testing(db_name):
     with sqlite3.connect(db_name) as conn:
         process_robo_logs.db_create(conn)
         log_id = process_robo_logs.db_write_log(conn,
-            #{'name':'DENA', 'date':'2018-02-12', 'finished':True, 'errors':None}
-            {'name':'DENA', 'date':'2018-02-12', 'finished':True, 'errors':str(['e1','e2']), 'junk':5}
+            #{'park':'DENA', 'date':'2018-02-12', 'filename':'C:/tmp/test.log', 'finished':True}
+            {'park':'DENA', 'date':'2018-02-12', 'filename':'C:/tmp/test.log', 'finished':True}
         )
         process_robo_logs.db_write_stats(conn,
             [
@@ -293,7 +352,7 @@ def db_testing(db_name):
         )
         sql = 'SELECT * FROM stats JOIN logs on stats.log_id = logs.log_id;'
         print(db_get_rows(conn, sql))
-        process_robo_logs.db_clear(conn)
+        process_robo_logs.db_clear(conn, drop=False)
         print(db_get_rows(conn, sql))
 
 
@@ -394,6 +453,22 @@ group by l.park order by l.park;
 
 if __name__ == '__main__':
     #db_testing(':memory:')
-    #test_queries(db)
-    #test_file_structure(r"\\inpakrovmais\Xdrive\Logs\2018archive")
-    test_file_structure(r"data/Logs/old")
+    #test_queries(DB)
+    test_file_structure(LOG_ROOT)
+
+
+    #print(process_park(r"\\inpakrovmais\Xdrive\Logs\2018archive\2018-12-16_18-00-01-LACL-update-x-drive.log")) # checked: ok
+    # [{u'failed': True, u'message': u'Accessing Destination Directory E:\\XDrive\\RemoteServers\\XDrive-LACL\\', u'code': 67, u'name': 'The network name cannot be found.', u'line_num': 36}]
+    #print(process_park(r"\\inpakrovmais\Xdrive\Logs\2018archive\2018-02-08_22-00-02-LACL-update-x-drive.log")) # checked: ok
+    # [{u'failed': True, u'message': u'Accessing Destination Directory E:\\XDrive\\RemoteServers\\XDrive-LACL\\', u'code': 53, u'name': 'The network path was not found.', u'line_num': 34}, 
+    #  {u'failed': True, u'message': u'Accessing Destination Directory E:\\XDrive\\RemoteServers\\XDrive-LACL\\', u'code': 53, u'name': 'The network path was not found.', u'line_num': 54}]
+    # print(process_park(r"\\inpakrovmais\Xdrive\Logs\2018archive\2018-10-02_22-00-03-DENA-update-x-drive.log")) # checked: ok
+    # print(process_park(r"\\inpakrovmais\Xdrive\Logs\2018archive\2018-12-10_22-00-03-YUGA-update-x-drive.log")) # checked: ok
+    # print(process_park(r"\\inpakrovmais\Xdrive\Logs\2018archive\2018-05-15_22-00-03-DENA-update-x-drive.log")) # checked: ok
+    # print(process_park(r"\\inpakrovmais\Xdrive\Logs\2018archive\2018-10-22_22-00-02-KLGO-update-x-drive.log")) # checked: ok
+    # print(process_park(r"\\inpakrovmais\Xdrive\Logs\2018archive\2018-10-25_22-00-02-KLGO-update-x-drive.log")) # checked: ok
+    # print(process_park(r"\\inpakrovmais\Xdrive\Logs\2018archive\2018-11-20_22-00-02-KLGO-update-x-drive.log")) # checked: ok
+    # print(process_park(r"\\inpakrovmais\Xdrive\Logs\2018archive\2018-11-22_22-00-02-KLGO-update-x-drive.log")) # checked: ok
+    # print(process_park(r"\\inpakrovmais\Xdrive\Logs\2018archive\2018-01-30_22-00-01-LACL-update-x-drive.log")) # checked: ok
+
+
