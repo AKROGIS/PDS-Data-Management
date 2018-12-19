@@ -217,7 +217,7 @@ function is_valid_date(date, min_date, max_date) {
 	return date !== null && date !== undefined;
 }
 
-function plot_2bars(x, l1, y1, l2, y2) {
+function plot_2bars(x, l1, y1, l2, y2, title) {
 	var trace1 = {
 		x: x,
 		y: y1,
@@ -231,20 +231,144 @@ function plot_2bars(x, l1, y1, l2, y2) {
 		name: l2,
 		type: 'bar'
 	};
-	var layout = {barmode: 'group'};
+	var layout = {
+		barmode: 'group',
+		title: title
+	};
 	Plotly.newPlot("graph_div", [trace1, trace2], layout);
 }
+
+function plot_2lines(x, l1, y1, l2, y2, title) {
+	var trace1 = {
+		x: x,
+		y: y1,
+		name: l1,
+		type: "scatter",
+		mode: "lines"
+	};
+	var trace2 = {
+		x: x,
+		y: y2,
+		name: l2,
+		type: "scatter",
+		mode: "lines"
+	};
+	var layout = {
+		title: title
+	};
+	Plotly.newPlot("graph_div", [trace1, trace2], layout);
+}
+
+function plot_5lines(x, l1, y1, l2, y2, l3, y3, l4, y4, l5, y5, title) {
+	var trace1 = {
+		x: x,
+		y: y1,
+		name: l1,
+		type: "scatter",
+		mode: "lines"
+	};
+	var trace2 = {
+		x: x,
+		y: y2,
+		name: l2,
+		type: "scatter",
+		mode: "lines"
+	};
+	var trace3 = {
+		x: x,
+		y: y3,
+		name: l3,
+		type: "scatter",
+		mode: "lines"
+	};
+	var trace4 = {
+		x: x,
+		y: y4,
+		name: l4,
+		type: "scatter",
+		mode: "lines"
+	};
+	var trace5 = {
+		x: x,
+		y: y5,
+		name: l5,
+		type: "scatter",
+		mode: "lines"
+	};
+	var layout = {
+		title: title
+	};
+	Plotly.newPlot("graph_div", [trace1, trace2, trace3, trace4, trace5], layout);
+}
+
 function unpack(rows, key) {
 	return rows.map(function(row) { return row[key]; });
 }
 
 function plot1(data) {
 	plot_2bars(
-		unpack(data,0),
+		unpack(data,0), //park
 		'Copy Speed (kB/s)',
-		unpack(data,2),
+		unpack(data,2), //copy_speed
 		'Scan Speed (files/s)',
-		unpack(data,1)
+		unpack(data,1), // scan_speed
+		"Park Speed Comparison (single night)"
+	)
+}
+
+function plot2(data) {
+	plot_2bars(
+		unpack(data,0), //park
+		'Scan Speed (files/s)',
+		unpack(data,1), // avg scan speed
+		'# of days',
+		unpack(data,2), // # of days
+		"Average Scan Speed by Park (last 90 days)"
+	)
+}
+
+function plot3(data) {
+	plot_2bars(
+		unpack(data,0), //park
+		'Copy Speed (kB/s)',
+		unpack(data,1), // avg copy speed
+		'# of days',
+		unpack(data,2), // # of days
+		"Average Copy Speed by Park (last 90 days)"
+	)
+}
+
+function plot4(data) {
+	park = data[0][0];
+	title = "Historic Speeds for " + park
+	plot_2lines(
+		// data 0 has the park name
+		unpack(data,1),
+		'Scan Speed (files/s)',
+		unpack(data,2),
+		'Copy Speed (kB/s)',
+		unpack(data,3),
+		title
+	)
+}
+
+function plot4a(data) {
+	park = data[0][0];
+	title = "Historic speeds for " + park
+	plot_5lines(
+		// data 0 has the park name
+		unpack(data,1),
+		'Scan Speed (files/s)',
+		unpack(data,2),
+		'Copy Speed (kB/s)',
+		unpack(data,3),
+		'Avg Size of File (kB)',
+		unpack(data,4),
+		'Copy Size (files)',
+		unpack(data,5),
+		'Copy Size (MBytes)',
+		unpack(data,6),
+		title
 	)
 }
 
@@ -277,6 +401,21 @@ function plot_parks1() {
 	var date = document.getElementById('page_date').textContent;
 	var url = '//inpakrovmais:8080/plot1?date=' + date;
 	getJSON(url, plot1, get_plot_data_fail)
+}
+
+function plot_parks2() {
+	var url = '//localhost:8080/scanavg?date=2018-09-01';
+	getJSON(url, plot2, get_plot_data_fail)
+}
+
+function plot_parks3() {
+	var url = '//localhost:8080/copyavg?date=2018-09-01';
+	getJSON(url, plot3, get_plot_data_fail)
+}
+
+function plot_parks4() {
+	var url = '//localhost:8080/speed?park=YUGA&start=2018-07-01&end=2018-11-01';
+	getJSON(url, plot4, get_plot_data_fail)
 }
 
 // Get data from the services and update the page

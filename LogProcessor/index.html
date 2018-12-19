@@ -62,7 +62,10 @@
 			<h2 id="park_heading">Park Details</h2>
 			<p id="parks_fail"></p>
 			<div id='park_cards'></div>
-			<button id="show_graph" onclick=plot_parks1()>plot</button>
+			<button id="show_graph1" onclick="plot_parks1()">Speed Comparison</button>
+			<button id="show_graph2" onclick="plot_parks2()">Avg Scan Speed</button>
+			<button id="show_graph3" onclick="plot_parks3()">Avg Copy Speed</button>
+			<button id="show_graph4" onclick="plot_parks4()">Speed over time</button>
 		</section>
 		<section id="graphs">
 			<h2 id="park_heading">Graphs</h2>
@@ -71,8 +74,10 @@
 		<aside>
 			<h2>Graphs</h2>
 			<ul>
-				<li>Speed Comparison</li>
-				<li>30 Day History</li>
+				<li><a href="javascript:void(0)" onclick="plot_parks1()">Speed Comparison</a></li>
+				<li><a href="javascript:void(0)" onclick="plot_parks2()">Avg Scan Speed</a></li>
+				<li><a href="javascript:void(0)" onclick="plot_parks3()">Avg Copy Speed</a></li>
+				<li><a href="javascript:void(0)" onclick="plot_parks4()">Speed Over Time</a></li>
 			</ul>
 		</aside>
 	</main>
