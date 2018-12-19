@@ -13,7 +13,7 @@ import time
 import logging.config
 import config_logger
 
-LOG_ROOT = 'E:/XDrive/Logs'
+LOG_ROOT = r'E:\XDrive\Logs'
 
 logging.config.dictConfig(config_logger.config)
 # Comment the next line during testing, uncomment in production
@@ -418,7 +418,7 @@ def clean_folder(folder):
 
 if __name__ == '__main__':
     try:
-        db = LOG_ROOT + '/logs.db'
+        db = os.path.join(LOG_ROOT, 'logs.db')
         folder = LOG_ROOT
         # clean_db(db)
         main(db, folder)
