@@ -30,7 +30,7 @@ def process_summary(file_handle, filename, line_num):
             line_num += 1
             results[key] = process_summary_line(line, text, filename, line_num)
         except Exception as ex:
-            # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue\
+            # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
             logger.error('Unexpected exception processing summary, file: %s, line#: %d, key: %s, text: %s, line: %s, exception: %s',
                     filename, line_num, key, text, line, ex)
     return results,line_num
@@ -376,7 +376,6 @@ def main(db_name, log_folder):
                 # In daily processing, I want an error email when there are issues in a log file
                 #  currently even recovered errors send an error
                 if not no_errors or not no_fails or not no_mismatch:
-                    print(no_errors, no_fails, no_mismatch)
                     logger.warning('The log file %s has errors', filename)
 
             except Exception as ex:
