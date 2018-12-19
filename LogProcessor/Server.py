@@ -168,6 +168,126 @@ class SyncHandler(BaseHTTPRequestHandler):
                 except Exception as ex:
                     self.err_response(ex.message)
 
+        elif path_parts.path == '/scanavg':
+            sql = """
+                SELECT l.park,
+                ROUND(AVG(1.0*sf.total/st.extra), 1) AS avg_scan_speed,
+                COUNT(*) AS CNT
+                FROM logs AS l
+                LEFT JOIN stats AS sf ON l.log_id = sf.log_id and sf.stat = 'files'
+                LEFT JOIN stats AS st ON l.log_id = st.log_id and st.stat = 'times'
+                LEFT JOIN errors AS e ON l.log_id = e.log_id
+                WHERE e.log_id IS NULL
+                AND st.extra > 0 AND sf.total > 0
+                AND l.date > ?
+                GROUP BY l.park
+                ORDER BY l.park;
+            """
+            if 'date' in params and len(params['date']) == 1:
+                date = params['date'][0]
+                date = self.sanitize_date(date)
+                if date:
+                    sql_params = [date]
+                else:
+                    self.err_response('Bad date request')
+                    return
+            else:
+                sql = sql.replace('AND l.date > ?','')
+            with sqlite3.connect(self.db_name) as db:
+                try:
+                    resp = self.db_get_rows(db, sql, sql_params, False)
+                    self.std_response(resp)
+                except Exception as ex:
+                    self.err_response(ex.message)
+
+        elif path_parts.path == '/copyavg':
+            sql = """
+                SELECT l.park,
+                ROUND(AVG(1.0*sb.copied/st.copied/1000.0), 1) AS avg_copy_speed,
+                COUNT(*) AS CNT
+                FROM logs AS l
+                LEFT JOIN stats AS st ON l.log_id = st.log_id and st.stat = 'times'
+                LEFT JOIN stats AS sb ON l.log_id = sb.log_id and sb.stat = 'bytes'
+                LEFT JOIN errors AS e ON l.log_id = e.log_id
+                WHERE e.log_id IS NULL
+                AND st.copied > 0 AND sb.copied > 0
+                AND l.date > ?
+                GROUP BY l.park
+                ORDER BY l.park;
+            """
+            if 'date' in params and len(params['date']) == 1:
+                date = params['date'][0]
+                date = self.sanitize_date(date)
+                if date:
+                    sql_params = [date]
+                else:
+                    self.err_response('Bad date request')
+                    return
+            else:
+                sql = sql.replace('AND l.date > ?','')
+            with sqlite3.connect(self.db_name) as db:
+                try:
+                    resp = self.db_get_rows(db, sql, sql_params, False)
+                    self.std_response(resp)
+                except Exception as ex:
+                    self.err_response(ex.message)
+
+        elif path_parts.path == '/speed':
+            sql = """
+                SELECT l.park, l.date,
+                ROUND(1.0*sf.total/st.extra, 1) AS scan_speed,
+                ROUND(1.0*sb.copied/st.copied/1000.0, 1) AS copy_speed,
+                ROUND(1.0*sb.copied/sf.copied/1000.0, 1) AS avg_size_kb,
+                sf.copied as files,
+                ROUND(sb.copied/1000.0/1000.0, 2) as MBytes
+                FROM logs AS l
+                LEFT JOIN stats AS sf ON l.log_id = sf.log_id and sf.stat = 'files'
+                LEFT JOIN stats AS st ON l.log_id = st.log_id and st.stat = 'times'
+                LEFT JOIN stats AS sb ON l.log_id = sb.log_id and sb.stat = 'bytes'
+                LEFT JOIN errors AS e ON l.log_id = e.log_id
+                WHERE e.log_id IS NULL
+                AND l.date > ?
+                AND l.date < ?
+                AND l.park = ?
+                ORDER BY l.park, l.date;
+            """
+            if 'start' in params and len(params['start']) == 1:
+                date = params['start'][0]
+                date = self.sanitize_date(date)
+                if date:
+                    sql_params.append(date)
+                else:
+                    self.err_response('Bad start date parameter')
+                    return
+            else:
+                sql = sql.replace('AND l.date > ?','')
+            if 'end' in params and len(params['end']) == 1:
+                date = params['end'][0]
+                date = self.sanitize_date(date)
+                if date:
+                    sql_params.append(date)
+                else:
+                    self.err_response('Bad end date parameter')
+                    return
+            else:
+                sql = sql.replace('AND l.date < ?','')
+            if 'park' in params and len(params['park']) == 1:
+                park = params['park'][0]
+                park = self.sanitize_park(park)
+                if park:
+                    sql_params.append(park)
+                else:
+                    self.err_response('Bad park parameter')
+                    return
+            else:
+                sql = sql.replace('AND l.park = ?','')
+            with sqlite3.connect(self.db_name) as db:
+                try:
+                    resp = self.db_get_rows(db, sql, sql_params, False)
+                    self.std_response(resp)
+                except Exception as ex:
+                    self.err_response(ex.message)
+
         elif path_parts.path == '/help':
             self.std_response({'help': self.usage})
         else:
@@ -235,6 +355,17 @@ class SyncHandler(BaseHTTPRequestHandler):
         except ValueError:
             return None
         return date.strftime('%Y-%m-%d')
+
+
+    def sanitize_park(self, s):
+        parks = ['DENA','GLBA','KATM','KEFJ','KENN','KLGO','KOTZ','LACL','NOME',u'SEAN','SITK','WRST','YUGA']
+        try:
+            park = s.upper()
+            if park not in parks:
+                return None
+        except ValueError:
+            return None
+        return park
 
 
 # Next line is for an insecure (http) service
