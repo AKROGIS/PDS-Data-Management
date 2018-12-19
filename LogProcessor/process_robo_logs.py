@@ -17,7 +17,7 @@ LOG_ROOT = 'E:/XDrive/Logs'
 
 logging.config.dictConfig(config_logger.config)
 # Comment the next line during testing, uncomment in production
-# logging.raiseExceptions = False # Ignore errors in the logging system
+logging.raiseExceptions = False # Ignore errors in the logging system
 logger = logging.getLogger('main')
 logger.info("Logging Started")
 
@@ -421,7 +421,7 @@ if __name__ == '__main__':
         db = LOG_ROOT + '/logs.db'
         folder = LOG_ROOT
         # clean_db(db)
-        # main(db, folder)
+        main(db, folder)
     except Exception as ex:
         # overly broad ecception catching.  I don't care what happened, I need to log the exception for debugging
         logger.error('Unexpected exception: %s', ex)
