@@ -114,7 +114,7 @@ def process_error(file_handle, filename, line, line_num, error_sentinal):
 
     # Error has failed unless we get a retry message
     error = {'code': code, 'failed': not retry, 'name': name, 'line_num': error_line_num, 'message': message}
-    return error, eof, retry, line_num  # ignore the last line read (blank or retry), caller can read the next line to continue 
+    return error, eof, retry, line_num  # ignore the last line read (blank or retry), caller can read the next line to continue
 
 
 def parse_error_line(line, filename, line_num, error_sentinal):
@@ -214,14 +214,17 @@ def db_clear(db, drop=True):
     try:
         cursor = db.cursor()
         if drop:
+            cursor.execute('DROP INDEX IF EXISTS changes_date_ix')
             cursor.execute('DROP INDEX IF EXISTS logs_date_ix')
             cursor.execute('DROP TABLE IF EXISTS logs')
             cursor.execute('DROP TABLE IF EXISTS stats')
             cursor.execute('DROP TABLE IF EXISTS errors')
+            cursor.execute('DROP TABLE IF EXISTS changes')
         else:
             cursor.execute('DELETE FROM logs')
             cursor.execute('DELETE FROM stats')
             cursor.execute('DELETE FROM errors')
+            cursor.execute('DELETE FROM changes')
         db.commit()
     except sqlite3.OperationalError:
         pass
@@ -270,6 +273,14 @@ def db_create(db):
             FOREIGN KEY(error_code) REFERENCES error_codes(error_code),
             FOREIGN KEY(log_id) REFERENCES logs(log_id));
     ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS changes(
+            date TEXT,
+            UNIQUE(date));
+    ''')
+    cursor.execute('''
+        CREATE INDEX IF NOT EXISTS changes_date_ix ON changes(date);
+    ''')
     db.commit()
 
 
@@ -303,6 +314,15 @@ def db_write_errors(db, errors):
         INSERT INTO errors (error_code, log_id, line_num, failed, message)
         VALUES (:code, :log, :line_num, :failed, :message)
     ''', errors)
+    db.commit()
+
+
+def db_write_change(db, dates):
+    cursor = db.cursor()
+    cursor.executemany('''
+        INSERT INTO changes (date)
+        VALUES (:date);
+    ''', dates)
     db.commit()
 
 
