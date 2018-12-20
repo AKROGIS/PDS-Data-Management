@@ -1,3 +1,6 @@
+//const data_server = '//inpakrovmais:8080'
+const data_server = '//localhost:8080'
+
 // Return bytes as human readable quantity
 // Credit: https://stackoverflow.com/a/14919494
 function humanFileSize(bytes, si) {
@@ -160,7 +163,7 @@ function post_park_details(data) {
 				<dd>${files_removed} files</dd>
 				<dt>Issues</dt>
 				<dd>${issues}</dd>
-				<a href='//inpakrovmais:8080/logfile?park=${park}&date=${date}'>Log file</a>
+				<a href='${data_server}/logfile?park=${park}&date=${date}'>Log file</a>
 			</div>
 		`
 		html += card_str
@@ -399,22 +402,22 @@ function previous_date() {
 
 function plot_parks1() {
 	var date = document.getElementById('page_date').textContent;
-	var url = '//inpakrovmais:8080/plot1?date=' + date;
+	var url = data_server + '/plot1?date=' + date;
 	getJSON(url, plot1, get_plot_data_fail)
 }
 
 function plot_parks2() {
-	var url = '//inpakrovmais:8080/scanavg?date=2018-09-01';
+	var url = data_server + '/scanavg?date=2018-09-01';
 	getJSON(url, plot2, get_plot_data_fail)
 }
 
 function plot_parks3() {
-	var url = '//inpakrovmais:8080/copyavg?date=2018-09-01';
+	var url = data_server + '/copyavg?date=2018-09-01';
 	getJSON(url, plot3, get_plot_data_fail)
 }
 
 function plot_parks4() {
-	var url = '//inpakrovmais:8080/speed?park=YUGA&start=2018-07-01&end=2018-11-01';
+	var url = data_server + '/speed?park=YUGA&start=2018-07-01&end=2018-11-01';
 	getJSON(url, plot4, get_plot_data_fail)
 }
 
@@ -430,8 +433,8 @@ function setup_page() {
 	}
 	query = '?date=' + date;
 	fix_date_button_state(date, first_night, last_night);
-	getJSON('//inpakrovmais:8080/summary' + query, post_summary, summary_failed)
-	getJSON('//inpakrovmais:8080/parks' + query, post_park_details, parks_failed)
+	getJSON(data_server + '/summary' + query, post_summary, summary_failed)
+	getJSON(data_server + '/parks' + query, post_park_details, parks_failed)
 }
 
 setup_page();
