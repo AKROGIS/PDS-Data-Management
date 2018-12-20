@@ -40,21 +40,21 @@
 			<h2 id='summary_heading'>Summary</h2>
 			<p id="summary_fail" class="card error" hidden>No robocopy results for this date; Contact PDS data manager</p>
 			<div id="summary_card" class="card nominal">
-				<p>Ran robocopy on <span id='count_total_parks'>?</span> parks.
-				<dl>
-					<dt>Scanned</dt>
-					<dd><span id='files_scanned'>?</span> files and <span id='dirs_scanned'>?</span> folders</dd>
-					<dt>Copied</dt>
-					<dd><span id='files_copied'>?</span> files (<span id='bytes_copied'>? Bytes</span>) <a id=changelog_link href='#'>Changelog</a></dd>
-					<dt>Removed</dt>
-					<dd><span id='files_removed'>?</span> files (<span id='bytes_removed'>? Bytes</span>)</dd>
-					<dt>Issues</dt>
-					<dd>
-						<span id='no_issues'>No Issues.</span>
-						<span id='summary_incomplete' hidden><span id='count_not_finished'>?</span> Parks did not finish. </span>
-						<span id='summary_errors' hidden><span id='total_errors'>?</span> Errors encountered.</span>
-					</dd>
-				</dl>
+				<ul>
+					<li>Robocopy to <span id='count_total_parks'>1 park</span>.</li>
+					<li>
+						<span id='summary_no_changes' hidden>No changes on region server.</span>
+						<span id='summary_changes'>See <a id=changelog_link href='#'>change log</a> for details.</span>
+					</li>
+					<li>
+						<span id='summary_no_issues'>No Issues.</span>
+						<span id='summary_issues' hidden>Issues:</span>
+						<ul>
+							<li id='summary_incomplete' hidden><span id='summary_incomplete_count'>1 Park</span> did not finish.</li>
+							<li id='summary_errors' hidden><span id='summary_errors_count'>1 Park</span> had errors.</li>
+						</ul>
+					</li>
+				</ul>
 			</div>
 		</section>
 		<section id="park_details">

@@ -88,36 +88,49 @@ function post_summary(data) {
 		document.getElementById('summary_fail').hidden = false;
 		return
 	}
-	var attr = Object.getOwnPropertyNames(data);
-	attr.forEach((key) => {
-		var ele = document.getElementById(key);
-		if (ele != undefined) {
-			ele.textContent = data[key];
-		}
-	});
-	document.getElementById('bytes_copied').textContent = humanFileSize(data['bytes_copied'],true);
-	document.getElementById('bytes_removed').textContent = humanFileSize(data['bytes_removed'],true);
 	var count_not_finished = data['count_incomplete'] + data['count_unfinished'];
 	var count_total_parks = data['count_complete'] + count_not_finished;
-	var total_errors = data['total_errors'] || 0;
-	var issues = total_errors > 0 || count_not_finished > 0;
-	document.getElementById('count_total_parks').textContent = count_total_parks;
-	document.getElementById('count_not_finished').textContent = count_not_finished;
+	var count_ele = document.getElementById('count_total_parks')
+	if (count_total_parks == 0) {
+		count_ele.textContent = 'no parks';
+	} else if (count_total_parks > 1) {
+		count_ele.textContent = count_total_parks + ' parks';
+	}
+	// case of 1 Park is the default in the html
+	//TODO: replace total_errors with count_parks_with_errors
+	var error_count = data['total_errors'] || 0;
+	var issues = error_count > 0 || count_not_finished > 0;
+	if (count_not_finished > 1) {
+		document.getElementById('summary_incomplete_count').textContent = count_not_finished + ' parks';
+	}
+	document.getElementById('summary_incomplete').hidden = (count_not_finished == 0);
+	if (error_count > 1) {
+		document.getElementById('summary_errors_count').textContent = error_count + ' parks';
+	}
+	document.getElementById('summary_errors').hidden = (error_count == 0);
+
 	if (issues) {
-		document.getElementById('no_issues').hidden = true;
-		if (total_errors == 0) {
+		document.getElementById('summary_issues').hidden = false;
+		document.getElementById('summary_no_issues').hidden = true;
+		if (error_count == 0) {
 			document.getElementById('summary_card').classList.replace('nominal', 'warning');
 		} else {
 			document.getElementById('summary_card').classList.replace('nominal', 'error');
 		}
+	} else {
+		document.getElementById('summary_issues').hidden = true;
+		document.getElementById('summary_no_issues').hidden = false;
 	}
-	if (count_not_finished > 0) {
-		document.getElementById('summary_incomplete').hidden = false;
+	//TODO: get change log dates from service
+	var has_changes = data['has_changes'];
+	if (has_changes) {
+		document.getElementById('summary_changes').hidden = false;
+		document.getElementById('summary_no_changes').hidden = true;
+		document.getElementById('changelog_link').href = 'PDS_ChangeLog.html#' + data['summary_date']
+	} else {
+		document.getElementById('summary_changes').hidden = true;
+		document.getElementById('summary_no_changes').hidden = false;
 	}
-	if (total_errors > 0) {
-		document.getElementById('summary_errors').hidden = false;
-	}
-	document.getElementById('changelog_link').href = 'PDS_ChangeLog.html#' + data['page_date']
 }
 
 // Success callback for adding park details to the web page
