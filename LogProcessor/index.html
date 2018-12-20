@@ -35,10 +35,10 @@
 			<button id="previous_date" data-limit="" data-destination="" aria-label="previous date" onclick=previous_date()><<</button>
 			<span id="page_date"></span>
 			<button id="next_date" data-limit="" data-destination="" aria-label="next date" onclick=next_date()>>></button>
-			<p id="summary_fail" class="card error" hidden>No robocopy results for this date; Contact PDS data manager</p>
 		</section>
 		<section id="summary">
 			<h2 id='summary_heading'>Summary</h2>
+			<p id="summary_fail" class="card error" hidden>No robocopy results for this date; Contact PDS data manager</p>
 			<div id="summary_card" class="card nominal">
 				<p>Ran robocopy on <span id='count_total_parks'>?</span> parks.
 				<dl>
@@ -59,11 +59,12 @@
 		</section>
 		<section id="park_details">
 			<h2 id="park_heading">Details</h2>
-			<p id="parks_fail"></p>
+			<p id="parks_fail" class="card error" hidden>No robocopy details; Contact PDS data manager</p>
 			<div id='park_cards'></div>
 		</section>
 		<section id="graphs" style="clear:both;">
 			<h2>Graph</h2>
+			<p id="graph_fail" class="card error" hidden>No data for graph; Contact PDS data manager</p>
 			<div id="graph_div"></div>
 		</section>
 		<aside>

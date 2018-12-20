@@ -74,7 +74,10 @@ function getJSON(url, callback, errorback) {
 				errorback(this.statusText);
 			}
 		}
-		 };
+	};
+	xhr.onerror= function(e) {
+		errorback("Error fetching data for report. Check if service is running.");
+	};
 	xhr.send();
   }
 
@@ -173,21 +176,23 @@ function post_park_details(data) {
 
 // Error callback for adding summary error to the web page
 function summary_failed(message) {
-	ele = document.getElementById('summary_fail');
+	var ele = document.getElementById('summary_fail');
 	if (message == 'Service Unavailable') {
 		message2 = 'Check to make sure the python service is running.';
 		ele.textContent = message + '. ' + message2;
 	} else {
 		ele.textContent = message;
 	}
-	ele.style.cssText = 'color: #990000; background-color: #ffdddd;';
+	ele.hidden = false;
+	ele = document.getElementById('summary_card').hidden = true;
 }
 
 // Error callback for adding park details error to the web page
 function parks_failed(message) {
-	ele = document.getElementById('parks_fail');
+	var ele = document.getElementById('parks_fail');
 	ele.textContent = message;
-	ele.style.cssText = 'color: #990000; background-color: #ffdddd;';
+	ele.hidden = false;
+	ele = document.getElementById('park_cards').hidden = true;
 }
 
 // Update the state of the date text and the next/previous date buttons
@@ -376,7 +381,11 @@ function plot4a(data) {
 }
 
 function get_plot_data_fail(err) {
-	console.log(err)
+	var ele = document.getElementById("graph_fail");
+	ele.hidden = false;
+	if (err) {
+		ele.textContent = err;
+	}
 }
 
 function get_last_night() {
@@ -400,23 +409,37 @@ function previous_date() {
 	location.href = UpdateQueryString('date', destination);
 }
 
+function prep_for_new_graph() {
+	document.getElementById("graph_fail").hidden = true;
+	var graph = document.getElementById("graph_div")
+	while(graph.firstChild) {
+		graph.removeChild(graph.firstChild);
+	};
+}
 function plot_parks1() {
+	prep_for_new_graph();
 	var date = document.getElementById('page_date').textContent;
 	var url = data_server + '/plot1?date=' + date;
 	getJSON(url, plot1, get_plot_data_fail)
 }
 
 function plot_parks2() {
+	prep_for_new_graph();
+	document.getElementById("graph_fail").hidden = true;
 	var url = data_server + '/scanavg?date=2018-09-01';
 	getJSON(url, plot2, get_plot_data_fail)
 }
 
 function plot_parks3() {
+	prep_for_new_graph();
+	document.getElementById("graph_fail").hidden = true;
 	var url = data_server + '/copyavg?date=2018-09-01';
 	getJSON(url, plot3, get_plot_data_fail)
 }
 
 function plot_parks4() {
+	prep_for_new_graph();
+	document.getElementById("graph_fail").hidden = true;
 	var url = data_server + '/speed?park=YUGA&start=2018-07-01&end=2018-11-01';
 	getJSON(url, plot4, get_plot_data_fail)
 }
