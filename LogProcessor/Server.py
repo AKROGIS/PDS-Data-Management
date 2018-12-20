@@ -28,22 +28,14 @@ class SyncHandler(BaseHTTPRequestHandler):
         if path_parts.path == '/summary':
             sql = """
                 SELECT l.date AS summary_date,
-                MAX(sf.total) AS files_scanned, MAX(sd.total) AS dirs_scanned,
-                MAX(sf.copied) AS files_copied, MAX(sf.extra) AS files_removed,
-                MAX(sb.copied) AS bytes_copied, MAX(sb.extra) AS bytes_removed,
-                SUM(e.count_errors) AS total_errors,
-                COUNT(l1.park) AS count_complete,
-                COUNT(l2.park) AS count_incomplete,
-                COUNT(l3.park) AS count_unfinished
+                COUNT(*) AS count_start,
+                COUNT(l1.park) AS count_unfinished,
+                COUNT(e1.log_id) AS count_with_errors,
+                CASE WHEN c.date IS NULL THEN 0 ELSE 1 END AS has_changes
                 FROM logs AS l
-                LEFT JOIN stats AS sf ON l.log_id = sf.log_id and sf.stat = 'files' AND l.park <> 'DENA'
-                LEFT JOIN stats AS sd ON l.log_id = sd.log_id and sd.stat = 'dirs' AND l.park <> 'DENA'
-                LEFT JOIN stats AS st ON l.log_id = st.log_id and st.stat = 'times' AND l.park <> 'DENA'
-                LEFT JOIN stats AS sb ON l.log_id = sb.log_id and sb.stat = 'bytes' AND l.park <> 'DENA'
-                LEFT JOIN logs AS l1 ON l.log_id = l1.log_id and l1.finished = 1
-                LEFT JOIN logs AS l2 ON l.log_id = l2.log_id and l2.finished = 0
-                LEFT JOIN logs AS l3 ON l.log_id = l3.log_id and l3.finished IS NULL
-                LEFT JOIN (SELECT log_id, COUNT(*) AS count_errors FROM errors where failed GROUP BY log_id) AS e ON l.log_id = e.log_id
+                LEFT JOIN logs AS l1 ON l.log_id = l1.log_id and (l1.finished = 0 OR l1.finished IS NULL)
+                LEFT JOIN (SELECT log_id FROM errors WHERE failed GROUP BY log_id) AS e1 ON l.log_id = e1.log_id
+                LEFT JOIN changes AS c on l.date = c.date
                 WHERE l.date = (SELECT MAX(date) FROM logs)
                 GROUP BY l.date;
             """
