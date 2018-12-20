@@ -84,8 +84,7 @@ function getJSON(url, callback, errorback) {
 // Success callback for adding summary data to the web page
 function post_summary(data) {
 	if (Object.keys(data).length === 0 && data.constructor === Object) {
-		document.getElementById('summary').hidden = true;
-		document.getElementById('graphs').hidden = true;
+		document.getElementById('summary_card').hidden = true;
 		document.getElementById('summary_fail').hidden = false;
 		return
 	}
@@ -124,7 +123,8 @@ function post_summary(data) {
 // Success callback for adding park details to the web page
 function post_park_details(data) {
 	if (data.length === 1) {
-		document.getElementById('park_details').hidden = true;
+		document.getElementById('park_cards').hidden = true;
+		document.getElementById('park_fail').hidden = false;
 		return
 	}
 	//["park","date","finished","count_errors","files_copied","files_removed","files_scanned","time_copying","time_scanning","bytes_copied"]
@@ -189,7 +189,7 @@ function summary_failed(message) {
 
 // Error callback for adding park details error to the web page
 function parks_failed(message) {
-	var ele = document.getElementById('parks_fail');
+	var ele = document.getElementById('park_fail');
 	ele.textContent = message;
 	ele.hidden = false;
 	ele = document.getElementById('park_cards').hidden = true;
@@ -314,6 +314,10 @@ function unpack(rows, key) {
 }
 
 function plot1(data) {
+	if (data.length < 2) {
+		get_plot_data_fail("No plot data for this date.")
+		return;
+	}
 	plot_2bars(
 		unpack(data,0), //park
 		'Copy Speed (kB/s)',
