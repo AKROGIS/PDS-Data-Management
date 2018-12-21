@@ -14,6 +14,12 @@ import logging.config
 import config_logger
 
 LOG_ROOT = r'E:\XDrive\Logs'
+CHANGE_LOG = r'\\inpakrovmdist\gisdata2\GIS\ThemeMgr\PDS_ChangeLog.txt'
+# For testing on Mac
+#LOG_ROOT = 'data'
+#CHANGE_LOG = r'data/PDS_ChangeLog.txt'
+# For testing on PC
+#LOG_ROOT = r'\\inpakrovmais\XDrive\Logs'
 
 logging.config.dictConfig(config_logger.config)
 # Comment the next line during testing, uncomment in production
@@ -403,6 +409,7 @@ def main(db_name, log_folder):
                 logger.error('Unexpected exception processing log file: %s, exception: %s',
                     filename, ex)
     clean_folder(log_folder)
+    get_changes(db_name)
 
 
 def clean_folder(folder):
@@ -436,15 +443,55 @@ def clean_folder(folder):
                 filename, new_name, ex)
 
 
+def get_changes(db_name):
+    if not os.path.exists(CHANGE_LOG):
+        logger.error('Change Log (%s) not found', CHANGE_LOG)
+        return
+    # if Change Log is older than last date in database, then skip
+    # if no dates in datebase, then read all
+    # otherwise, read changelog until date <= max_db_date
+    max_db_date = None
+    with sqlite3.connect(db_name) as conn:
+        max_db_date = conn.cursor().execute('SELECT MAX(date) FROM changes;').fetchone()[0]
+    unix_timestamp = os.path.getmtime(CHANGE_LOG)
+    file_date = datetime.datetime.fromtimestamp(unix_timestamp).isoformat()[:10]
+    if file_date <= max_db_date:
+        logger.info('Changelog file date %s is not newer than the most recent change in the datebase %s',
+            file_date, max_db_date)
+        return
+    if max_db_date is None:
+        logger.info('No change dates in the datebase, reading entire change log.')
+    dates = []
+    with open(CHANGE_LOG, 'r') as file_handle:
+        previous_line = file_handle.readline()
+        for line in file_handle:
+            if line.strip() == '----------':
+                date = previous_line[:10]
+                if max_db_date is None or date > max_db_date:
+                    dates.append((date,))  # add a single element tuple to the list (for the db parameter substitution)
+                if max_db_date is not None and date <= max_db_date:
+                    break
+            previous_line = line
+    dates.sort()
+    print(dates)
+    with sqlite3.connect(db_name) as conn:
+        try:
+            db_write_change(conn, dates)
+        except sqlite3.DatabaseError as ex:
+            logger.error('Unable to write new dates from changelog into database, error: %s', ex)
+
+
 if __name__ == '__main__':
+    db = os.path.join(LOG_ROOT, 'logs.db')
     try:
         db = os.path.join(LOG_ROOT, 'logs.db')
         folder = LOG_ROOT
         # clean_db(db)
-        main(db, folder)
+        # main(db, folder)
     except Exception as ex:
         # overly broad ecception catching.  I don't care what happened, I need to log the exception for debugging
         logger.error('Unexpected exception: %s', ex)
 
+    get_changes(db)
     # TODO: read head of \\inpakrovmdist\GISData2\GIS\ThemeMgr\PDS_ChangeLog.txt to get last update
     # TODO: copy \\inpakrovmdist\GISData2\PDS_ChangeLog.html to \\inpakrovmgis\inetapps\robo
