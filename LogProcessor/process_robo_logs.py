@@ -487,11 +487,7 @@ if __name__ == '__main__':
         db = os.path.join(LOG_ROOT, 'logs.db')
         folder = LOG_ROOT
         # clean_db(db)
-        # main(db, folder)
+        main(db, folder)
     except Exception as ex:
         # overly broad ecception catching.  I don't care what happened, I need to log the exception for debugging
         logger.error('Unexpected exception: %s', ex)
-
-    get_changes(db)
-    # TODO: read head of \\inpakrovmdist\GISData2\GIS\ThemeMgr\PDS_ChangeLog.txt to get last update
-    # TODO: copy \\inpakrovmdist\GISData2\PDS_ChangeLog.html to \\inpakrovmgis\inetapps\robo
