@@ -28,8 +28,9 @@
 		</section>
 		<section id="summary">
 			<h2 id='summary_heading'>Summary</h2>
+			<p id="summary_wait">Please wait for the data to load...</p>
 			<p id="summary_fail" class="card error" hidden>No robocopy results for this date; Contact PDS data manager</p>
-			<div id="summary_card" class="card nominal">
+			<div id="summary_card" class="card nominal" hidden>
 				<ul>
 					<li>Robocopy to <span id='count_total_parks'>1 park</span>.</li>
 					<li>
@@ -49,13 +50,15 @@
 		</section>
 		<section id="park_details">
 			<h2 id="park_heading">Details</h2>
+			<p id="park_wait">Please wait for the data to load...</p>
 			<p id="park_fail" class="card error" hidden>No robocopy details; Contact PDS data manager</p>
-			<div id='park_cards'></div>
+			<div id='park_cards' hidden></div>
 		</section>
 		<section id="graphs" style="clear:both;">
 			<h2>Graph</h2>
+			<p id="graph_wait" hidden>Please wait for the data to load...</p>
 			<p id="graph_fail" class="card error" hidden>No data for graph; Contact PDS data manager</p>
-			<div id="graph_div"></div>
+			<div id="graph_div" hidden></div>
 		</section>
 		<aside>
 			<h2>Plots</h2>

@@ -84,7 +84,7 @@ function getJSON(url, callback, errorback) {
 // Success callback for adding summary data to the web page
 function post_summary(data) {
 	if (Object.keys(data).length === 0 && data.constructor === Object) {
-		document.getElementById('summary_card').hidden = true;
+		document.getElementById("summary_wait").hidden = true;
 		document.getElementById('summary_fail').hidden = false;
 		return
 	}
@@ -134,12 +134,14 @@ function post_summary(data) {
 		document.getElementById('summary_changes').hidden = true;
 		document.getElementById('summary_no_changes').hidden = false;
 	}
+	document.getElementById("summary_wait").hidden = true;
+	document.getElementById("summary_card").hidden = false;
 }
 
 // Success callback for adding park details to the web page
 function post_park_details(data) {
 	if (data.length === 1) {
-		document.getElementById('park_cards').hidden = true;
+		document.getElementById("park_wait").hidden = true;
 		document.getElementById('park_fail').hidden = false;
 		return
 	}
@@ -191,6 +193,8 @@ function post_park_details(data) {
 		html += card_str
 	});
 	document.getElementById('park_cards').innerHTML = html;
+	document.getElementById("park_wait").hidden = true;
+	document.getElementById("park_cards").hidden = false;
 }
 
 // Error callback for adding summary error to the web page
@@ -203,7 +207,7 @@ function summary_failed(message) {
 		ele.textContent = message;
 	}
 	ele.hidden = false;
-	ele = document.getElementById('summary_card').hidden = true;
+	document.getElementById("summary_wait").hidden = true;
 }
 
 // Error callback for adding park details error to the web page
@@ -211,7 +215,7 @@ function parks_failed(message) {
 	var ele = document.getElementById('park_fail');
 	ele.textContent = message;
 	ele.hidden = false;
-	ele = document.getElementById('park_cards').hidden = true;
+	document.getElementById("park_wait").hidden = true;
 }
 
 // Update the state of the date text and the next/previous date buttons
@@ -361,6 +365,8 @@ function plot1(data) {
 		get_plot_data_fail("No plot data for this date.")
 		return;
 	}
+	document.getElementById("graph_wait").hidden = true;
+	document.getElementById("graph_div").hidden = false;
 	plot_2bars(
 		unpack(data,0), //park
 		'Copy Speed (kB/s)',
@@ -372,6 +378,8 @@ function plot1(data) {
 }
 
 function plot2(data) {
+	document.getElementById("graph_wait").hidden = true;
+	document.getElementById("graph_div").hidden = false;
 	plot_2bars(
 		unpack(data,0), //park
 		'Scan Speed (files/s)',
@@ -383,6 +391,8 @@ function plot2(data) {
 }
 
 function plot3(data) {
+	document.getElementById("graph_wait").hidden = true;
+	document.getElementById("graph_div").hidden = false;
 	plot_2bars(
 		unpack(data,0), //park
 		'Copy Speed (kB/s)',
@@ -394,6 +404,8 @@ function plot3(data) {
 }
 
 function plot4(data) {
+	document.getElementById("graph_wait").hidden = true;
+	document.getElementById("graph_div").hidden = false;
 	park = data[0][0];
 	title = "Historic Speeds for " + park
 	plot_2lines(
@@ -408,6 +420,8 @@ function plot4(data) {
 }
 
 function plot4a(data) {
+	document.getElementById("graph_wait").hidden = true;
+	document.getElementById("graph_div").hidden = false;
 	park = data[0][0];
 	title = "Historic speeds for " + park
 	plot_5lines(
@@ -425,6 +439,8 @@ function plot4a(data) {
 		unpack(data,6),
 		title
 	)
+	document.getElementById("graph_wait").hidden = true;
+	document.getElementById("graph_div").hidden = false;
 }
 
 function get_plot_data_fail(err) {
@@ -433,6 +449,7 @@ function get_plot_data_fail(err) {
 	if (err) {
 		ele.textContent = err;
 	}
+	document.getElementById("graph_wait").hidden = true;
 }
 
 function get_last_night() {
@@ -457,8 +474,10 @@ function previous_date() {
 }
 
 function prep_for_new_graph() {
-	document.getElementById("graph_fail").hidden = true;
 	var graph = document.getElementById("graph_div")
+	graph.hidden = true;
+	document.getElementById("graph_fail").hidden = true;
+	document.getElementById("graph_wait").hidden = false;
 	while(graph.firstChild) {
 		graph.removeChild(graph.firstChild);
 	};
@@ -503,7 +522,13 @@ function setup_page() {
 	}
 	query = '?date=' + date;
 	fix_date_button_state(date, first_night, last_night);
+	document.getElementById("summary_wait").hidden = false;
+	document.getElementById("summary_card").hidden = true;
+	document.getElementById("summary_fail").hidden = true;
 	getJSON(data_server + '/summary' + query, post_summary, summary_failed)
+	document.getElementById("park_wait").hidden = false;
+	document.getElementById("park_cards").hidden = true;
+	document.getElementById("park_fail").hidden = true;
 	getJSON(data_server + '/parks' + query, post_park_details, parks_failed)
 }
 
