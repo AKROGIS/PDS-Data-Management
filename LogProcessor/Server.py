@@ -9,7 +9,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
 LOG_DB = 'E:/XDrive/Logs/logs.db'
 #LOG_DB = r'\\inpakrovmais\XDrive\Logs\logs.db'
-#LOG_DB = 'data/logs.db'
+LOG_DB = 'data/logs.db'
 
 class SyncHandler(BaseHTTPRequestHandler):
     db_name = LOG_DB
