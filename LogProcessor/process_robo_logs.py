@@ -473,7 +473,6 @@ def get_changes(db_name):
                     break
             previous_line = line
     dates.sort()
-    print(dates)
     with sqlite3.connect(db_name) as conn:
         try:
             db_write_change(conn, dates)
@@ -482,7 +481,6 @@ def get_changes(db_name):
 
 
 if __name__ == '__main__':
-    db = os.path.join(LOG_ROOT, 'logs.db')
     try:
         db = os.path.join(LOG_ROOT, 'logs.db')
         folder = LOG_ROOT

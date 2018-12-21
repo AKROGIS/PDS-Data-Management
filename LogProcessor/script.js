@@ -1,5 +1,5 @@
-//const data_server = '//inpakrovmais:8080'
-const data_server = '//localhost:8080'
+const data_server = '//inpakrovmais:8080'
+//const data_server = '//localhost:8080'
 
 // Return bytes as human readable quantity
 // Credit: https://stackoverflow.com/a/14919494
