@@ -151,9 +151,10 @@ function post_park_details(data) {
 		var date = row[1];
 		var bytes_copied = row[9];
 		var size_copied = humanFileSize(bytes_copied,true);
-		var time_copying = row[7];
+		var time_copying = row[7] ;
 		var copy_speed = round(bytes_copied/time_copying/1000.0,1);
 		var copy_text = time_copying == 0 ? 'Nothing copied.' : `${size_copied} in ${time_copying} seconds (${copy_speed} kB/sec)`;
+		copy_text = time_copying == null ? 'Unknown' : copy_text;
 		var files_scanned = row[6];
 		var time_scanning = row[8];
 		var scan_speed = round(files_scanned/time_scanning,1);
@@ -162,7 +163,7 @@ function post_park_details(data) {
 		var count_errors = row[3];
 		var status = count_errors == 0 ? (finished == 1 ? 'nominal' : 'warning') : 'error';
 		var error_str = count_errors == 0 ? '' : `${count_errors} Errors.`;
-		var finish_str = finished == 1 ? '' : 'Robocopy did not finish (no timing statistics).';
+		var finish_str = finished == 1 ? '' : 'Robocopy did not finish (no timing data).';
 		var issues = 'No Issues.';
 		if (error_str == '' && finish_str != '') {
 			issues = finish_str;
@@ -171,15 +172,17 @@ function post_park_details(data) {
 		} else if (error_str != '' && finish_str != '') {
 			issues = error_str + ' ' + finish_str;
 		}
+		var scan_text = files_scanned == null ? 'Unknown' : `${files_scanned} files in ${time_scanning} seconds (${scan_speed} files/sec)`
+		var removed_text = files_removed == null ? 'Unknown' : `${files_removed} files`
 		var card_str = `
 			<div class='card ${status} inline'>
 				<h3>${park}</h3>
 				<dt>Copied</dt>
 				<dd>${copy_text}</dd>
 				<dt>Scanned</dt>
-				<dd>${files_scanned} files in ${time_scanning} seconds (${scan_speed} files/sec)</dd>
+				<dd>${scan_text}</dd>
 				<dt>Removed</dt>
-				<dd>${files_removed} files</dd>
+				<dd>${removed_text}</dd>
 				<dt>Issues</dt>
 				<dd>${issues}</dd>
 				<a href='${data_server}/logfile?park=${park}&date=${date}'>Log file</a>
