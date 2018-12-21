@@ -234,6 +234,30 @@ function fix_date_button_state(date, min_date, max_date) {
 	next_button.hidden = (max_date <= date);
 }
 
+function page_date(str) {
+	if (!str) {
+		str = document.getElementById('page_date').textContent
+	}
+	const year = str.substring(0,4)
+	const month = str.substring(5,7) - 1
+	const day = str.substring(8,10)
+	return new Date(year, month, day)
+}
+
+function pad2(n) {
+	if (n < 10) {
+		return '0' + n;
+	}
+	return n;
+}
+
+function ISOformat(date) {
+	return date.getFullYear() +
+	  '-' + pad2(date.getMonth() + 1) +
+	  '-' + pad2(date.getDate());
+}
+
+
 // Validate a user provided iso date string
 // Range is open, i.e. min_date and max_date are allowed, if null then no limit
 function is_valid_date(date, min_date, max_date) {
