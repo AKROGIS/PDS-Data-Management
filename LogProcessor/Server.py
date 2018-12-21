@@ -85,6 +85,61 @@ class SyncHandler(BaseHTTPRequestHandler):
                 except Exception as ex:
                     self.err_response(ex.message)
 
+        elif path_parts.path == '/error_summary':
+            sql = """
+                SELECT e.error_code, c.error_name, count(*) AS count
+                FROM errors AS e JOIN error_codes AS c
+                ON e.error_code = c.error_code
+                WHERE e.failed AND log_id = ?
+                ORDER BY e.error_code;
+            """
+            # Return nothing (log_id = 0), instead of an error when given bad input
+            log_id = 0
+            if 'log' in params and len(params['log']) == 1:
+                log_text = params['log'][0]
+                try:
+                    log_id = int(log_text)
+                except ValueError:
+                    pass
+            sql_params = [log_id]
+            with sqlite3.connect(self.db_name) as db:
+                try:
+                    resp = self.db_get_rows(db, sql, sql_params)
+                    self.std_response(resp)
+                except Exception as ex:
+                    self.err_response(ex.message)
+
+
+        elif path_parts.path == '/error_details':
+            sql = """
+                SELECT REPLACE(message,'E:\\XDrive\\RemoteServers\\XDrive-','') AS message
+                FROM errors
+                WHERE log_id = ? AND error_code = ? ORDER BY error_id;
+            """
+            # Return nothing (log_id = 0), instead of an error when given bad input
+            log_id = 0
+            code = 0
+            if 'log' in params and len(params['log']) == 1:
+                log_text = params['log'][0]
+                try:
+                    log_id = int(log_text)
+                except ValueError:
+                    pass
+            if 'code' in params and len(params['code']) == 1:
+                code_text = params['code'][0]
+                try:
+                    code = int(code_text)
+                except ValueError:
+                    pass
+            sql_params = [log_id, code]
+            with sqlite3.connect(self.db_name) as db:
+                try:
+                    resp = self.db_get_rows(db, sql, sql_params)
+                    self.std_response(resp)
+                except Exception as ex:
+                    self.err_response(ex.message)
+
+
         elif path_parts.path == '/logfile':
             sql = "SELECT filename FROM logs WHERE date = ? AND park = ?"
             date = None
