@@ -219,13 +219,10 @@ function parks_failed(message) {
 }
 
 // Update the state of the date text and the next/previous date buttons
-function fix_date_button_state(date, min_date, max_date) {
+function fix_date_button_state(date) {
 	document.getElementById('page_date').textContent = date;
 	var previous_button = document.getElementById('previous_date');
 	var next_button = document.getElementById('next_date');
-	previous_button.dataset.limit = min_date;
-	next_button.dataset.limit = max_date;
-
 	//TODO: instantiating a new date with a string is discouraged due to browser differences
 	var next_date = new Date(date);
 	next_date.setDate(next_date.getDate() + 1);
@@ -237,8 +234,8 @@ function fix_date_button_state(date, min_date, max_date) {
 	var previous_text = previous_date.toISOString().substring(0, 10);
 	previous_button.dataset.destination = previous_text;
 
-	previous_button.hidden = (date <= min_date);
-	next_button.hidden = (max_date <= date);
+	previous_button.hidden = (date <= previous_button.dataset.limit);
+	next_button.hidden = (next_button.dataset.limit <= date);
 }
 
 function page_date(str) {
@@ -464,13 +461,17 @@ function get_last_night() {
 // ===========
 
 function next_date() {
-	var destination = document.getElementById('next_date').dataset.destination;
-	location.href = UpdateQueryString('date', destination);
+	const new_date = document.getElementById('next_date').dataset.destination;
+	const url = UpdateQueryString('date', new_date);
+    window.history.pushState({},"", url);
+	setup_page(new_date);
 }
 
 function previous_date() {
-	var destination = document.getElementById('previous_date').dataset.destination;
-	location.href = UpdateQueryString('date', destination);
+	const new_date = document.getElementById('previous_date').dataset.destination;
+	const url = UpdateQueryString('date', new_date);
+    window.history.pushState({},"", url);
+	setup_page(new_date);
 }
 
 function prep_for_new_graph() {
@@ -511,17 +512,9 @@ function plot_parks4() {
 }
 
 // Get data from the services and update the page
-function setup_page() {
-	var last_night = get_last_night();
-	var first_night = '2018-01-22'
-	let params = new URLSearchParams(document.location.search.substring(1));
-	let date = params.get("date");
-	if (!is_valid_date(date, first_night, last_night)) {
-		//TODO: show error, hide everything else and add 'goto last night' button
-		date = last_night
-	}
-	query = '?date=' + date;
-	fix_date_button_state(date, first_night, last_night);
+function setup_page(date) {
+	fix_date_button_state(date);
+	const query = '?date=' + date;
 	document.getElementById("summary_wait").hidden = false;
 	document.getElementById("summary_card").hidden = true;
 	document.getElementById("summary_fail").hidden = true;
@@ -532,4 +525,19 @@ function setup_page() {
 	getJSON(data_server + '/parks' + query, post_park_details, parks_failed)
 }
 
-setup_page();
+// Get data from the services and update the page
+function setup_site() {
+	var last_night = get_last_night();
+	var first_night = '2018-01-22'
+	document.getElementById('previous_date').dataset.limit = first_night;
+	document.getElementById('next_date').dataset.limit = last_night;
+	let params = new URLSearchParams(document.location.search.substring(1));
+	let date = params.get("date");
+	if (!is_valid_date(date, first_night, last_night)) {
+		//TODO: show error, hide everything else and add 'goto last night' button
+		date = last_night
+	}
+	setup_page(date);
+}
+
+setup_site();
