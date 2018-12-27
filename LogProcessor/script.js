@@ -83,8 +83,8 @@ function getJSON(url, callback, errorback) {
 
 // Success callback for adding summary data to the web page
 function post_summary(data) {
+	document.getElementById("summary_wait").hidden = true;
 	if (Object.keys(data).length === 0 && data.constructor === Object) {
-		document.getElementById("summary_wait").hidden = true;
 		document.getElementById('summary_fail').hidden = false;
 		return
 	}
@@ -134,7 +134,6 @@ function post_summary(data) {
 		document.getElementById('summary_changes').hidden = true;
 		document.getElementById('summary_no_changes').hidden = false;
 	}
-	document.getElementById("summary_wait").hidden = true;
 	document.getElementById("summary_card").hidden = false;
 }
 
