@@ -103,7 +103,7 @@ function dateFromIso(str) {
 // Range is open, i.e. minDate and maxDate are allowed, if null then no limit
 function validateDate(date, minDate, maxDate) {
 	const dateObj = dateFromIso(date)
-	let newDate = isoDateFormat(dateObj)
+	const newDate = isoDateFormat(dateObj)
 	if (minDate && newDate < minDate) { return minDate }
 	if (maxDate && maxDate < newDate) { return maxDate }
 	return newDate
@@ -111,15 +111,14 @@ function validateDate(date, minDate, maxDate) {
 
 // Returns an ISO format date for yesterday (presumably the last time robo ran)
 function getYesterday() {
-	today = new Date()
-	today.setDate(today.getDate() - 1)  //yesterday
-	date = isoDateFormat(today)
-	return date;
+	const dateObj = new Date()
+	dateObj.setDate(dateObj.getDate() - 1)  //yesterday
+	return isoDateFormat(dateObj)
 }
 
 // generic request to get JSON data from data service
 function getJSON(url, callback, errorback) {
-	let xhr = new XMLHttpRequest();
+	const xhr = new XMLHttpRequest();
 	xhr.open('GET', url, true);
 	xhr.responseType = 'json';
 	xhr.onload = function() {
@@ -155,7 +154,7 @@ function post_summary(data) {
 	const has_changes = data['has_changes'];
 	const issues = count_errors > 0 || count_unfinished > 0;
 
-	var count_ele = document.getElementById('count_total_parks')
+	const count_ele = document.getElementById('count_total_parks')
 	if (count_starts == 0) {
 		count_ele.textContent = 'no parks';
 	} else if (count_starts > 1) {
@@ -206,26 +205,26 @@ function post_park_details(data) {
 	}
 	//["park","date","finished","count_errors","files_copied","files_removed","files_scanned","time_copying","time_scanning","bytes_copied"]
 	//Ignore the first row (header), assume there are no more then 20 parks
-	html = '';
+	let html = '';
 	data.slice(1, 20).forEach((row) => {
-		var park = row[0];
-		var date = row[1];
-		var bytes_copied = row[9];
-		var size_copied = humanFileSize(bytes_copied,true);
-		var time_copying = row[7] ;
-		var copy_speed = round(bytes_copied/time_copying/1000.0,1);
-		var copy_text = time_copying == 0 ? 'Nothing copied.' : `${size_copied} in ${time_copying} seconds (${copy_speed} kB/sec)`;
+		const park = row[0];
+		const date = row[1];
+		const bytes_copied = row[9];
+		const size_copied = humanFileSize(bytes_copied,true);
+		const time_copying = row[7] ;
+		const copy_speed = round(bytes_copied/time_copying/1000.0,1);
+		let copy_text = time_copying == 0 ? 'Nothing copied.' : `${size_copied} in ${time_copying} seconds (${copy_speed} kB/sec)`;
 		copy_text = time_copying == null ? 'Unknown' : copy_text;
-		var files_scanned = row[6];
-		var time_scanning = row[8];
-		var scan_speed = round(files_scanned/time_scanning,1);
-		var files_removed = row[5];
-		var finished = row[2];
-		var count_errors = row[3];
-		var status = count_errors == 0 ? (finished == 1 ? 'nominal' : 'warning') : 'error';
-		var error_str = count_errors == 0 ? '' : `${count_errors} Errors.`;
-		var finish_str = finished == 1 ? '' : 'Robocopy did not finish (no timing data).';
-		var issues = 'No Issues.';
+		const files_scanned = row[6];
+		const time_scanning = row[8];
+		const scan_speed = round(files_scanned/time_scanning,1);
+		const files_removed = row[5];
+		const finished = row[2];
+		const count_errors = row[3];
+		const status = count_errors == 0 ? (finished == 1 ? 'nominal' : 'warning') : 'error';
+		const error_str = count_errors == 0 ? '' : `${count_errors} Errors.`;
+		const finish_str = finished == 1 ? '' : 'Robocopy did not finish (no timing data).';
+		let issues = 'No Issues.';
 		if (error_str == '' && finish_str != '') {
 			issues = finish_str;
 		} else if (error_str != '' && finish_str == '') {
@@ -233,9 +232,9 @@ function post_park_details(data) {
 		} else if (error_str != '' && finish_str != '') {
 			issues = error_str + ' ' + finish_str;
 		}
-		var scan_text = files_scanned == null ? 'Unknown' : `${files_scanned} files in ${time_scanning} seconds (${scan_speed} files/sec)`
-		var removed_text = files_removed == null ? 'Unknown' : `${files_removed} files`
-		var card_str = `
+		const scan_text = files_scanned == null ? 'Unknown' : `${files_scanned} files in ${time_scanning} seconds (${scan_speed} files/sec)`
+		const removed_text = files_removed == null ? 'Unknown' : `${files_removed} files`
+		const card_str = `
 			<div class='card ${status} inline'>
 				<h3>${park}</h3>
 				<dt>Copied</dt>
@@ -258,9 +257,9 @@ function post_park_details(data) {
 
 // Error callback for adding summary error to the web page
 function summary_failed(message) {
-	var ele = document.getElementById('summary_fail');
+	const ele = document.getElementById('summary_fail');
 	if (message == 'Service Unavailable') {
-		message2 = 'Check to make sure the python service is running.';
+		const message2 = 'Check to make sure the python service is running.';
 		ele.textContent = message + '. ' + message2;
 	} else {
 		ele.textContent = message;
@@ -271,7 +270,7 @@ function summary_failed(message) {
 
 // Error callback for adding park details error to the web page
 function parks_failed(message) {
-	var ele = document.getElementById('park_fail');
+	const ele = document.getElementById('park_fail');
 	ele.textContent = message;
 	ele.hidden = false;
 	document.getElementById("park_wait").hidden = true;
@@ -279,8 +278,8 @@ function parks_failed(message) {
 
 // Update the state of the date text and the next/previous date buttons
 function fix_date_button_state(date) {
-	var previous_button = document.getElementById('previous_date');
-	var next_button = document.getElementById('next_date');
+	const previous_button = document.getElementById('previous_date');
+	const next_button = document.getElementById('next_date');
 
 	//Use a javascript date object because it makes date math much easier
 	// getDate and setDate get/set the day of the month
@@ -297,20 +296,20 @@ function fix_date_button_state(date) {
 }
 
 function plot_2bars(x, l1, y1, l2, y2, title) {
-	var trace1 = {
+	const trace1 = {
 		x: x,
 		y: y1,
 		name: l1,
 		type: 'bar'
 	};
 
-	var trace2 = {
+	const trace2 = {
 		x: x,
 		y: y2,
 		name: l2,
 		type: 'bar'
 	};
-	var layout = {
+	const layout = {
 		barmode: 'group',
 		title: title
 	};
@@ -318,63 +317,63 @@ function plot_2bars(x, l1, y1, l2, y2, title) {
 }
 
 function plot_2lines(x, l1, y1, l2, y2, title) {
-	var trace1 = {
+	const trace1 = {
 		x: x,
 		y: y1,
 		name: l1,
 		type: "scatter",
 		mode: "lines"
 	};
-	var trace2 = {
+	const trace2 = {
 		x: x,
 		y: y2,
 		name: l2,
 		type: "scatter",
 		mode: "lines"
 	};
-	var layout = {
+	const layout = {
 		title: title
 	};
 	Plotly.newPlot("graph_div", [trace1, trace2], layout);
 }
 
 function plot_5lines(x, l1, y1, l2, y2, l3, y3, l4, y4, l5, y5, title) {
-	var trace1 = {
+	const trace1 = {
 		x: x,
 		y: y1,
 		name: l1,
 		type: "scatter",
 		mode: "lines"
 	};
-	var trace2 = {
+	const trace2 = {
 		x: x,
 		y: y2,
 		name: l2,
 		type: "scatter",
 		mode: "lines"
 	};
-	var trace3 = {
+	const trace3 = {
 		x: x,
 		y: y3,
 		name: l3,
 		type: "scatter",
 		mode: "lines"
 	};
-	var trace4 = {
+	const trace4 = {
 		x: x,
 		y: y4,
 		name: l4,
 		type: "scatter",
 		mode: "lines"
 	};
-	var trace5 = {
+	const trace5 = {
 		x: x,
 		y: y5,
 		name: l5,
 		type: "scatter",
 		mode: "lines"
 	};
-	var layout = {
+	const layout = {
 		title: title
 	};
 	Plotly.newPlot("graph_div", [trace1, trace2, trace3, trace4, trace5], layout);
@@ -430,8 +429,8 @@ function plot3(data) {
 function plot4(data) {
 	document.getElementById("graph_wait").hidden = true;
 	document.getElementById("graph_div").hidden = false;
-	park = data[0][0];
-	title = "Historic Speeds for " + park
+	const park = data[0][0];
+	const title = "Historic Speeds for " + park
 	plot_2lines(
 		// data 0 has the park name
 		unpack(data,1),
@@ -446,8 +445,8 @@ function plot4(data) {
 function plot4a(data) {
 	document.getElementById("graph_wait").hidden = true;
 	document.getElementById("graph_div").hidden = false;
-	park = data[0][0];
-	title = "Historic speeds for " + park
+	const park = data[0][0];
+	const title = "Historic speeds for " + park
 	plot_5lines(
 		// data 0 has the park name
 		unpack(data,1),
@@ -468,7 +467,7 @@ function plot4a(data) {
 }
 
 function get_plot_data_fail(err) {
-	var ele = document.getElementById("graph_fail");
+	const ele = document.getElementById("graph_fail");
 	ele.hidden = false;
 	if (err) {
 		ele.textContent = err;
@@ -495,7 +494,7 @@ function previous_date() {
 }
 
 function prep_for_new_graph() {
-	var graph = document.getElementById("graph_div")
+	const graph = document.getElementById("graph_div")
 	graph.hidden = true;
 	document.getElementById("graph_fail").hidden = true;
 	document.getElementById("graph_wait").hidden = false;
@@ -505,29 +504,29 @@ function prep_for_new_graph() {
 }
 function plot_parks1() {
 	prep_for_new_graph();
-	var date = document.getElementById('page_date').textContent;
-	var url = data_server + '/plot1?date=' + date;
+	const date = document.getElementById('page_date').textContent;
+	const url = data_server + '/plot1?date=' + date;
 	getJSON(url, plot1, get_plot_data_fail)
 }
 
 function plot_parks2() {
 	prep_for_new_graph();
 	document.getElementById("graph_fail").hidden = true;
-	var url = data_server + '/scanavg?date=2018-09-01';
+	const url = data_server + '/scanavg?date=2018-09-01';
 	getJSON(url, plot2, get_plot_data_fail)
 }
 
 function plot_parks3() {
 	prep_for_new_graph();
 	document.getElementById("graph_fail").hidden = true;
-	var url = data_server + '/copyavg?date=2018-09-01';
+	const url = data_server + '/copyavg?date=2018-09-01';
 	getJSON(url, plot3, get_plot_data_fail)
 }
 
 function plot_parks4() {
 	prep_for_new_graph();
 	document.getElementById("graph_fail").hidden = true;
-	var url = data_server + '/speed?park=YUGA&start=2018-07-01&end=2018-11-01';
+	const url = data_server + '/speed?park=YUGA&start=2018-07-01&end=2018-11-01';
 	getJSON(url, plot4, get_plot_data_fail)
 }
 
@@ -548,12 +547,12 @@ function setup_page(date) {
 
 // Get data from the services and update the page
 function setup_site() {
-	var last_night = getYesterday();
-	var first_night = '2018-01-22'
+	const last_night = getYesterday();
+	const first_night = '2018-01-22'
 	document.getElementById('previous_date').dataset.limit = first_night;
 	document.getElementById('next_date').dataset.limit = last_night;
-	let params = new URLSearchParams(document.location.search.substring(1));
-	let date = validateDate(params.get("date"), first_night, last_night);
+	const params = new URLSearchParams(document.location.search.substring(1));
+	const date = validateDate(params.get("date"), first_night, last_night);
 	setup_page(date);
 }
 
