@@ -1,0 +1,10 @@
+{
+    "extends": "standard",
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "globals": {
+        "Plotly": true
+    }
+}
