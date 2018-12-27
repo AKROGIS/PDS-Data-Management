@@ -1,5 +1,9 @@
 const data_server = '//inpakrovmais:8080'
 //const data_server = '//localhost:8080'
+//NOTE: all dates in this code are ISO formated date strings (YYYY-MM-DD) in local time.
+//      in the few cases where a javascript date object is needed it is called dateObj
+
+const data_server = '//localhost:8080'
 
 // Return bytes as human readable quantity
 // Credit: https://stackoverflow.com/a/14919494
@@ -55,6 +59,62 @@ function UpdateQueryString(key, value, url) {
         else
             return url;
     }
+}
+
+// Left pad a number to two digits with a zero
+function pad2(n) {
+	return (n < 10) ? '0' + n : n;
+}
+
+// Produce a short ISO formated date from a date object
+function isoDateFormat(dateObj) {
+	return dateObj.getFullYear() +
+	  '-' + pad2(dateObj.getMonth() + 1) +
+	  '-' + pad2(dateObj.getDate());
+}
+
+// Produce a date object from a short ISO formated date
+// It is flexible in that zero padding is not required, and month/day default to Jan/1
+// an invalid date will result in today's date being returned
+function dateFromIso(str) {
+	if (!str) {
+		return new Date()
+	}
+	try {
+		const parts = str.split('-')
+		const year = parts[0]
+		const month = (parts[1] || 1) - 1
+		const day = parts[2] || 1
+		const dateObj = new Date(year, month, day)
+		if (dateObj instanceof Date && !isNaN(dateObj)) {
+			return dateObj
+		} else {
+			return new Date()
+		}
+	}
+	catch(error) {
+		return new Date()
+	}
+}
+
+// Validate a user provided iso date string
+// if date is null then the current date will be assumed
+// if date is outside range, then it will be clipped to the range
+// Range is open, i.e. minDate and maxDate are allowed, if null then no limit
+function validateDate(date, minDate, maxDate) {
+	const dateObj = dateFromIso(date)
+	let newDate = isoDateFormat(dateObj)
+	if (minDate && newDate < minDate) { return minDate }
+	if (maxDate && maxDate < newDate) { return maxDate }
+	return newDate
+}
+
+// Returns an ISO format date for yesterday (presumably the last time robo ran)
+function getYesterday() {
+	today = new Date()
+	today.setDate(today.getDate() - 1)  //yesterday
+	date = isoDateFormat(today)
+	return date;
 }
 
 // generic request to get JSON data from data service
@@ -219,53 +279,21 @@ function parks_failed(message) {
 
 // Update the state of the date text and the next/previous date buttons
 function fix_date_button_state(date) {
-	document.getElementById('page_date').textContent = date;
 	var previous_button = document.getElementById('previous_date');
 	var next_button = document.getElementById('next_date');
-	//TODO: instantiating a new date with a string is discouraged due to browser differences
-	var next_date = new Date(date);
-	next_date.setDate(next_date.getDate() + 1);
-	var next_text = next_date.toISOString().substring(0, 10);
-	next_button.dataset.destination = next_text;
 
-	var previous_date = new Date(date);
-	previous_date.setDate(previous_date.getDate() - 1)
-	var previous_text = previous_date.toISOString().substring(0, 10);
-	previous_button.dataset.destination = previous_text;
+	//Use a javascript date object because it makes date math much easier
+	// getDate and setDate get/set the day of the month
+	// setDate will roll up/down a month/year as needed if the new day is out of range
+	let dateObj = dateFromIso(date)
+	dateObj.setDate(dateObj.getDate() + 1);  //Add one day to the date
+	next_button.dataset.destination = isoDateFormat(dateObj);
+	dateObj = dateFromIso(date)
+	dateObj.setDate(dateObj.getDate() - 1);  //Subtract one day to the date
+	previous_button.dataset.destination = isoDateFormat(dateObj);
 
 	previous_button.hidden = (date <= previous_button.dataset.limit);
 	next_button.hidden = (next_button.dataset.limit <= date);
-}
-
-function page_date(str) {
-	if (!str) {
-		str = document.getElementById('page_date').textContent
-	}
-	const year = str.substring(0,4)
-	const month = str.substring(5,7) - 1
-	const day = str.substring(8,10)
-	return new Date(year, month, day)
-}
-
-function pad2(n) {
-	if (n < 10) {
-		return '0' + n;
-	}
-	return n;
-}
-
-function ISOformat(date) {
-	return date.getFullYear() +
-	  '-' + pad2(date.getMonth() + 1) +
-	  '-' + pad2(date.getDate());
-}
-
-
-// Validate a user provided iso date string
-// Range is open, i.e. min_date and max_date are allowed, if null then no limit
-function is_valid_date(date, min_date, max_date) {
-	//TODO: validate date
-	return date !== null && date !== undefined;
 }
 
 function plot_2bars(x, l1, y1, l2, y2, title) {
@@ -448,13 +476,6 @@ function get_plot_data_fail(err) {
 	document.getElementById("graph_wait").hidden = true;
 }
 
-function get_last_night() {
-	today = new Date()
-	today.setDate(today.getDate() - 1)  //yesterday
-	date = today.toISOString().substring(0,10)
-	return date;
-}
-
 // ===========
 // DOM Events
 // ===========
@@ -512,6 +533,7 @@ function plot_parks4() {
 
 // Get data from the services and update the page
 function setup_page(date) {
+	document.getElementById('page_date').textContent = date;
 	fix_date_button_state(date);
 	const query = '?date=' + date;
 	document.getElementById("summary_wait").hidden = false;
@@ -526,16 +548,12 @@ function setup_page(date) {
 
 // Get data from the services and update the page
 function setup_site() {
-	var last_night = get_last_night();
+	var last_night = getYesterday();
 	var first_night = '2018-01-22'
 	document.getElementById('previous_date').dataset.limit = first_night;
 	document.getElementById('next_date').dataset.limit = last_night;
 	let params = new URLSearchParams(document.location.search.substring(1));
-	let date = params.get("date");
-	if (!is_valid_date(date, first_night, last_night)) {
-		//TODO: show error, hide everything else and add 'goto last night' button
-		date = last_night
-	}
+	let date = validateDate(params.get("date"), first_night, last_night);
 	setup_page(date);
 }
 
