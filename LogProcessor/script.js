@@ -465,7 +465,7 @@ function plot4 (data) {
   )
 }
 
-function plot4a (data) {
+function plot5 (data) {
   document.getElementById('graph_wait').hidden = true
   document.getElementById('graph_div').hidden = false
   const park = data[0][0]
@@ -558,6 +558,14 @@ function plotParks4 () {
   document.getElementById('graph_fail').hidden = true
   const url = dataServer + '/speed?park=YUGA&start=2018-07-01&end=2018-11-01'
   getJSON(url, plot4, getPlotDataFail)
+}
+
+// eslint-disable-next-line no-unused-vars
+function plotParks5 () {
+  prepForNewGraph()
+  document.getElementById('graph_fail').hidden = true
+  const url = dataServer + '/speed?park=YUGA&start=2018-07-01&end=2018-11-01'
+  getJSON(url, plot5, getPlotDataFail)
 }
 
 // Get data from the services and update the page
