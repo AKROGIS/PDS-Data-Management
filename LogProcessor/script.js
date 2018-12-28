@@ -153,10 +153,10 @@ function postSummary (data) {
   }
   const date = data['summary_date']
   const countStarts = data['count_start']
-  const countUnfinished = data['countUnfinished']
+  const countUnfinished = data['count_unfinished']
   const countErrors = data['count_with_errors']
-  const hasChanges = data['hasChanges']
-  const issues = countErrors > 0 || countUnfinished > 0
+  const hasChanges = data['has_changes']
+  const hasIssues = countErrors > 0 || countUnfinished > 0
 
   const countEle = document.getElementById('count_total_parks')
   if (countStarts == 0) {
@@ -178,7 +178,7 @@ function postSummary (data) {
   }
   document.getElementById('summary_errors').hidden = countErrors == 0
 
-  if (issues) {
+  if (hasIssues) {
     document.getElementById('summary_issues').hidden = false
     document.getElementById('summary_no_issues').hidden = true
     if (countErrors == 0) {
