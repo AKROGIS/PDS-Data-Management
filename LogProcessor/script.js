@@ -126,8 +126,8 @@ function getJSON (url, callback, errorback) {
   xhr.open('GET', url, true)
   xhr.responseType = 'json'
   xhr.onload = function () {
-    if (this.readyState == this.DONE) {
-      if (this.status == 200) {
+    if (this.readyState === this.DONE) {
+      if (this.status === 200) {
         if (this.response !== null) {
           callback(this.response)
         } else {
@@ -159,7 +159,7 @@ function postSummary (data) {
   const hasIssues = countErrors > 0 || countUnfinished > 0
 
   const countEle = document.getElementById('count_total_parks')
-  if (countStarts == 0) {
+  if (countStarts === 0) {
     countEle.textContent = 'no parks'
   } else if (countStarts > 1) {
     countEle.textContent = countStarts + ' parks'
@@ -170,18 +170,18 @@ function postSummary (data) {
     document.getElementById('summary_incomplete_count').textContent =
       countUnfinished + ' parks'
   }
-  document.getElementById('summary_incomplete').hidden = countUnfinished == 0
+  document.getElementById('summary_incomplete').hidden = countUnfinished === 0
 
   if (countErrors > 1) {
     document.getElementById('summary_errors_count').textContent =
       countErrors + ' parks'
   }
-  document.getElementById('summary_errors').hidden = countErrors == 0
+  document.getElementById('summary_errors').hidden = countErrors === 0
 
   if (hasIssues) {
     document.getElementById('summary_issues').hidden = false
     document.getElementById('summary_no_issues').hidden = true
-    if (countErrors == 0) {
+    if (countErrors === 0) {
       document
         .getElementById('summary_card')
         .classList.replace('nominal', 'warning')
@@ -225,7 +225,7 @@ function postParkDetails (data) {
     const timeCopying = row[7]
     const copySpeed = round(bytesCopied / timeCopying / 1000.0, 1)
     let copyText =
-      timeCopying == 0
+      timeCopying === 0
         ? 'Nothing copied.'
         : `${sizeCopied} in ${timeCopying} seconds (${copySpeed} kB/sec)`
     copyText = timeCopying == null ? 'Unknown' : copyText
@@ -236,16 +236,16 @@ function postParkDetails (data) {
     const finished = row[2]
     const countErrors = row[3]
     const status =
-      countErrors == 0 ? (finished == 1 ? 'nominal' : 'warning') : 'error'
-    const errorStr = countErrors == 0 ? '' : `${countErrors} Errors.`
+      countErrors === 0 ? (finished === 1 ? 'nominal' : 'warning') : 'error'
+    const errorStr = countErrors === 0 ? '' : `${countErrors} Errors.`
     const finishStr =
-      finished == 1 ? '' : 'Robocopy did not finish (no timing data).'
+      finished === 1 ? '' : 'Robocopy did not finish (no timing data).'
     let issues = 'No Issues.'
-    if (errorStr == '' && finishStr != '') {
+    if (errorStr === '' && finishStr !== '') {
       issues = finishStr
-    } else if (errorStr != '' && finishStr == '') {
+    } else if (errorStr !== '' && finishStr === '') {
       issues = errorStr
-    } else if (errorStr != '' && finishStr != '') {
+    } else if (errorStr !== '' && finishStr !== '') {
       issues = errorStr + ' ' + finishStr
     }
     const scanText =
@@ -278,7 +278,7 @@ function postParkDetails (data) {
 // Error callback for adding summary error to the web page
 function summaryFailed (message) {
   const ele = document.getElementById('summary_fail')
-  if (message == 'Service Unavailable') {
+  if (message === 'Service Unavailable') {
     const message2 = 'Check to make sure the python service is running.'
     ele.textContent = message + '. ' + message2
   } else {
