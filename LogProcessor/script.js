@@ -8,14 +8,14 @@ const dataServer = '//inpakrovmais:8080'
 // Return bytes as human readable quantity
 // Credit: https://stackoverflow.com/a/14919494
 function humanFileSize (bytes, si) {
-  var thresh = si ? 1000 : 1024
+  const thresh = si ? 1000 : 1024
   if (Math.abs(bytes) < thresh) {
     return bytes + ' Bytes'
   }
-  var units = si
+  const units = si
     ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
     : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
-  var u = -1
+  let u = -1
   do {
     bytes /= thresh
     ++u
@@ -33,26 +33,27 @@ function round (value, decimals) {
 // credit: https://stackoverflow.com/a/11654596
 function UpdateQueryString (key, value, url) {
   if (!url) url = window.location.href
-  var re = new RegExp('([?&])' + key + '=.*?(&|#|$)(.*)', 'gi'),
-    hash
+  const re = new RegExp('([?&])' + key + '=.*?(&|#|$)(.*)', 'gi')
 
   if (re.test(url)) {
-    if (typeof value !== 'undefined' && value !== null)
+    if (typeof value !== 'undefined' && value !== null) {
       return url.replace(re, '$1' + key + '=' + value + '$2$3')
-    else {
-      hash = url.split('#')
+    } else {
+      const hash = url.split('#')
       url = hash[0].replace(re, '$1$3').replace(/(&|\?)$/, '')
-      if (typeof hash[1] !== 'undefined' && hash[1] !== null)
+      if (typeof hash[1] !== 'undefined' && hash[1] !== null) {
         url += '#' + hash[1]
+      }
       return url
     }
   } else {
     if (typeof value !== 'undefined' && value !== null) {
-      var separator = url.indexOf('?') !== -1 ? '&' : '?'
-      hash = url.split('#')
+      const separator = url.indexOf('?') !== -1 ? '&' : '?'
+      const hash = url.split('#')
       url = hash[0] + separator + key + '=' + value
-      if (typeof hash[1] !== 'undefined' && hash[1] !== null)
+      if (typeof hash[1] !== 'undefined' && hash[1] !== null) {
         url += '#' + hash[1]
+      }
       return url
     } else return url
   }
@@ -501,6 +502,7 @@ function getPlotDataFail (err) {
 // DOM Events
 // ===========
 
+// eslint-disable-next-line no-unused-vars
 function nextDate () {
   const newDate = document.getElementById('next_date').dataset.destination
   const url = UpdateQueryString('date', newDate)
@@ -508,6 +510,7 @@ function nextDate () {
   setupPage(newDate)
 }
 
+// eslint-disable-next-line no-unused-vars
 function previousDate () {
   const newDate = document.getElementById('previous_date').dataset.destination
   const url = UpdateQueryString('date', newDate)
@@ -525,6 +528,7 @@ function prepForNewGraph () {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 function plotParks1 () {
   prepForNewGraph()
   const date = document.getElementById('page_date').textContent
@@ -532,6 +536,7 @@ function plotParks1 () {
   getJSON(url, plot1, getPlotDataFail)
 }
 
+// eslint-disable-next-line no-unused-vars
 function plotParks2 () {
   prepForNewGraph()
   document.getElementById('graph_fail').hidden = true
@@ -539,6 +544,7 @@ function plotParks2 () {
   getJSON(url, plot2, getPlotDataFail)
 }
 
+// eslint-disable-next-line no-unused-vars
 function plotParks3 () {
   prepForNewGraph()
   document.getElementById('graph_fail').hidden = true
@@ -546,6 +552,7 @@ function plotParks3 () {
   getJSON(url, plot3, getPlotDataFail)
 }
 
+// eslint-disable-next-line no-unused-vars
 function plotParks4 () {
   prepForNewGraph()
   document.getElementById('graph_fail').hidden = true
