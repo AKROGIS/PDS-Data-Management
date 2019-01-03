@@ -258,6 +258,7 @@ function postParkDetails (data) {
     const cardStr = `
       <div class='card ${status} inline'>
         <h3>${park}</h3>
+        <dl>
         <dt>Copied</dt>
         <dd>${copyText}</dd>
         <dt>Scanned</dt>
@@ -266,6 +267,7 @@ function postParkDetails (data) {
         <dd>${removedText}</dd>
         <dt>Issues</dt>
         <dd>${issues}</dd>
+        </dl>
         <a href='${dataServer}/logfile?park=${park}&date=${date}'>Log file</a>
       </div>
     `
