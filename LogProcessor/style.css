@@ -1,42 +1,49 @@
-header {
-    background-color:#000000;
-    color:#ffffff;
-    padding:8px;
-    padding-bottom:4px;
+body {
+    font-family: sans-serif;
+    margin: 0;
 }
-header .title {
+
+header {
+    background-color: #000000;
+    color: #ffffff;
+    padding: 8px;
+    padding-bottom: 4px;
+}
+header .body {
     position: absolute;
     top: 8px;
     left: 80px;
-    margin-bottom: 0px;
 }
 header h1 {
     font-weight: normal;
     margin-top: 10px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
-
-header .subtitle {
+header p {
     font-size: 0.8em;
-    margin-top: 0px;
+    margin-top: 0;
 }
 
 main {
     padding: 10px;
 }
 
+button {
+    cursor: pointer;
+    font: inherit;
+}
+
+dt {
+    font-weight: bold;
+}
+
 footer {
-    background-color:#000000;
-    color:#dddddd;
+    background-color: #000000;
+    color: #dddddd;
     padding:10px;
 }
-
 footer a {
-    color:#dddddd;
-}
-
-#date_control {
-    padding-left:20px;
+    color: #dddddd;
 }
 
 #page_date {
@@ -45,12 +52,17 @@ footer a {
     margin: 15px;
 }
 
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .card {
+    width: fit-content;
     margin: 10px;
     padding: 5px;
     outline-style: solid;
     outline-width: thin;
-    display: inline-block;
     box-shadow: 5px 5px 5px #dddddd;
 }
 
@@ -60,24 +72,16 @@ footer a {
     margin-bottom: 0.5em;
 }
 
-dt {
-    font-weight: bold;
-}
-
-.inline {
-    float: left;
-}
-
 .nominal {
     outline-color: green;
-    background-color:#ddffdd;
+    background-color: #ddffdd;
 }
 .warning {
     outline-color: rgb(182, 156, 12);
-    background-color:#ffffdd;
+    background-color: #ffffdd;
 }
 .error {
     outline-color: #880000;
-    color:#880000;
-    background-color:#ffdddd;
+    color: #880000;
+    background-color: #ffdddd;
 }

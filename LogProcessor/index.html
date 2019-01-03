@@ -1,12 +1,11 @@
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Robocopy Status</title>
 	<meta name="description" content="Status report on the region to park GIS robocopy.">
-	<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
 	<link rel="stylesheet" href="style.css">
 	<script defer src="script.js"></script>
 	<script defer src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -15,9 +14,9 @@
 <body>
 	<header>
 		<a href="/"><img src="./ah_medium_black.gif" alt="Logo for AKRO GIS Team" height="71" width="55"></a>
-		<div class="title">
+		<div class="body">
 			<h1>GIS Robocopy Status</h1>
-			<p class="subtitle">Alaska Region GIS Team</p>
+			<p>Alaska Region GIS Team</p>
 		</div>
 	</header>
 	<main role="main">
@@ -27,7 +26,7 @@
 			<button id="next_date" data-limit="" data-destination="" aria-label="next date" onclick=nextDate()>▶</button>
 		</section>
 		<section id="summary">
-			<h2 id='summary_heading'>Summary</h2>
+			<h2>Summary</h2>
 			<p id="summary_wait">Please wait for the data to load...</p>
 			<p id="summary_fail" class="card error" hidden>No robocopy results for this date; Contact PDS data manager</p>
 			<div id="summary_card" class="card nominal" hidden>
@@ -49,12 +48,12 @@
 			</div>
 		</section>
 		<section id="park_details">
-			<h2 id="park_heading">Details</h2>
+			<h2>Details</h2>
 			<p id="park_wait">Please wait for the data to load...</p>
 			<p id="park_fail" class="card error" hidden>No robocopy details; Contact PDS data manager</p>
-			<div id='park_cards' hidden></div>
+			<div id='park_cards' class="card-container" hidden></div>
 		</section>
-		<section id="graphs" style="clear:both;">
+		<section id="graphs">
 			<h2>Graph</h2>
 			<p id="graph_wait" hidden>Please wait for the data to load...</p>
 			<p id="graph_fail" class="card error" hidden>No data for graph; Contact PDS data manager</p>
@@ -76,6 +75,5 @@
 			Brought to you by the <a href="mailto:akro_gis_helpdesk@nps.gov">Alaska Region GIS Team</a>
 		</address>
 	</footer>
-
 </body>
 </html>
