@@ -2,7 +2,8 @@
 //      in the few cases where a javascript date object is needed it is called dateObj
 
 // The name of the server with the data for this page
-const dataServer = '//inpakrovmais:8080'
+//const dataServer = 'http://inpakrovmais:8080'
+const dataServer = 'https://inpakrovmais.nps.doi.net:8443'
 // const dataServer = '//localhost:8080'
 
 // Return bytes as human readable quantity
