@@ -195,6 +195,12 @@ function postSummary (data) {
   } else {
     document.getElementById('summary_issues').hidden = true
     document.getElementById('summary_no_issues').hidden = false
+    document
+      .getElementById('summary_card')
+      .classList.replace('error', 'nominal')
+    document
+      .getElementById('summary_card')
+      .classList.replace('warning', 'nominal')
   }
 
   if (hasChanges) {
