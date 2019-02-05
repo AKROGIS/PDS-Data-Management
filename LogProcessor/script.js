@@ -158,6 +158,7 @@ function postSummary (data) {
   const countUnfinished = data['count_unfinished']
   const countErrors = data['count_with_errors']
   const hasChanges = data['has_changes']
+  const hasParseErrors = data['has_parse_errors']
   const hasIssues = countErrors > 0 || countUnfinished > 0
 
   const countEle = document.getElementById('count_total_parks')
@@ -202,6 +203,8 @@ function postSummary (data) {
       .getElementById('summary_card')
       .classList.replace('warning', 'nominal')
   }
+
+  document.getElementById('error_card').hidden = !hasParseErrors
 
   if (hasChanges) {
     document.getElementById('summary_changes').hidden = false
