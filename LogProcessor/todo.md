@@ -3,7 +3,6 @@ Bugs
  * browser history arrows only update address, not page content (chrome on windows)
  * going from date with data to date without (i.e. 2018-10-04 -> 2018-10-05) does not hide details (chrome on windows)
  * using date arrows when a graph is open does not update the graph (chrome on windows)
- * parsing stats fails with large data changes (see DENA 2019-02-05)
  * 2019-02-05 shows no changes on server, not true
 
 Enhancements
