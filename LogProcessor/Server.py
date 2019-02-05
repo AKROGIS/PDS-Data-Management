@@ -31,11 +31,13 @@ class SyncHandler(BaseHTTPRequestHandler):
                 COUNT(*) AS count_start,
                 COUNT(l1.park) AS count_unfinished,
                 COUNT(e1.log_id) AS count_with_errors,
-                CASE WHEN c.date IS NULL THEN 0 ELSE 1 END AS has_changes
+                CASE WHEN c.date IS NULL THEN 0 ELSE 1 END AS has_changes,
+                CASE WHEN e2.date IS NULL THEN 0 ELSE 1 END AS has_parse_errors
                 FROM logs AS l
                 LEFT JOIN logs AS l1 ON l.log_id = l1.log_id and (l1.finished = 0 OR l1.finished IS NULL)
                 LEFT JOIN (SELECT log_id FROM errors WHERE failed GROUP BY log_id) AS e1 ON l.log_id = e1.log_id
                 LEFT JOIN changes AS c on l.date = c.date
+                LEFT JOIN (SELECT SUBSTR(DATETIME(TimeStamp, '-1 day'), 0 ,11) as date from log group by date) as e2 ON l.date = e2.date
                 WHERE l.date = (SELECT MAX(date) FROM logs)
                 GROUP BY l.date;
             """
