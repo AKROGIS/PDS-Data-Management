@@ -173,8 +173,13 @@ class SyncHandler(BaseHTTPRequestHandler):
                     msg = 'log file {0} not found'.format(filename)
                     self.err_response(msg)
             else:
-                msg = 'No log file for date {0}, park {1}'.format(date, park)
-                self.err_response(msg)
+                folder = os.path.dirname(LOG_DB)
+                filename = os.path.join(folder, 'LogProcessor.log')
+                if os.path.exists(filename):
+                    self.file_response(filename)
+                else:
+                    msg = 'log file {0} not found'.format(filename)
+                    self.err_response(msg)
 
         elif path_parts.path == '/dates':
             sql = """
