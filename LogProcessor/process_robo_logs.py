@@ -36,7 +36,7 @@ def process_summary(file_handle, filename, line_num):
             line_num += 1
             results[key] = process_summary_line(line, text, filename, line_num)
         except Exception as ex:
-            # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
+            # overly broad exception catching.  I don't care what happened, I want to log the error, and continue
             logger.error('Unexpected exception processing summary, file: %s, line#: %d, key: %s, text: %s, line: %s, exception: %s',
                     filename, line_num, key, text, line, ex)
     return results,line_num
@@ -58,8 +58,8 @@ def process_summary_line(line, sentinal, filename, line_num):
     try:
         clean_line = line.replace(sentinal, '')
         if sentinal == 'Bytes :':
-            counts = [int(float(item)) for item in clean_line.replace(' g', 'e9')
-                      .replace(' m', 'e6').replace(' k', 'e3').split()]
+            counts = [int(float(item)) for item in clean_line.replace(' t', 'e12')
+                      .replace(' g', 'e9').replace(' m', 'e6').replace(' k', 'e3').split()]
         elif sentinal == 'Times :':
             clean_line = clean_line.replace('          ', '   0:00:00')
             times = [time.strptime(item, '%H:%M:%S') for item in clean_line.split()]
@@ -74,7 +74,7 @@ def process_summary_line(line, sentinal, filename, line_num):
         count_obj['failed'] = counts[4]
         count_obj['extra'] = counts[5]
     except Exception as ex:
-        logger.error('Parsing summary for %s in line: %s, file: %s, line#: %d, excpetion: %s', sentinal, line, filename, line_num,  ex)
+        logger.error('Parsing summary for %s in line: %s, file: %s, line#: %d, exception: %s', sentinal, line, filename, line_num,  ex)
 
     return count_obj
 
@@ -114,7 +114,7 @@ def process_error(file_handle, filename, line, line_num, error_sentinal):
             logger.error('Unexpected data on retry line after error in log file: %s, line#: %d, line: %s',
                 filename, line_num, line)
     except Exception as ex:
-        # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue\
+        # overly broad exception catching.  I don't care what happened, I want to log the error, and continue\
         logger.error('Unexpected exception processing error lines in log file: %s, line#: %d, line: %s, exception: %s',
                 filename, line_num, line, ex)
 
@@ -130,7 +130,7 @@ def parse_error_line(line, filename, line_num, error_sentinal):
         code = int(line.split(error_sentinal)[1].split()[0])
         message = line.split(') ')[1].strip()
     except Exception as ex:
-        # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
+        # overly broad exception catching.  I don't care what happened, I want to log the error, and continue
         logger.error('Parsing error line in log file: %s, line#: %d, line: %s, exception: %s',
             filename, line_num, line, ex)
     return code, message
@@ -201,7 +201,7 @@ def process_park(file_name):
                         logger.warning('%s on %s: Robo copy not finished (paused then killed)', park, date)
                         results['finished'] = False
             except Exception as ex:
-                # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
+                # overly broad exception catching.  I don't care what happened, I want to log the error, and continue
                 logger.error('Unexpected exception processing log, file: %s, line#: %d, line: %s, exception: %s',
                     file_name, line_num, line, ex)
         if saved_error:
@@ -405,7 +405,7 @@ def main(db_name, log_folder):
                     logger.warning('The log file %s has errors', filename)
 
             except Exception as ex:
-                # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
+                # overly broad exception catching.  I don't care what happened, I want to log the error, and continue
                 logger.error('Unexpected exception processing log file: %s, exception: %s',
                     filename, ex)
     clean_folder(log_folder)
@@ -426,7 +426,7 @@ def clean_folder(folder):
             new_name = os.path.join(archive_path, os.path.basename(filename))
             os.rename(filename,new_name)
         except Exception as ex:
-            # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
+            # overly broad exception catching.  I don't care what happened, I want to log the error, and continue
             logger.error('Unexpected exception moving log file: %s to archive %s, exception: %s',
                 filename, new_name, ex)
     # These log files do not have a date stamp, so be sure to remove the previous copy
@@ -438,7 +438,7 @@ def clean_folder(folder):
                 os.remove(new_name)
             os.rename(filename,new_name)
         except Exception as ex:
-            # overly broad ecception catching.  I don't care what happened, I want to log the error, and continue
+            # overly broad exception catching.  I don't care what happened, I want to log the error, and continue
             logger.error('Unexpected exception moving log file: %s to archive %s, exception: %s',
                 filename, new_name, ex)
 
@@ -487,5 +487,5 @@ if __name__ == '__main__':
         # clean_db(db)
         main(db, folder)
     except Exception as ex:
-        # overly broad ecception catching.  I don't care what happened, I need to log the exception for debugging
+        # overly broad exception catching.  I don't care what happened, I need to log the exception for debugging
         logger.error('Unexpected exception: %s', ex)
