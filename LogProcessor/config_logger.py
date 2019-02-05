@@ -36,11 +36,16 @@ config = {
             'fromaddr': 'regan_sarwas@nps.gov',
             'toaddrs':  ['regan_sarwas@nps.gov'],
             'subject':  'Error running Robocopy Log Processor'
+        },
+        'sqlite': {
+            'class': 'SQLiteHandler.SQLiteHandler',
+            'level': 'ERROR',
+            'db':    'E:/Xdrive/Logs/logs.db'
         }
     },
     'root': {
         'level': 'NOTSET',
-        # 'handlers': ['console', 'file']  # Do not send emails when testing
-        'handlers': ['console', 'file', 'email']  # Send emails in production
+        # 'handlers': ['console', 'file', 'sqlite']  # Do not send emails when testing
+        'handlers': ['console', 'file', 'sqlite', 'email']  # Send emails in production
     }
 }
