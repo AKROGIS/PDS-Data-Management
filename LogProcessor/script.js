@@ -524,7 +524,7 @@ function getPlotDataFail (err) {
 function nextDate () {
   const newDate = document.getElementById('next_date').dataset.destination
   const url = UpdateQueryString('date', newDate)
-  window.history.pushState({}, '', url)
+  window.history.pushState({date: newDate}, '', url)
   setupPage(newDate)
 }
 
@@ -532,7 +532,7 @@ function nextDate () {
 function previousDate () {
   const newDate = document.getElementById('previous_date').dataset.destination
   const url = UpdateQueryString('date', newDate)
-  window.history.pushState({}, '', url)
+  window.history.pushState({date: newDate}, '', url)
   setupPage(newDate)
 }
 
@@ -609,7 +609,13 @@ function setupSite () {
   document.getElementById('next_date').dataset.limit = lastNight
   const params = new URLSearchParams(document.location.search.substring(1))
   const date = validateDate(params.get('date'), firstNight, lastNight)
+  window.history.replaceState({date: date}, '', document.location)
   setupPage(date)
 }
 
 setupSite()
+window.onpopstate = function(event) {
+  if (event.state.date) {
+    setupPage(event.state.date);
+  }
+};

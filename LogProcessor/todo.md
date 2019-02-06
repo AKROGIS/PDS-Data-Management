@@ -1,6 +1,5 @@
 Bugs
 ----
- * browser history arrows only update address, not page content (chrome/safari on mac/windows)
  * using date arrows when a graph is open does not update the graph (chrome/safari on mac/windows)
 
 Enhancements
