@@ -164,20 +164,25 @@ function postSummary (data) {
   const countEle = document.getElementById('count_total_parks')
   if (countStarts === 0) {
     countEle.textContent = 'no parks'
+  } else if (countStarts === 1) {
+    countEle.textContent = '1 park'
   } else if (countStarts > 1) {
     countEle.textContent = countStarts + ' parks'
   }
-  // case of "1 Park" is the default in the html
 
-  if (countUnfinished > 1) {
-    document.getElementById('summary_incomplete_count').textContent =
-      countUnfinished + ' parks'
+  var ele = document.getElementById('summary_incomplete_count')
+  if (countUnfinished === 1) {
+    ele.textContent = '1 park'
+  } else {
+    ele.textContent = countUnfinished + ' parks'
   }
   document.getElementById('summary_incomplete').hidden = countUnfinished === 0
 
-  if (countErrors > 1) {
-    document.getElementById('summary_errors_count').textContent =
-      countErrors + ' parks'
+  ele = document.getElementById('summary_errors_count')
+  if (countErrors === 1) {
+    ele.textContent = '1 park'
+  } else {
+    ele.textContent = countErrors + ' parks'
   }
   document.getElementById('summary_errors').hidden = countErrors === 0
 
