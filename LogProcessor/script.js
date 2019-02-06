@@ -226,6 +226,7 @@ function postSummary (data) {
 // Success callback for adding park details to the web page
 function postParkDetails (data) {
   if (data.length === 1) {
+    document.getElementById('park_cards').innerHTML = "" // hiding doesn't work due to display: flex in card-container class
     document.getElementById('park_wait').hidden = true
     document.getElementById('park_fail').hidden = false
     return
