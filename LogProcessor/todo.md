@@ -1,9 +1,9 @@
 Bugs
 ----
- * browser history arrows only update address, not page content (chrome on windows)
- * going from date with data to date without (i.e. 2018-10-04 -> 2018-10-05) does not hide details (chrome on windows)
- * using date arrows when a graph is open does not update the graph (chrome on windows)
- * 2019-02-05 shows no changes on server, not true
+ * browser history arrows only update address, not page content (chrome/safari on mac/windows)
+ * going from date with data to date without (i.e. 2018-10-04 -> 2018-10-05) does not hide details (chrome/safari on mac/windows)
+ * using date arrows when a graph is open does not update the graph (chrome/safari on mac/windows)
+ * move from 2019-02-01 (2 errors) to 2019-02-02 (1 error) does not update the error count (chrome/safari on mac/windows)
 
 Enhancements
 ------------
