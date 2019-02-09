@@ -20,7 +20,7 @@ def load_csv_file(csvpath):
     records = []
     with open(csvpath, 'rb') as fh:
         # ignore the first record (header)
-        fh.readline()
+        # fh.readline()
         for row in csv.reader(fh):
             unicode_row = [unicode(item, 'utf-8') if item else None for item in row]
             records.append(unicode_row)
@@ -85,5 +85,11 @@ if __name__ == '__main__':
     logger.addHandler(logging.FileHandler(r"data\build-mosaics.log"))    
     logger.setLevel(logging.DEBUG)
 
-    # main(fgdb=r'C:\tmp\mosaics\Test.gdb', mosaic='test2', csv_file=r'data\build_spot_rgb.csv')
-    main2()
+    # main2()
+    gdb = r'X:\Mosaics\Statewide\DEMs\SDMI_IFSAR.gdb'
+    main(fgdb=gdb, mosaic='DSM', csv_file=r'data\build_ifsar_2019_dsm.csv')
+    main(fgdb=gdb, mosaic='DTM', csv_file=r'data\build_ifsar_2019_dtm.csv')
+    main(fgdb=gdb, mosaic='ORI', csv_file=r'data\build_ifsar_2019_ori.csv')
+    main(fgdb=gdb, mosaic='ORI_SUP1', csv_file=r'data\build_ifsar_2019_ori1.csv')
+    main(fgdb=gdb, mosaic='ORI_SUP2', csv_file=r'data\build_ifsar_2019_ori2.csv')
+    main(fgdb=gdb, mosaic='ORI_SUP3', csv_file=r'data\build_ifsar_2019_ori3.csv')

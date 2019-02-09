@@ -11,14 +11,14 @@ import glob
 
 # must run this from a folder with a data directory
 
-csv_file = 'data/ifsar_tif_new_x.csv'
-out_file = 'data/ifsar_tif_new_x_supp.csv'
+csv_file = 'data/ifsar_tif_2019.csv'
+out_file = 'data/ifsar_tif_2019_supp.csv'
 
 with open(out_file, 'w') as o:
     csv_writer = csv.writer(o)
     csv_writer.writerow(['folder', 'filename', 'ext', 'size', 'legacy', 'nga', 'kind', 'edge',
                          'cell', 'lat', 'lon', 'tfw', 'xml', 'html', 'txt', 'tif_xml', 'ovr',
-                         'aux', 'rrd', 'aux_old', 'crc', 'extras'])
+                         'aux', 'rrd', 'aux_old', 'crc', 'extras', 'skip'])
     with open(csv_file, 'r') as f:
         f.readline() # remove header
         csv_reader = csv.reader(f)
@@ -85,4 +85,4 @@ with open(out_file, 'w') as o:
             extras = len(exts_found)-1-tfw-xml-html-txt-tif_xml-ovr-aux-rrd-aux_old-crc # 1 for the tif that must exist
             csv_writer.writerow([path, name, ext, size, legacy, nga, kind, edge, cell,
                                  lat, lon, tfw, xml, html, txt, tif_xml, ovr, aux,
-                                 rrd, aux_old, crc, extras])
+                                 rrd, aux_old, crc, extras, 'N'])
