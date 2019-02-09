@@ -709,3 +709,44 @@ Fuchia WD MyPassport Ultra 1TB  SN: WX21A466XJZR
     WD Apps for Mac
     WD Apps for Windows
     WD Apps Setup.exe
+
+----------------------
+X18
+----------------------
+**IFSAR Delivery 7Feb2019**
+
+Black WD Easystore 1TB  SN: WXF1A288VALS
+
+*Checked contents with X drive:  Good, 2019-07-08, RES*
+
+### AK2017_TO4_Lot1_b_drive2\Alaska_MidAccuracy_DEM\Summer_2017_Lot01b
+    3,108 Files, 111 Folders
+    123 GB (132,986,431,428 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2019_IFSAR\Summer_2017_Lot01b
+    3,108 Files, 111 Folders
+    123 GB (132,986,431,428 bytes)
+### Alaska_drive4\Alaska_MidAccuracy_DEM\Summer_2017_Lot1c
+    3,299 Files, 118 Folders
+    159 GB (171,212,951,936 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2019_IFSAR\Summer_2017_Lot01c
+    3,299 Files, 118 Folders
+    159 GB (171,212,951,936 bytes)
+### AlaskaDEM_Drive1\Summer_2017_Lot_1a
+    3,334 Files, 121 Folders
+    145 GB (156,090,504,822 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2019_IFSAR\Summer_2017_Lot01a
+    3,334 Files, 121 Folders
+    145 GB (156,090,504,822 bytes)
+### Other Files/Folders
+*Did not copy - Not IFSAR data*
+
+    $RECYCLE.BIN
+    System Volume Information
+    WD Discovery
+    WD Software Offline Installers
+    IFSAR Delivery 7Feb2019  3 WD 1T drives.doc
+    ifsar_drives_delivery7Feb2019.pdf
+    readme.txt
+    User Manual.url
+    WD Discovery for Mac.dmg
+    WD Discovery.exe

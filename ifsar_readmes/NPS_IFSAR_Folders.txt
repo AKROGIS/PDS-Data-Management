@@ -96,6 +96,15 @@ _README
  * 2018-10-05_Missing_Deliveries
    - X15 - FromDGGS
 
+2019_IFSAR
+----------
+ * Summer_2017_Lot01a
+   - X18 - AlaskaDEM_Drive1\Summer_2017_Lot_1a
+ * Summer_2017_Lot01b
+   - X18 - AK2017_TO4_Lot1_b_drive2\Alaska_MidAccuracy_DEM\Summer_2017_Lot01b
+ * Summer_2017_Lot01c
+   - X18 - Alaska_drive4\Alaska_MidAccuracy_DEM\Summer_2017_Lot1c
+
 FEDI_Data
 ---------
  * Copper_River
