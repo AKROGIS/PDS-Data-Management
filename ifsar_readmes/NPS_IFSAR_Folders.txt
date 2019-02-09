@@ -1,0 +1,152 @@
+NPS IFSAR Folders
+=================
+
+This document describes how the folder
+
+  * X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR
+
+was populated from distribution disks (typically provided by USGS).
+The distribution disks are identified by the moniker X#, and are summarized in the
+file *NPS_IFSAR_Manifest.txt*.  The distribution disks can be found in the I&M cabinets
+on the 3rd floor (NE corner) of the Alaska Region HQ Office.
+
+Some of the folders were provided on multiple distribution disks.  See the
+file *NPS_IFSAR_Manifest.txt* to see how these distributions may differ.
+
+Typically, all of the files on distribution disk were copied exactly as provided.
+When this was not always the case, the file *NPS_IFSAR_Manifest.txt*
+describes how the distribution and our server folders differ.
+
+After the files were copied to the server, there may have been some additional
+cleanup and corrections.  See the file *NPS_IFSAR_Readme.txt* for details.
+
+_README
+-------
+ * Created by AKRO GIS to document the SDMI_IFSAR data
+
+2010_IFSAR
+----------
+ * ReadMe.txt
+   - X1 - SDMI-IFSAR\AK_SDMI_IFSAR_Data_2010\ReadMe.txt
+ * README_NPS.txt
+   - Created by AKRO GIS to document original names of disk# folders
+
+2014_IFSAR
+----------
+ * AK DEM NRCS
+   - X8 - 2014_IFSAR\AK DEM NRCS
+ * AK DEM6
+   - X8 - 2014_IFSAR\AK DEM6
+ * AK DEM7
+   - X8 - 2014_IFSAR\AK DEM7
+ * Arctic2014_Lot1
+   - X9 - IFSAR\Arctic2014_Lot1
+ * Lower_SE_Lot_01
+   - X9 - IFSAR\Lower_SE_Lot_01
+ * NRCS_USGS_USFS_BLM_Cell_116
+   - X9 - IFSAR\NRCS_USGS_USFS_BLM_Cell_116
+ * Upper Southeast AK
+   - X8 - 2014_IFSAR\Upper Southeast AK
+ * Upper_SE_Glacier_Bay
+   - X9 - IFSAR\Upper_SE_Glacier_Bay
+
+2015_IFSAR
+----------
+ * AK_DEM_lot2_cell363
+   - X13 - AK_DEM_lot2_cell363
+ * Alaska_Mid_Accuracy_DEM_Lower_SE_AK
+   - X13 - 20150729 Delivery\Alaska_Mid_Accuracy_DEM_Lower_SE_AK
+   - X13 - Lower_SE_AK_IFSAR_lots2_3\Alaska_Mid_Accuracy_DEM_Lower_SE_AK
+ * Arctic2014_Carryover
+   - X13 - AKMid_AccuracyFY2014DEM
+ * FEDI_NRCS_USGS_USFS_BLM
+   - X13 - NRCS_USGS_USFS_BLM_AK_midAccy_DEM
+
+2016_IFSAR
+----------
+ * 2015_AK_TO9_MOD1Drive2
+   - X12 - 2015_AK_TO9_MOD1Drive2
+ * 20160610 Delivery
+   - X13 - 20160610 Delivery
+
+2017_IFSAR
+----------
+ * Chugach2_Overcollect
+   - X16 - Alaska_MidAccuracy_DEM
+ * Deliveries_5Dec2017
+   - X14 - Deliveries_5Dec2017
+ * Delivery_3April2017
+   - X15 - Delivery_3April2017
+ * disk1
+   - X15 - from_Elements500G_SN_WX21AB4F3Y36
+ * disk2
+   - X15 - from_PassportUltra2T_SN_WX31AA5C46A0
+ * disk3
+   - X15 - from_PassportUltra500G_SN_WX81A16ACP8P
+   - X15 - from_PassportUltra500G_SN_WXA1AC5PHLSZ
+ * IfSAR Delieveries
+   - X17 - IfSAR Delieveries
+ * readme.txt
+   - Created by AKRO GIS to document original names of disk# folders
+
+2018_IFSAR
+----------
+ * 2018-05-22_Delivery
+   - X15 - Missing_Source_Disk\USGS_Delivery_22May2018
+ * 2018-10-05_Missing_Deliveries
+   - X15 - FromDGGS
+
+FEDI_Data
+---------
+ * Copper_River
+   - X4 - From_USGS_Rolla_PatEmmett_16Aug2013_ciragoSNEX1100107701\CopperRiverAK_IFSAR\Alaska_MidAccuracy_IFSAR\Copper_River
+ * FiveCellBlock
+   - X1 - SDMI-IFSAR\AK_SDMI_IFSAR_Data_2010\FEDI_Data\FiveCellBlock
+   - X2 - SDMI-IFSAR\AK_SDMI_IFSAR_Data_2010\FEDI_Data\FiveCellBlock
+ * Glacier_Bay
+   - X5 - Glacier_Bay
+   - X11 - GLBA_data\IFSAR\Glacier_Bay
+ * NineCellBlock
+   - X1 - SDMI-IFSAR\AK_SDMI_IFSAR_Data_2010\FEDI_Data\NineCellBlock
+   - X2 - SDMI-IFSAR\AK_SDMI_IFSAR_Data_2010\FEDI_Data\NineCellBlock
+ * ThreeCellBlk_AddOnArea01
+   - X1 - ThreeCellBlk_AddOnArea01_02282012
+   - X2 - ThreeCellBlk_AddOnArea01_02282012
+ * ThreeCellBlk_AddOnArea02
+   - X1 - FEDI_Cell_D_E_F_AddOnArea02_07092012\ThreeCellBlk_AddOnArea02
+   - X2 - FEDI_Cell_D_E_F_AddOnArea02_07092012\ThreeCellBlk_AddOnArea02
+
+Final_EdgeMatched_Data
+----------------------
+  - X1 - SDMI-IFSAR\AK_SDMI_IFSAR_Data_2010\Final_EdgeMatched_Data
+  - X2 - SDMI-IFSAR\AK_SDMI_IFSAR_Data_2010\Final_EdgeMatched_Data
+
+GINA_CIAP_G7317
+---------------
+  - X13 - GINA_CIAP_G7317
+
+Intermap_Data
+-------------
+ * Block06
+   - X6 - Block06
+   - X7 - Block06
+ * Block07
+   - X6 - Block07
+   - X7 - Block07
+ * Block08B
+   - X6 - Block08B
+   - X7 - Block08B
+ * Block09
+   - X6 - Block09
+   - X7 - Block09
+ * Cell_1, Cell_2, Cell_6, Cell_7, Cell_8, Cell_9, Cell_10, Cell_11, Cell_15, Cell_16, Cell_17, Cell_20, Cell_31, Cell_32
+   - X1 - SDMI-IFSAR\AK_SDMI_IFSAR_Data_2010\Intermap_Data
+   - X2 - SDMI-IFSAR\AK_SDMI_IFSAR_Data_2010\Intermap_Data
+ * Lot1
+  - X15 - Missing_Source_Disk\Intermap_Data\Lot1
+ * Lot1a
+  - X10 - AK Dem6-Lots (Base & 1A)\Lot1A
+ * Lot1Base
+  - X10 - AK Dem6-Lots (Base & 1A)\Lot1-Base
+ * Lot2, Lot3, Lot4, Lot5, Lot8a
+  - X15 - Missing_Source_Disk\Intermap_Data

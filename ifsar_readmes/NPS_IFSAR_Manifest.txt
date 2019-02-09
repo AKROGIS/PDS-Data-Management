@@ -1,0 +1,711 @@
+Catalog of IFSAR Delivery Disks
+===============================
+
+This file lists the contents of each IFSAR delivery disk and compares the
+contents to the data on the X drive.
+
+
+X1
+----------------------------------
+**IFSAR 2010 - Copy 1 of 2**
+
+Black WD My Passport Essential SE 1TB  SN: WXB1A90V2970T
+
+*Checked contents with X drive:  Good, 2018-05-29, RES*
+
+### FEDI_Cell_D_E_F_AddOnArea02_07092012\ThreeCellBlk_AddOnArea02
+    12,089 Files, 220 Folders
+    13.7 GB (14,767,214,273 bytes)
+##### -> X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\FEDI_Data\ThreeCellBlk_AddOnArea02
+    6,053 Files, 220 Folders
+    13.7 GB (14,766,008,930 bytes)
+    {did not copy 3 *.lock files; 0 bytes}
+    {did not copy 6,033 *.md5 files; 1,205,343 bytes}
+
+### SDMI-IFSAR\AK_SDMI_IFSAR_Data_2010\FEDI_Data\FiveCellBlock
+    13,528 Files, 303 Folders
+    22.2 GB (23,911,735,976 bytes)
+##### -> X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\FEDI_Data\FiveCellBlock
+    6,737 Files, 303 Folders
+    22.2 GB (23,910,974,363 bytes)
+    {did not copy 2 *.lock files; 0 bytes}
+    {did not copy 6,789 *.md5 files; 761,613 bytes}
+
+### SDMI-IFSAR\AK_SDMI_IFSAR_Data_2010\FEDI_Data\NineCellBlock
+    23,252 Files, 525 Folders
+    42.1 GB (45,206,824,299 bytes)
+##### -> X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\FEDI_Data\NineCellBlock
+    11,580 Files, 525 Folders
+    42.1 GB (45,205,528,177 bytes)
+    {did not copy 1 *.lock file; 0 bytes}
+    {did not copy 11,671 *.md5 files; 1,296,122 bytes}
+
+### SDMI-IFSAR\AK_SDMI_IFSAR_Data_2010\Final_EdgeMatched_Data
+    436 Files, 24 Folders
+    3.84 GB (4,130,749,527 bytes)
+##### -> X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\Final_EdgeMatched_Data
+    218 Files, 24 Folders
+    3.84 GB (4,130,726,930 bytes)
+    {did not copy 218 *.md5 files; 22,597 bytes}
+
+### SDMI-IFSAR\AK_SDMI_IFSAR_Data_2010\Intermap_Data
+    17,738 Files, 280 Folders
+    548 GB (589,111,188,192 bytes)
+##### -> X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\Intermap_Data
+    {only these folders: Cell_1,2,6,7,8,9,10,11,15,16,17,20,31,Cell_32}
+    8,874 Files, 280 Folders
+    548 GB (589,110,179,230 bytes)
+    {did not copy 8,864 *.md5 files; 1,008,962 bytes}
+
+### SDMI-IFSAR\AK_SDMI_IFSAR_Data_2010\ReadMe.txt
+##### -> X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2010_IFSAR\ReadMe.txt
+
+### SDMI-IFSAR\manifests
+    {Did not copy - md5 Checksum verification files}
+
+### ThreeCellBlk_AddOnArea01_02282012
+    5,945 Files, 209 Folders
+    17.1 GB (18,447,963,999 bytes)
+##### -> X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\FEDI_Data\ThreeCellBlk_AddOnArea01
+    5,943 Files, 209 Folders
+    17.1 GB (18,447,963,999 bytes)
+    {did not copy 2 *.lock files; 0 bytes}
+
+### Other Files/Folders
+*Did not copy - Not IFSAR data*
+
+    $RECYCLE.BIN
+    Extras
+    System Volume Information
+    User Manuals
+    WD Quick Formatter.exe
+    WD SmartWare
+    WD SmartWare for Mac
+    WD SmartWare.exe
+
+
+----------------------------------
+X2
+----------------------------------
+**IFSAR 2010 - Copy 2 of 2**
+
+Toshiba Canvio Connect 2TB  SN: 541CT86HT18B
+
+*Checked contents with X drive:  Good, 2018-05-29, RES*
+
+### FEDI_Cell_D_E_F_AddOnArea02_07092012
+    {EXACT Duplicate of X1 - FEDI_Cell_D_E_F_AddOnArea02_07092012}
+### SDMI-IFSAR
+    {EXACT Duplicate of X1 - SDMI-IFSAR}
+### ThreeCellBlk_AddOnArea01_02282012
+    {EXACT Duplicate of X1 - ThreeCellBlk_AddOnArea01_02282012}
+
+### Other Files/Folders
+*Did not copy - Not IFSAR data*
+
+    $RECYCLE.BIN
+    System Volume Information
+    Toshiba
+
+
+----------------------------------
+X3
+----------------------------------
+**SDMI DATA SPOT/IFSAR Apr 2013**
+
+Silver WD My Passport  1TB  SN: WXL1E92ETHJ3
+
+*Checked contents with X drive:  Good, 2018-05-29, RES*
+
+### SDMI/IFSAR
+    {Did not copy - Not USGS distribution data}
+    {This is a partial copy of the old X drive derivative}
+### SDMI/SPOT
+    {Did not copy - Not IFSAR data}
+### Other Files/Folders
+*Did not copy - Not IFSAR data*
+
+    $RECYCLE.BIN
+    Extras
+    Locale
+    My Passport Apps for Mac
+    ReturnContactInfo.txt
+    System Volume Information
+    User Manuals
+    WD Apps for Windows
+    WD Apps Setup.exe
+
+
+--------------------------
+X4
+--------------------------
+**IFSAR Backup Aug 2013**
+
+WD My Book Studio  3TB  SN: WCAWZ2658905
+
+*Checked contents with X drive:  Good, 2018-05-29, RES*
+
+### From_USGS_Rolla_PatEmmett_16Aug2013_ciragoSNEX1100107701\CopperRiverAK_IFSAR\Alaska_MidAccuracy_IFSAR\Copper_River
+    2,564 Files, 213 Folders
+    19.1 GB (20,583,378,024 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\FEDI_Data\Copper_River
+    2,556 Files, 212 Folders
+    19.1 GB (20,583,378,024 bytes)
+    {did not copy 8 *.lock files; 0 bytes}
+### From_USGS_Rolla_PatEmmett_16Aug2013_ciragoSNEX1100107701\rcpt.pdf
+    {Did not copy - Shipping manifest}
+### fromY
+    {Did not copy - Not USGS distribution data}
+### Other Files/Folders
+*Did not copy - Not IFSAR data*
+
+    $RECYCLE.BIN
+    System Volume Information
+
+
+---------------------
+X5
+---------------------
+**Glacier Bay 2013**
+
+Silver WD My Passport  1TB  SN: WX11A63A9100
+
+*Checked contents with X drive:  Good, 2018-05-29, RES*
+
+### Glacier_Bay
+    2,957 Files, 271 Folders
+    27.3 GB (29,389,337,058 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\FEDI_Data\Glacier_Bay
+    2,955 Files, 270 Folders
+    27.3 GB (29,389,337,058 bytes)
+    {did not copy 2 *.lock files; 0 bytes}
+### Other Files/Folders
+*Did not copy - Not IFSAR data*
+
+    $RECYCLE.BIN
+    MyPassport
+    System Volume Information
+
+
+---------------------------
+X6
+----------------------------
+**NW AK Area 1B - Copy #1**
+
+Silver WD My Passport  1TB  SN: WX91A13M1557
+
+*Checked contents with X drive:  Good, 2018-05-29, RES*
+
+### AK_DEM5_cells.jpg
+    {Did not copy - shipping details}
+### Block06
+    4,450 Files, 198 Folders
+    174 GB (187,129,693,802 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\Intermap_Data\Block06
+    4,446 Files, 198 Folders
+    174 GB (187,129,693,802 bytes)
+    {did not copy 4 *.lock files; 0 bytes}
+### Block07
+    3,132 Files, 157 Folders
+    113 GB (122,033,925,797 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\Intermap_Data\Block07
+    3,127 Files, 157 Folders
+    113 GB (122,033,925,797 bytes)
+    {did not copy 5 *.lock files; 0 bytes}
+### Block08B
+    2,724 Files, 124 Folders
+    114 GB (122,486,935,504 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\Intermap_Data\Block08B
+    2,723 Files, 124 Folders
+    114 GB (122,486,935,504 bytes)
+    {did not copy 1 *.lock file; 0 bytes}
+### Block09
+    2,941 Files, 124 Folders
+    133 GB (143,462,506,165 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\Intermap_Data\Block09
+    2,936 Files, 124 Folders
+    133 GB (143,462,506,165 bytes)
+    {did not copy 5 *.lock files; 0 bytes}
+### Other Files/Folders
+*Did not copy - Not IFSAR data*
+
+    $RECYCLE.BIN
+    Passport
+    System Volume Information
+
+
+---------------------------
+X7
+---------------------------
+**NW AK Area 1B - Copy #2**
+
+Silver WD My Passport  1TB  SN: WXL1E92DETP4
+
+*Checked contents with X drive:  Good, 2018-05-29, RES*
+
+    {EXACT Duplicate of disk X6}
+
+
+--------------------------------------------
+X8
+--------------------------------------------
+**Oct 2015 IFSAR Delivery**
+
+Black WD My Passport Ultra 1TB  SN: WXM1E14SYMZ4
+
+*Checked contents with X drive:  Good, 2018-05-29, RES*
+
+### 2014_IFSAR\AK DEM NRCS
+    2,467 Files, 224 Folders
+    21.3 GB (22,909,848,710 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2014_IFSAR\AK DEM NRCS
+    2,464 Files, 224 Folders
+    21.3 GB (22,909,848,922 bytes)
+    {did not copy 4 *.lock files; 0 bytes}
+    {Shortened a folder name; and added a readme.txt file: 212 bytes}
+    {  in the root folder}
+### 2014_IFSAR\AK DEM6
+    17,087 Files, 830 Folders
+    653 GB (701,231,800,441 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2014_IFSAR\AK DEM6
+    17,070 Files, 830 Folders
+    653 GB (701,231,800,674 bytes)
+    {did not copy 18 *.lock files; 0 bytes}
+    {Shortened a folder name; and added a readme.txt file: 233 bytes}
+    {  in Lot1B\Alaska_MidAccuracy_IFSAR}
+### 2014_IFSAR\AK DEM7
+    1,488 Files, 130 Folders
+    8.98 GB (9,650,005,457 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2014_IFSAR\AK DEM7
+    1,481 Files, 130 Folders
+    8.98 GB (9,650,005,457 bytes)
+    {did not copy 7 *.lock files; 0 bytes}
+### 2014_IFSAR\Upper Southeast AK
+    1,965 Files, 67 Folders
+    5.64 GB (6,066,948,848 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2014_IFSAR\Upper Southeast AK
+    1,962 Files, 67 Folders
+    5.64 GB (6,066,948,848 bytes)
+    {did not copy 3 *.lock files; 0 bytes}
+### Other Files/Folders
+*Did not copy - Not IFSAR data*
+
+    $RECYCLE.BIN
+    MyPassport
+    System Volume Information
+
+
+-------------------------------------
+X9
+-------------------------------------
+**KLGO 2014 - Delivered April 2015**
+
+Black WD My Passport Ultra 1TB  SN: WXE1A2423679
+
+*Checked contents with X drive:  Good, 2018-05-25, RES*
+
+### IFSAR\Arctic2014_Lot1
+    1,554 Files, 66 Folders
+    51.1 GB (54,907,414,676 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2014_IFSAR\Arctic2014_Lot1
+    1,554 Files, 66 Folders
+    51.1 GB (54,907,414,676 bytes)
+### IFSAR\Lower_SE_Lot_01
+    1,882 Files, 118 Folders
+    11.2 GB (12,065,642,858 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2014_IFSAR\Lower_SE_Lot_01
+    1,880 Files, 118 Folders
+    11.2 GB (12,065,642,858 bytes)
+    {did not copy 2 *.lock files; 0 bytes}
+### IFSAR\NRCS_USGS_USFS_BLM_Cell_116
+    582 Files, 21 Folders
+    34.3 GB (36,932,293,068 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2014_IFSAR\NRCS_USGS_USFS_BLM_Cell_116
+    582 Files, 21 Folders
+    34.3 GB (36,932,293,068 bytes)
+### IFSAR\Upper_SE_Glacier_Bay
+    4,948 Files, 338 Folders
+    42.5 GB (45,635,829,863 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2014_IFSAR\Upper_SE_Glacier_Bay
+    4,940 Files, 338 Folders
+    42.5 GB (45,635,829,863 bytes)
+    {did not copy 8 *.lock files; 0 bytes}
+### Other Files/Folders
+*Did not copy - Not IFSAR data*
+
+    $RECYCLE.BIN
+    Extras
+    Locale
+    My Passport Apps for Mac
+    System Volume Information
+    User Manuals
+    WD Apps for Windows
+    WD Apps Setup.exe
+
+
+------------------------
+X10
+------------------------
+**LOT1-BASE & LOT 1A**
+
+Silver Toshiba CANVIO Slim II 1TB  SN: Y3P5T1Z6TTT1
+
+*Checked contents with X drive:  Good, 2018-05-25, RES*
+
+### AK Dem6-Lots (Base & 1A)\Lot1A
+    603 Files, 30 Folders
+    20.7 GB (22,257,520,243 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\Intermap_Data\Lot1a
+    602 Files, 28 Folders
+    20.7 GB (22,257,520,243 bytes)
+    {did not copy 1 *.lock file; 0 bytes}
+    {Removed 2 intermediate folders (Alaska_MidAccuracy_IFSAR\DEM6_Option1_Cell188)}
+### AK Dem6-Lots (Base & 1A)\Lot1-Base
+    2,759 Files, 128 Folders
+    88.5 GB (95,104,556,730 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\Intermap_Data\Lot1Base
+    2,757 Files, 126 Folders
+    88.5 GB (95,104,556,730 bytes)
+    {did not copy 2 *.lock files; 0 bytes}
+    {Removed 2 intermediate folders (Alaska_MidAccuracy_IFSAR\DEM6_BaseOrder)}
+### Other Files/Folders
+*Did not copy - Not IFSAR data*
+
+    autorun
+    System Volume Information
+    Toshiba
+
+
+--------------------------------------------
+X11
+--------------------------------------------
+**Glacier Bay National Park and Preserve**
+
+Blue FreeAgent Go Flex 1TB  SN: NA0CNAQZ
+
+*Checked contents with X drive:  Good, 2018-05-25, RES*
+
+### GLBA_data\IFSAR\Glacier_Bay
+    {Exact duplicate of X5 Glacier_Bay}
+### Other Files/Folders
+*Did not copy - Not IFSAR data*
+
+    GLBA_data\IFSAR\Mosaic
+    GLBA_data\GLBA_PDS.mxd
+    GLBA_data\Reports
+    GLBA_data\X
+    GLBA_data\Y
+    $RECYCLE.BIN
+    FreeAgent
+    System Volume Information
+
+
+-------------------
+X12
+-------------------
+**AK IFSAR 2015**
+
+Black Toshiba Canvio 2TB  SN: 54JBTDQXT18B (In the wrong box)
+
+*Checked contents with X drive:  Good, 2018-05-09, RES*
+
+### 2015_AK_TO9_MOD1Drive2
+    4,723 Files, 169 Folders
+    226 GB (243,013,939,815 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2016_IFSAR\2015_AK_TO9_MOD1Drive2
+    4,721 Files, 169 Folders
+    226 GB (243,013,939,815 bytes)
+    {Did not copy 2 *.lock files; 0 bytes}
+### DISK_LABELS_DeliveryInfo
+    {Did not copy - pdfs/images of shipping data/disk}
+### Other Files/Folders
+*Did not copy - Not IFSAR data*
+
+    $RECYCLE.BIN
+    autorun
+    autorun.inf
+    Mac Driver
+    NTI
+    Pogoplug PC
+    Quick Reference Guide.pdf
+    Setup.exe
+    System Volume Information
+    Warranty.pdf
+
+
+--------------------------------
+X13
+--------------------------------
+**IFSAR DEM Archive July2015**
+
+Black WD My Passport Ultra 1TB  SN: WXM1E14SXHS4
+
+*Checked contents with X drive:  Good, 2018-05-09, RES*
+
+### 20150729 Delivery\Alaska_Mid_Accuracy_DEM_Lower_SE_AK
+    {NOTE: this was skipped because it is nearly duplicate to the submittal below}
+    {   Lower_SE_AK_IFSAR_lots2_3\Alaska_Mid_Accuracy_DEM_Lower_SE_AK}
+    5,739 Files, 457 Folders
+    56.6 GB (60,798,203,799 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2015_IFSAR\Alaska_Mid_Accuracy_DEM_Lower_SE_AK
+    5,733 Files, 457 Folders
+    56.5 GB (60,770,165,078 bytes)
+    {Did not copy 2 *.lock files; 0 bytes}
+    {Did not copy the ovr and stats files for DSM and ORI in}
+    {  LOT_2\CELL_364\N5600W13415P}
+    {  26.7 MB (28,038,721 bytes)}
+    {  They were not included in the duplicate submittal below}
+### 20150729 Delivery\ifsar delivery 20150729.pdf
+    {Did not copy - shipping details}
+### 20160610 Delivery
+    5,447 Files, 324 Folders
+    27.9 GB (30,044,037,658 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2016_IFSAR\20160610 Delivery
+    5,446 Files, 324 Folders
+    27.9 GB (30,044,037,658 bytes)
+    {did not copy 1 *.lock files; 0 bytes}
+### AK_DEM_lot2_cell363\AK_MidAccuracy_DEM\FEDI_NRCS_USGS_USFS_BLM
+    1,294 Files, 71 Folders
+    3.43 GB (3,691,721,185 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2015_IFSAR\AK_DEM_lot2_cell363\FEDI_NRCS_USGS_USFS_BLM
+    1,288 Files, 71 Folders
+    3.43 GB (3,691,721,185 bytes)
+    {Did not copy 6 *.lock files; 0 bytes}
+### AK_DEM_lot2_cell363\usgsdrives003_lot2_cell_363.pdf
+    {Did not copy - shipping details}
+### AKMid_AccuracyFY2014DEM\Alaska_MidAccuracy_DEM\Arctic2014_Carryover
+    4,998 Files, 174 Folders
+    285 GB (306,446,354,303 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2015_IFSAR\Arctic2014_Carryover
+    4,996 Files, 174 Folders
+    285 GB (306,446,354,303 bytes)
+    {Did not copy 2 *.lock files; 0 bytes}
+### AKMid_AccuracyFY2014DEM\autorun
+    {Did not copy - drive & shipping details}
+### AKMid_AccuracyFY2014DEM\usgsdrives000_arctic_carryover.pdf
+    {Did not copy - drive & shipping details}
+### GINA_CIAP_G7317
+    14,793 Files, 227 Folders
+    184 GB (198,130,101,779 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\GINA_CIAP_G7317
+    14,793 Files, 227 Folders
+    184 GB (198,130,101,779 bytes)
+### Lower_SE_AK_IFSAR_lots2_3\Alaska_Mid_Accuracy_DEM_Lower_SE_AK
+    5,735 Files, 457 Folders
+    56.5 GB (60,770,165,078 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2015_IFSAR\Alaska_Mid_Accuracy_DEM_Lower_SE_AK
+    5,733 Files, 457 Folders
+    56.5 GB (60,770,165,078 bytes)
+    {Did not copy 2 *.lock files; 0 bytes}
+### Lower_SE_AK_IFSAR_lots2_3\usgsdrive000_lots2_3_lowerSE_AK.pdf
+    {Did not copy - shipping details}
+### NRCS_USGS_USFS_BLM_AK_midAccy_DEM\AK_MidAccuracy_DEM\FEDI_NRCS_USGS_USFS_BLM
+    2,951 Files, 282 Folders
+    26.2 GB (28,176,316,408 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2015_IFSAR\FEDI_NRCS_USGS_USFS_BLM
+    2,950 Files, 282 Folders
+    26.2 GB (28,176,316,408 bytes)
+    {Did not copy 1 *.lock file; 0 bytes}
+### usgsdrives_coverletter.pdf
+    {Did not copy - shipping details}
+### Other Files/Folders
+*Did not copy - Not IFSAR data*
+
+    $RECYCLE.BIN
+    Passport_Stuff
+    System Volume Information
+
+
+-------------------------
+X14
+-------------------------
+**5DEC2017 Deliveries**
+
+Black WD Easystore 2TB  SN: WXA1A37J41JT
+
+*Loaded contents to the X drive: 2018-05-09, RES*
+
+### Deliveries_5Dec2017\AK_Summer_2016_lots1-3_redilivery_corrected_header\Summer_2016_Lot1
+    4,222 Files, 124 Folders
+    247 GB (266,140,354,734 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2017_IFSAR\Deliveries_5Dec2017\Summer_2016_Lot1
+    4,222 Files, 124 Folders
+    247 GB (266,140,354,734 bytes)
+### Deliveries_5Dec2017\AK_Summer_2016_lots1-3_redilivery_corrected_header\Summer_2016_Lot2
+    4,106 Files, 122 Folders
+    263 GB (283,117,311,208 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2017_IFSAR\Deliveries_5Dec2017\Summer_2016_Lot2
+    4,106 Files, 122 Folders
+    263 GB (283,117,311,208 bytes)
+### Deliveries_5Dec2017\AK_Summer_2016_lots1-3_redilivery_corrected_header\Summer_2016_Lot3
+    2,348 Files, 77 Folders
+    116 GB (124,905,816,112 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2017_IFSAR\Deliveries_5Dec2017\Summer_2016_Lot3
+    2,348 Files, 77 Folders
+    116 GB (124,905,816,112 bytes)
+### Other Files/Folders
+in **Deliveries_5Dec2017\AK_Summer_2016_lots1-3_redilivery_corrected_header**
+
+*Did not copy - Not IFSAR data*
+
+    Seagate
+    Autorun.inf
+    BackupPlus.ico
+
+### Deliveries_5Dec2017\AK2016_TO1Lot4_drive6\Alaska_Summer2016\Alaska_MidAccuracy_DEM\Summer_2016_Lot04
+    3,607 Files, 113 Folders
+    223 GB (239,680,978,237 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2017_IFSAR\Deliveries_5Dec2017\Summer_2016_Lot04
+    3,607 Files, 113 Folders
+    223 GB (239,680,978,237 bytes)
+### Deliveries_5Dec2017\AK2016_TO3Lot2Drive2_AK_NNE_2016\Alaska_MidAccuracy_DEM\SummerNNE_2016_Lot02
+    3,344 Files, 113 Folders
+    221 GB (237,401,520,362 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2017_IFSAR\Deliveries_5Dec2017\SummerNNE_2016_Lot02
+    3,344 Files, 113 Folders
+    221 GB (237,401,520,362 bytes)
+### Deliveries_5Dec2017\Chugach2Option7_cell_354\Alaska_MidAccuracy_DEM\Chugach2_Option7
+    1,360 Files, 81 Folders
+    5.55 GB (5,969,043,731 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2017_IFSAR\Deliveries_5Dec2017\Chugach2_Option7
+    1,360 Files, 81 Folders
+    5.55 GB (5,969,043,731 bytes)
+### Deliveries_5Dec2017\Nov2017_IFSARdeliveries.pdf
+    125 KB (128,997 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2017_IFSAR\Deliveries_5Dec2017\Nov2017_IFSARdeliveries.pdf
+    125 KB (128,997 bytes)
+### Other Files/Folders
+*Did not copy - Not IFSAR data*
+
+    $RECYCLE.BIN
+    readme.txt
+    System Volume Information
+    User Manual.url
+    WD Discovery
+    WD Discovery for Mac.dmg
+    WD Discovery.exe
+    WD Software Offline Installers
+
+
+-----------------------------
+X15
+-----------------------------
+**3Apr2017 - Mostly Kenai**
+
+Black WD My Passport Ultra 2TB  SN: WX71A16RLL94
+
+*Checked contents with X drive:  Good, 2018-05-15, RES*
+
+### Delivery_3April2017
+    6 Files, 0 Folders
+    4.52 MB (4,744,952 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2017_IFSAR\Delivery_3April2017
+    6 Files, 0 Folders
+    4.52 MB (4,744,952 bytes)
+### from_Elements500G_SN_WX21AB4F3Y36
+    4,883 Files, 218 Folders
+    183 GB (196,715,060,906 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2017_IFSAR\disk1
+    4,883 Files, 218 Folders
+    183 GB (196,715,060,906 bytes)
+### from_PassportUltra2T_SN_WX31AA5C46A0
+    8,391 Files, 369 Folders
+    383 GB (411,618,734,928 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2017_IFSAR\disk2
+    8,387 Files, 369 Folders
+    383 GB (411,618,734,928 bytes)
+    {Did not copy 4 *.lock file; 0 bytes}
+    {file AK_IFSAR_copies\Summer_2016_Lot1\USGS_15_Tiles\Cell_94\n6745w14615\
+    {  ORI_n6745w14615P.tif  is corrupt on source disk; }
+    {downloaded from ftp://ifsar.gina.alaska.edu for X drive}
+### from_PassportUltra500G_SN_WX81A16ACP8P
+    1,510 Files, 89 Folders
+    5.08 GB (5,456,314,635 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2017_IFSAR\disk3
+    1,510 Files, 89 Folders
+    5.08 GB (5,456,314,635 bytes)
+### from_PassportUltra500G_SN_WXA1AC5PHLSZ
+    {NOTE:  This is actually a duplicate of the previous folder}
+    {was originally copied as disk4, but subsequently deleted}
+    1,510 Files, 89 Folders
+    5.08 GB (5,456,314,635 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2017_IFSAR\disk3
+    1,510 Files, 89 Folders
+    5.08 GB (5,456,314,635 bytes)
+### FromDGGS\2018-09-01_Missing_Cells
+    7,619 Files, 390 Folders
+    297 GB (319,656,208,910 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2018_IFSAR\2018-10-05_Missing_Deliveries
+    7,619 Files, 390 Folders
+    297 GB (319,656,208,910 bytes)
+### Missing_Source_Disk\Intermap_Data
+    14,446 Files, 700 Folders
+    534 GB (573,405,455,180 bytes)
+##### -> X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\Intermap_Data
+    {only these folders: Lot1, Lot2, Lot3, Lot4, Lot5, Lot8a}
+    14,446 Files, 700 Folders
+    534 GB (573,405,455,180 bytes)
+### Missing_Source_Disk\USGS_Delivery_22May2018\Alaska_MidAccuracy_DEM
+    3,791 Files, 230 Folders
+    20.5 GB (22,110,101,802 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2018_IFSAR\2018-05-22_Delivery
+    3,791 Files, 230 Folders
+    20.5 GB (22,110,101,802 bytes)
+### Other Files/Folders
+*Did not copy - Not IFSAR data*
+
+    $RECYCLE.BIN
+    System Volume Information
+    WD_files
+    Missing_Source_Disk\Readme.txt
+
+
+-------------------------------------------------------------
+X16
+-------------------------------------------------------------
+**AK IFSAR Chugach Overcollect Cells - 276, 277, 305, 306)**
+
+Black WD MyPassport Ultra 500GB  SN: WXH1A56K9RXK
+
+*Checked contents with X drive:  Good, 2018-05-16, RES*
+
+### Alaska_MidAccuracy_DEM
+    2,978 Files, 229 Folders
+    15.7 GB (16,918,382,398 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2017_IFSAR\Chugach2_Overcollect\Alaska_MidAccuracy_DEM
+    2,978 Files, 229 Folders
+    15.7 GB (16,918,382,398 bytes)
+### Other Files/Folders
+*Did not copy - Not IFSAR data*
+
+    $RECYCLE.BIN
+    System Volume Information
+
+
+----------------------
+X17
+----------------------
+**AK IFSAR Chugach**
+
+Fuchia WD MyPassport Ultra 1TB  SN: WX21A466XJZR
+
+*Checked contents with X drive:  Good, 2018-05-16, RES*
+
+### IfSAR Delieveries
+    4,446 Files, 226 Folders
+    138 GB (148,984,029,714 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2017_IFSAR\IfSAR Delieveries
+    4,444 Files, 226 Folders
+    138 GB (148,984,029,714 bytes)
+    {Did not copy 2 *.lock file; 0 bytes}
+### Other Files/Folders
+*Did not copy - Not IFSAR data*
+
+    $RECYCLE.BIN
+    bin
+    Extras
+    System Volume Information
+    User Manuals
+    WD Apps for Mac
+    WD Apps for Windows
+    WD Apps Setup.exe
