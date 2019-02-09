@@ -20,7 +20,7 @@ def load_csv_file(csvpath):
     records = []
     with open(csvpath, 'rb') as fh:
         # ignore the first record (header)
-        # fh.readline()
+        fh.readline()
         for row in csv.reader(fh):
             unicode_row = [unicode(item, 'utf-8') if item else None for item in row]
             records.append(unicode_row)
@@ -40,8 +40,11 @@ def make_raster_list_for_mosaic(fgdb, mosaic, csv_data):
 
 
 def add_rasters_to_mosaic(fgdb, mosaic, rasters):
+    dataset = os.path.join(fgdb,mosaic)
+    # print(dataset)
+    # print(rasters)
     arcpy.AddRastersToMosaicDataset_management(
-        in_mosaic_dataset=os.path.join(fgdb,mosaic),
+        in_mosaic_dataset=dataset,
         raster_type='Raster Dataset',
         input_path=rasters,
         update_overviews="NO_OVERVIEWS"
@@ -86,7 +89,8 @@ if __name__ == '__main__':
     logger.setLevel(logging.DEBUG)
 
     # main2()
-    gdb = r'X:\Mosaics\Statewide\DEMs\SDMI_IFSAR.gdb'
+    #gdb = r'X:\Mosaics\Statewide\DEMs\SDMI_IFSAR.gdb'
+    gdb = r'C:/tmp/pds/ifsar_update/2019/SDMI_IFSAR.gdb'
     main(fgdb=gdb, mosaic='DSM', csv_file=r'data\build_ifsar_2019_dsm.csv')
     main(fgdb=gdb, mosaic='DTM', csv_file=r'data\build_ifsar_2019_dtm.csv')
     main(fgdb=gdb, mosaic='ORI', csv_file=r'data\build_ifsar_2019_ori.csv')

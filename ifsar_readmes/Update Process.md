@@ -51,14 +51,23 @@ PDS Update Process for IFSAR data
    - One per each mosaic dataset in `X:\Mosaics\Statewide\DEMs\SDMI_IFSAR.gdb`
    - Use SQL EXPORT queries at the end of `pds-reorg/Ifsar file analysis.sql`
    - Save exports as `csv` files in `pds-reorg\data`
+   - SSMS adds a utf8 BOM at the begining of the file.  The easiest way to deal
+     with this is add a column name row at the top that is skipped.
 9. Add new rasters to Mosaic
    - Copy `\Mosaics\Statewide\DEMs\SDMI_IFSAR.gdb` and Overviews to
      an editable location (`C:\tmp`) a portable HD copy of the X drive
      mounted as `X:` is the most fool proof.
-   - Edit and run the script `pds-reorg/organize_ifsar.py` for each
+   - Edit and run the script `pds-reorg/build_mosaics.py` for each
      mosaic dataset.
+10. Add functions to the input rasters
+    - Edit MaxPS values for all new tiles to match other existing tiles
+    - Add masks for nodata = 0 and nodata = 1 for the ori images
+    - Add no data masks to the dtm and dsm if needed.
 11. Update Overviews
+    - build overviews
+    - generate overviews (but only the minimum needed)
+    - How? 
 12. Test
-10. Update Metadata
+13. Update Metadata
 
 
