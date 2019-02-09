@@ -60,18 +60,12 @@ others have been reformatted to remove short comings, and are in
 **X:\Extras\AKR\Statewide\DEM\Legacy_IFSAR**. Details of the reformatting are in
 readme files in the sub folders.
 
-To Do
------
-* Fix mosaic
-  - remove paths to SDMI_IFSAR\2017_IFSAR\disk4
-  - remove paths to Summer_2016_Lot4_Cell_150
-
-  if I do this on the existing geodatabase the small update
-  happens in a multi-GB file, which will be impossible to robo copy
-  to several parks - need to delete the old style stats first and rebuild the mosaic.
-* Use arcpy to recalc
-  stats at 1,1 with ignore values of -10000 and -32767.  This creates a
-  new *.tif.aux.xml and creates (or updates) a *.tif.xml file to document the process.
-  The files with old stats are listed in ...
-* remove/replace old pyramid (*.rrd) file??
-* delete overviews for not used files
+Possible Improvements
+---------------------
+* Use arcpy to recalc stats at 1,1 with ignore values of -10000 and -32767.
+  This creates a new *.tif.aux.xml and creates (or updates) a *.tif.xml file
+  to document the process.  The files with old stats are listed in old_style_stats.txt
+  No that we have imported these files into the mosaic, the original stats files are
+  ignored.
+* Remove/replace old style pyramid (*.rrd) files??
+* Delete overviews for unused files
