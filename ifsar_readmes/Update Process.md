@@ -60,14 +60,54 @@ PDS Update Process for IFSAR data
    - Edit and run the script `pds-reorg/build_mosaics.py` for each
      mosaic dataset.
 10. Add functions to the input rasters
-    - Edit MaxPS values for all new tiles to match other existing tiles
+    - Add Mosaics to ArcMap, and select the new footprints, then use
+      `Selection` -> `Batch Edit Raster Functions` from the context menu,
+      or the `Field Calculator` from the table view. 
+    - Check/Set MaxPS to 6.25 for all ORI, and 15 for all DTM/DSM
     - Add masks for nodata = 0 and nodata = 1 for the ori images
-    - Add no data masks to the dtm and dsm if needed.
+    - Add no data masks to the dtm and dsm if needed (typically only along border).
 11. Update Overviews
-    - build overviews
-    - generate overviews (but only the minimum needed)
-    - How? 
+    - If you made a copy, fix the paths of the writable copy of the overviews
+      - right click, `Remove` -> `Reset Relative Path`
+      - right click, `Modify` -> `Repair...` and replace the X drive path to the
+        overviews to the writable copy.
+    - Define Overviews
+      - **Do not** use `Optimize` -> `Define Overviews...` in the context menu
+      - Use `Optimize` -> `Build Overviews...` in the context menu with the
+        following options:
+      - Define Missing Overview Tiles (optional): ON
+      - Generate Overviews (optional): OFF
+      - Generate Missing Overview Images Only (optional): ON
+      - Generate Stale Overview Images Only (optional): ON
+      - The second two will be grayed out, when the second option is off,
+        but I think they still apply.
+    - Get objectID of new overviews (bottom of the list), and only Build
+      Overviews for new overviews
+      - Use `Optimize` -> `Build Overviews...` in the context menu with the
+        following options:
+      - Query Definition (optional): `OBJECTID >= xxx` (replace `XXX` with first new overview)
+      - Define Missing Overview Tiles (optional): OFF
+      - Generate Overviews (optional): ON
+      - Generate Missing Overview Images Only (optional): ON
+      - Generate Stale Overview Images Only (optional): ON
+    - Use ArcMap to find the OBJECTID of the overviews at a higher level than the new
+      ones, in the same area as the new tiles.  These overviews exist but will need to
+      be updated.  Close ArcMap and update them with following:
+      - Use `Optimize` -> `Build Overviews...` in the context menu with the
+        following options:
+      - Query Definition (optional): `OBJECTID in (xx, yy, ... zz)` (replace `xx`,
+        etc with the overview needing updating)
+      - Define Missing Overview Tiles (optional): OFF
+      - Generate Overviews (optional): ON
+      - Generate Missing Overview Images Only (optional): OFF
+      - Generate Stale Overview Images Only (optional): OFF
+    - You cannot Define and Build overviews in one step,  because despite the options
+      to only updated the stale and new it will recreate all.
 12. Test
 13. Update Metadata
-
-
+14. Update the PDS
+    - Copy to the new gdb and new overview files to the X drive
+    - Fix the overview paths:
+      - right click, `Remove` -> `Reset Relative Path`
+      - right click, `Modify` -> `Repair...` and replace the 
+        path to the writable overviews with the X drive path.
