@@ -12,6 +12,12 @@ REM to use GDAL commands you must first run the command C:\users\resarwas\gdal\S
 REM Run this from the directory to translate
 REM need to make a folder called 'new' first
 
+REM To convert from odd formats (like BAG) to tif, use the following
+REM FOR %%f in (*.bag) DO (
+REM     SET "src=%%f"
+REM     SET "dest=new\%%~nf.tif"
+
+
 FOR %%f in (*.tif) DO (
 
     SET "src=%%f"
