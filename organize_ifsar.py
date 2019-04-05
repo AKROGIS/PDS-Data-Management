@@ -11,10 +11,10 @@ import glob
 
 # must run this from a folder with a data directory
 
-csv_file = 'data/ifsar_tif_2019.csv'
-out_file = 'data/ifsar_tif_2019_supp.csv'
+csv_file = 'data/ifsar_tif_2019b.csv'
+out_file = 'data/ifsar_tif_2019b_supp.csv'
 
-with open(out_file, 'w') as o:
+with open(out_file, 'wb') as o:
     csv_writer = csv.writer(o)
     csv_writer.writerow(['folder', 'filename', 'ext', 'size', 'legacy', 'nga', 'kind', 'edge',
                          'cell', 'lat', 'lon', 'tfw', 'xml', 'html', 'txt', 'tif_xml', 'ovr',

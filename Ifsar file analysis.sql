@@ -1,6 +1,6 @@
 
 -- Add new data to the base table
-INSERT INTO ifsar_tif_all SELECT * FROM ifsar_tif_all
+INSERT INTO ifsar_tif_all SELECT * FROM ifsar_tif_2019b
 
 -- Specify tiles to skip (do not belong in mosaic)
 -- ================================================

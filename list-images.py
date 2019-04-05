@@ -29,7 +29,7 @@ def main(folder, ext='tif', csv_file=None):
         check_folder(folder, ext)
     else:
         import csv
-        with open(csv_file, 'w') as f:
+        with open(csv_file, 'wb') as f:
             csv_writer = csv.writer(f)
 
             def put_in_csv(row):
@@ -53,4 +53,4 @@ if __name__ == '__main__':
     # IKONOS
     # main(r'X:\IKONOS\LACL\BGRN', '.tif')
     # main(r'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR', '.bil', 'c:/Users/RESarwas/Documents/GitHub/pds-reorg/data/ifsar_bil_new_x.csv')
-    main(r'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2019_IFSAR', '.tif', 'data/ifsar_tif_2019.csv')
+    main(r'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2019_IFSAR\Summer_2017_Lot8_9', '.tif', 'data/ifsar_tif_2019b.csv')
