@@ -32,14 +32,17 @@ namespace MapFixer
                 Moves.Solution? maybeSolution = moves.GetSolution(oldDataset);
                 if (maybeSolution == null)
                 {
+                    //TODO: defer this dialog until after the loop. Add a counter and increment it here.
                     string msg = string.Format("Sorry the layer '{0}' is broken, but it isn't due to the X drive reorganization. This addin does not have the information necessary to fix it.",
                         layerName);
                     msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
-                    continue; 
+                    continue;
                 }
                 Moves.Solution solution = maybeSolution.Value;
                 if (solution.NewDataset == null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath == null)
                 {
+                    // This is a very unusual case.  We do not have a solution, only a note.
+                    // TODO: Change the wording - The layer has been removed and there is no replacement.
                     string msg = string.Format("The layer '{0}' is broken, but it cannot be fixed automatically.",
                         layerName);
                     msg = msg + "\n\nNote: " + solution.Remarks;
@@ -56,6 +59,8 @@ namespace MapFixer
                 }
                 if (solution.NewDataset == null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath == null)
                 {
+                    // solution.ReplacementDataset != null is not supported; should be filtered out when moves loaded; IGNORE
+                    // TODO: Remove all but the continue
                     string msg = string.Format("The layer '{0}' is broken. The data has moved to a new location.  Do you want to fix the layer?",
                         layerName);
                     if (solution.Remarks != null)
@@ -71,14 +76,14 @@ namespace MapFixer
                 }
                 if (solution.NewDataset == null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath != null)
                 {
-                    //TODO
+                    // solution.ReplacementDataset != null is not supported; should be filtered out when moves loaded; IGNORE
                     continue;
                 }
                 if (solution.NewDataset != null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath == null)
                 {
                     if (solution.Remarks == null)
                     {
-                        // This is the optimal action.  There is no good reason for a user not to click OK.
+                        // This is the optimal action.  The user is not prompted, since there is no good reason for a user not to click OK.
                         // The user will be warned that layers have been fixed, and they can choose to not save the changes.
                         autoFixesApplied += 1;
                         RepairLayer(dataLayer, oldDataset, solution.NewDataset.Value);
@@ -98,17 +103,21 @@ namespace MapFixer
                 }
                 if (solution.NewDataset != null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath != null)
                 {
-                    //TODO
+                    // TODO: prompt user if they want the archive/trash version, or the new layer file (recommended)
+                    // TODO: messageBox do you want to add layer (yes/no)  add solution.Remarks if not null
+                    // TODO: if yes add layer
+                    // TODO: messagebox do you want to delete the old layer (If you have customized this layer, you might want to inspect and apply by hand, then delete manually). Yes/no
+                    // TODO: if yes, delete the broken layer
                     continue;
                 }
                 if (solution.NewDataset != null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath == null)
                 {
-                    //TODO
+                    // solution.ReplacementDataset != null is not supported; should be filtered out when moves loaded; IGNORE
                     continue;
                 }
                 if (solution.NewDataset != null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath != null)
                 {
-                    //TODO
+                    // solution.ReplacementDataset != null is not supported; should be filtered out when moves loaded; IGNORE
                     continue;
                 }
             }
@@ -132,16 +141,24 @@ namespace MapFixer
             }
         }
 
+        //FIXME: only need to deal with dataset name changes.  All other changes are not supported
         public void RepairLayer(IDataLayer2 dataLayer, Moves.GisDataset oldDataset, Moves.GisDataset newDataset)
         {
+            // TODO: check and skip if (oldDataset.DatasourceType != newDataset.DatasourceType || oldDataset.WorkspaceProgID != newDataset.WorkspaceProgID)
+            // This should be impossible by checks against the CSV and during the loading of the moves.
+            // If it happens just do nothing and ignore it.
+            // TODO: only check for if (oldDataset.DatasourceName == newDataset.DatasourceName)
             if (oldDataset.DatasourceName == newDataset.DatasourceName && oldDataset.DatasourceType == newDataset.DatasourceType && oldDataset.WorkspaceProgID == newDataset.WorkspaceProgID)
             {
+                //TODO: This may fail in 10.6.1  See: https://community.esri.com/thread/221120-set-datasource-with-arcobjects
                 IDataSourceHelperLayer helper = new DataSourceHelper() as IDataSourceHelperLayer;
                 helper.FindAndReplaceWorkspaceNamePath((ILayer)dataLayer, oldDataset.WorkspacePath, newDataset.WorkspacePath, false);
             }
             else
             {
-                // FIXME:  This is much more complicated
+                // TODO: Rename the dataset
+                // TODO: Maybe try: http://help.arcgis.com/en/sdk/10.0/arcobjects_net/componenthelp/index.html#/ReplaceName_Method/001200000ss3000000/
+                //FIXME:  This is incomplete an maybe wrong
                 IDataset dataset = OpenDataset(newDataset);
                 // Patch the layer, and trigger the TOC and map updates, etc...
                 // see http://help.arcgis.com/en/sdk/10.0/arcobjects_net/componenthelp/index.html#//00490000002r000000
@@ -225,7 +242,7 @@ namespace MapFixer
                 }
                 catch (Exception)
                 {
-                    // TODO: Log or messageBox the error;\
+                    // TODO: Log or messageBox the error;
                     return null;
                 }
             }
@@ -239,7 +256,7 @@ namespace MapFixer
                 }
                 catch (Exception)
                 {
-                    // TODO: Log or messageBox the error;\
+                    // TODO: Log or messageBox the error;
                     return null;
                 }
             }
@@ -253,7 +270,7 @@ namespace MapFixer
                 }
                 catch (Exception)
                 {
-                    // TODO: Log or messageBox the error;\
+                    // TODO: Log or messageBox the error;
                     return null;
                 }
             }
