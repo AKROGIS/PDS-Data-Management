@@ -284,6 +284,8 @@ namespace MapFixer
                         dataSourceType = null;
                         if (Enum.TryParse<esriDatasetType>(row[8], out tempDataSourceType))
                             dataSourceType = tempDataSourceType;
+                        //TODO: if row[6] != null && row[2] != row[6] or row[8] != null && row[4] != row[8]
+                        //TODo: We have a situation we can't handle
                         newDataset = new PartialGisDataset(row[5], row[6], row[7], dataSourceType);
                     }
                     PartialGisDataset? replacementDataset = null;
@@ -378,7 +380,7 @@ namespace MapFixer
             // the moves that are known by date to be not applicable can be skipped.
 
             // IMPORTANT: the timesatmp does not solve this problem:
-\           // at time 1 dataset /a/b/c is created (not logged in the moves dataset)
+            // at time 1 dataset /a/b/c is created (not logged in the moves dataset)
             // at time 2 dataaset /a/b/c is moved to /d/e/f (and logged)
             // at time 3 a new dataset /a/b/c is created (not logged)
             // at time 4 new dsataset /a/b/c is moved to /g/h/i (logged)
