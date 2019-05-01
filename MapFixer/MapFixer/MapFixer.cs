@@ -14,9 +14,14 @@ namespace MapFixer
 
         public void FixMap(Moves moves)
         {
-            ESRI.ArcGIS.Framework.IMessageDialog msgBox = new ESRI.ArcGIS.Framework.MessageDialogClass();
             var brokenDataSources = GetBrokenDataSources();
+            // We do not need to do anything if there was nothing to fix
+            if (brokenDataSources.Count == 0) {
+                return;
+            }
+            ESRI.ArcGIS.Framework.IMessageDialog msgBox = new ESRI.ArcGIS.Framework.MessageDialogClass();
             var autoFixesApplied = 0;
+            var unfixableLayers = 0;
             foreach (IDataLayer2 dataLayer in brokenDataSources)
             {
                 string layerName;
@@ -32,10 +37,7 @@ namespace MapFixer
                 Moves.Solution? maybeSolution = moves.GetSolution(oldDataset);
                 if (maybeSolution == null)
                 {
-                    //TODO: defer this dialog until after the loop. Add a counter and increment it here.
-                    string msg = string.Format("Sorry the layer '{0}' is broken, but it isn't due to the X drive reorganization. This addin does not have the information necessary to fix it.",
-                        layerName);
-                    msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
+                    unfixableLayers += 1;
                     continue;
                 }
                 Moves.Solution solution = maybeSolution.Value;
@@ -121,23 +123,35 @@ namespace MapFixer
                     continue;
                 }
             }
+
             //TODO: Refresh TOC
             ArcMap.Document.ActiveView.Refresh();
             ArcMap.Document.CurrentContentsView.Refresh(null);
-            if (autoFixesApplied > 0)
-            {
-                string msg = String.Format("{0} broken layers were automatically fixed based on the new locations of known data sources. " +
-                    "Close the document without saving if this is not what you want.", autoFixesApplied);
-                msgBox.DoModal("Map has been modified", msg, "OK", null, ArcMap.Application.hWnd);
-            }
-            //Check for completeness
+
+            // Print a Summary
             brokenDataSources = GetBrokenDataSources();
-            if (brokenDataSources.Count > 0)
+            if (autoFixesApplied > 0 || unfixableLayers > 0 || brokenDataSources.Count > 0)
             {
-                string msg = "There are still some broken layers in your map. " +
-                    "If this is unexpected, it may be because some of the datasources have moved multiple times. " +
-                    "Try running the tool again.";
-                msgBox.DoModal("Map Check", msg, "OK", "Cancel", ArcMap.Application.hWnd);
+                string msg = "";
+                if (autoFixesApplied > 0) {
+                    msg += String.Format("{0} broken layers were automatically fixed based on the new locations of known data sources. " +
+                    "Close the document without saving if this is not what you want.", autoFixesApplied);
+                }
+                if (autoFixesApplied > 0 && (unfixableLayers > 0 || brokenDataSources.Count > 0)) {
+                    msg += "\n\n";
+                }
+                if (unfixableLayers > 0) {
+                    msg += String.Format("{0} broken layers could not be fixed; breakage is not due to changes on the PDS (X drive).",
+                    unfixableLayers);
+                }
+                if (unfixableLayers < brokenDataSources.Count) {
+                    // We know that brokenDataSources.Count must be >= unfixableLayers, therefore some of the fixes need fixing
+                    if (unfixableLayers > 0) {
+                        msg += "\n\n";
+                    }
+                    msg += "Additional fixes are possible and needed.  Please save, close and reopen your map.";
+                }
+                msgBox.DoModal("Map Fixer Summary", msg, "OK", null, ArcMap.Application.hWnd);
             }
         }
 
