@@ -24,7 +24,8 @@ namespace MapFixer
             var unfixableLayers = 0;
             foreach (IDataLayer2 dataLayer in brokenDataSources)
             {
-                var layerName = dataLayer is IDataset ? ((IDataset)dataLayer).Name : ((ILayer2)dataLayer).Name;
+                var dataset = dataLayer as IDataset;
+                var layerName = dataset != null ? dataset.Name : ((ILayer2)dataLayer).Name;
                 Moves.GisDataset oldDataset = GetDataset(dataLayer);
                 Moves.Solution? maybeSolution = moves.GetSolution(oldDataset);
                 if (maybeSolution == null)
@@ -175,14 +176,14 @@ namespace MapFixer
                 ILayer layer;
                 while((layer = layerEnumerator.Next()) != null)
                 {
-                    if (layer is ILayer2)
+                    var layer2 = layer as ILayer2;
+                    if (layer2 != null)
                     {
-                        ILayer2 layer2 = (ILayer2)layer;
                         if (!layer2.Valid)
                         {
-                            if (layer2 is IDataLayer2)
+                            var dataLayer = layer2 as IDataLayer2;
+                            if (dataLayer != null)
                             {
-                                IDataLayer2 dataLayer = (IDataLayer2)layer2;
                                 layerList.Add(dataLayer);
                             }
                         }
