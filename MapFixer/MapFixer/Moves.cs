@@ -285,8 +285,12 @@ namespace MapFixer
                         dataSourceType = null;
                         if (Enum.TryParse<esriDatasetType>(row[8], out tempDataSourceType))
                             dataSourceType = tempDataSourceType;
-                        //TODO: if row[6] != null && row[2] != row[6] or row[8] != null && row[4] != row[8]
-                        //TODo: We have a situation we can't handle
+                        if ((row[6] != null && row[2] != row[6]) || (row[8] != null && row[4] != row[8]))
+                        {
+                            //Warning: We can't handle handle changing the workspace or dataset types (only the name)
+                            row[6] = null;
+                            dataSourceType = null;
+                        }
                         newDataset = new PartialGisDataset(row[5], row[6], row[7], dataSourceType);
                     }
                     PartialGisDataset? replacementDataset = null;
@@ -297,7 +301,11 @@ namespace MapFixer
                             dataSourceType = tempDataSourceType;
                         replacementDataset = new PartialGisDataset(row[9], row[10], row[11], dataSourceType);
                     }
-                    //TODO: if replacementDataset != null; set to null and issue warning
+                    if (replacementDataset != null)
+                    {
+                        replacementDataset = null;
+                        // Warning: Replacement datasets are not supported
+                    }
                     var layerFile = string.IsNullOrWhiteSpace(row[13]) ? null : row[13].Trim();
                     var remarks = string.IsNullOrWhiteSpace(row[14]) ? null : row[14].Trim();
                     if (newDataset == null && replacementDataset == null && layerFile == null && remarks == null)
@@ -338,7 +346,7 @@ namespace MapFixer
             string movePath = moveFrom.WorkspacePath;
             string fullPath = dataset.WorkspaceWithoutVolume;
             // Just searching for oldPath somewhere in newpath could yield some false positives.
-            // Instead, strip the volume and only match if the beginning of the string
+            // Instead, strip the volume and only match the beginning of the string
             return fullPath.StartsWith(movePath, StringComparison.OrdinalIgnoreCase);
         }
 
@@ -371,24 +379,24 @@ namespace MapFixer
             // ulimately, the user should not be given the option to use /d/e/f since it doesn't exist.
             // however this gets complicated.  For example
             // At time 1 /a/b/c is moved to the archive and a replcement of /d/e/f is offered
-            // at time 2 the archive is moved to the trash and replaced by /1/2/3
+            // at time 2 archive/a/b/c is moved to the trash and replaced by /1/2/3
             // at time 3 /d/e/f is moved to archive and replaced by /4/5/6
             // The user with /a/b/c might want 1/2/3, 4/5/6, archive/d/e/f or trash/a/b/c.  To resolve this
             // The user should be given the choice from time 1, then the choice from time 2 or time 3 depending
-            // on the original choice.
+            // on the first choice.
 
             // The timestamp is really not that helpful. It is only useful when doing a second search, and then
             // the moves that are known by date to be not applicable can be skipped.
 
-            // IMPORTANT: the timesatmp does not solve this problem:
-            // at time 1 dataset /a/b/c is created (not logged in the moves dataset)
+            // IMPORTANT: the timestamp does not solve this problem:
+            // at time 1 dataset /a/b/c is created (creates are not logged in the moves dataset)
             // at time 2 dataaset /a/b/c is moved to /d/e/f (and logged)
             // at time 3 a new dataset /a/b/c is created (not logged)
             // at time 4 new dsataset /a/b/c is moved to /g/h/i (logged)
             // GetSolution will always return the move at time 2 when first checking /a/b/c.
             // GetSolution could correctly return the move at time4 if given a start time after time 2.
             // However, we do not know if the map added data /a/b/c before time 2 or after time 3.
-            // This is not stored in the map document.
+            // The date a layer is added is not stored in the map document.
             // We will try to discourage this kind of renaming situation.
 
             if (!oldDataset.IsOnPDS)
