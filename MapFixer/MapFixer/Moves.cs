@@ -346,7 +346,10 @@ namespace MapFixer
                     _moves.Add(new Move(timestamp, oldDataset, newDataset, null, layerFile, remarks));
                 }
             }
-            catch { }
+            catch
+            {
+                // ignored; Never fail for any reason when reading input
+            }
         }
 
         private bool IsDataSourceMatch(GisDataset dataset, PartialGisDataset moveFrom)
