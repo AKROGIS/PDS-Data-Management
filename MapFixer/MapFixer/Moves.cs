@@ -253,63 +253,100 @@ namespace MapFixer
             //The constructor is very forgiving on the input.  It ignores any record which isn't valid.  It doesn't throw any exceptions
             //It may contain an empty list of moves, which will is dealt with appropriately
             //The csv file used for input should be validated whenever it is edited.
-            //   do the same parsing below and print exceptions and/or warnings whenever the foreach loop continues (skips a line)
-            //   Also need to check for chronological ordering
-            //   Also check that workspace paths do not have volume information
-            //   Check that replacement is not provided; not supported - use replacement layer
-            //   Check that new and old do not differ in workspace type or dataset type; not supported - use replacement layer
-            //   check if new is null (deleted), trash or archive, then replacement layer must be provided.
-            //   check that columns 2,6,10 are progID strings (https://desktop.arcgis.com/en/arcobjects/latest/net/webframe.htm#IWorkspaceName_WorkspaceFactoryProgID.htm)
-            //   check that columns 4,8,12 are datasetTypes (https://desktop.arcgis.com/en/arcobjects/latest/net/webframe.htm#esriDatasetType.htm)
+            //Validation rules:
+            //   Each row requires a timestamp, and the timestamp must be ordered from oldest to newest
+            //   Workspace paths must not have volume information
+            //   Replacement datasets are not supported - use replacement layer
+            //   New and old datasets must not differ in workspace type or dataset type - use replacement layer
+            //   If newDataset is null (i.e old is deleted), trash or archive, then a replacement layerfile should be provided.
+            //      A remark is all that is mandatory when newDataset is null.
+            //   Column 2 and 6 must be progID strings
+            //   Columns 4 and 8must be datasetTypes
+
+            //TODO: Add a boolean 'check' parameter, which will print the warning comments below
             try
             {
+                int lineNum = 0;
+                DateTime previousTimestamp = default(DateTime);
                 foreach (string line in File.ReadLines(csvpath))
                 {
+                    lineNum += 1;
                     var row = line.Split(delimeter);
                     if (row.Count() != fieldCount)
+                    {
                         continue;
+                        //Warning: Wrong number of columns at line linNum; Skipping.
+                    }
                     if (!DateTime.TryParse(row[0], out DateTime timestamp))
                     {
                         continue;
+                        //Warning: First column at line linNum is not a DateTime; Skipping.
                     }
+                    if (timestamp < previousTimestamp)
+                    {
+                        continue;
+                        //Warning: Timestamp in column 1 must be increasing. Skipping line linNum for being out of order.
+                    }
+                    previousTimestamp = timestamp;
 
                     if (string.IsNullOrWhiteSpace(row[1]))
+                    {
                         continue;
+                        //Warning: Old Workspace Path (column 2) not provided at line lineNum; Skipping.
+                    } else
+                    {
+                        //TODO: Verify row[1] does not start with a UNC or drive letter (no volume information)
+                    }
                     esriDatasetType? dataSourceType = null;
                     if (Enum.TryParse<esriDatasetType>(row[4], out esriDatasetType tempDataSourceType))
+                    {
                         dataSourceType = tempDataSourceType;
+                    }
+                    if (dataSourceType == null && !string.IsNullOrWhiteSpace(row[4]))
+                    {
+                        //Warning: esriDatasetType provided at column 5 line lineNum is not valid; Using null
+                    }
+                    //TODO: Check that row[2] is a progID strings (https://desktop.arcgis.com/en/arcobjects/latest/net/webframe.htm#IWorkspaceName_WorkspaceFactoryProgID.htm)
                     var oldDataset = new PartialGisDataset(row[1], row[2], row[3], dataSourceType);
+
                     PartialGisDataset? newDataset = null;
                     if (!string.IsNullOrWhiteSpace(row[5]))
                     {
+                        //TODO: Verify row[5] does not start with a UNC or drive letter (no volume information)
                         dataSourceType = null;
                         if (Enum.TryParse<esriDatasetType>(row[8], out tempDataSourceType))
+                        {
                             dataSourceType = tempDataSourceType;
+                        }
+                        if (dataSourceType == null && !string.IsNullOrWhiteSpace(row[8]))
+                        {
+                            //Warning: esriDatasetType provided at column 9 line lineNum is not valid; Using null
+                        }
                         if ((row[6] != null && row[2] != row[6]) || (row[8] != null && row[4] != row[8]))
                         {
-                            //Warning: We can't handle handle changing the workspace or dataset types (only the name)
+                            //Warning: You can't change the workspace or dataset types on line lineNum; Ignoring new values. Use a replacement layerfile instead
                             row[6] = null;
                             dataSourceType = null;
                         }
+                        // We do not need to check that row[6] is a progID, because it must be null or the same as row[2]
                         newDataset = new PartialGisDataset(row[5], row[6], row[7], dataSourceType);
                     }
+
                     PartialGisDataset? replacementDataset = null;
                     if (!string.IsNullOrWhiteSpace(row[9]))
                     {
-                        dataSourceType = null;
-                        if (Enum.TryParse<esriDatasetType>(row[12], out tempDataSourceType))
-                            dataSourceType = tempDataSourceType;
-                        replacementDataset = new PartialGisDataset(row[9], row[10], row[11], dataSourceType);
-                    }
-                    if (replacementDataset != null)
-                    {
-                        replacementDataset = null;
-                        // Warning: Replacement datasets are not supported
+                        // Warning: Replacement datasets are not supported (Column 10, line lineNum); Ignoring. Use a replacement layerfile instead
                     }
                     var layerFile = string.IsNullOrWhiteSpace(row[13]) ? null : row[13].Trim();
+                    //TODO: verify that non-null layerFile is a valid file system object (ending in '.lyr')
+
                     var remarks = string.IsNullOrWhiteSpace(row[14]) ? null : row[14].Trim();
                     if (newDataset == null && replacementDataset == null && layerFile == null && remarks == null)
+                    {
                         continue;
+                        //Warning: line lineNum is invalid. It must have a newdataset or a layerfile, or a remark
+                    }
+                    //TODO: if newDataset is null (deleted), trash or archive, then replacement layer must be provided.
 
                     _moves.Add(new Move(timestamp, oldDataset, newDataset, replacementDataset, layerFile, remarks));
                 }
