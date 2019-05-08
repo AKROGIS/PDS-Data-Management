@@ -268,6 +268,7 @@ namespace MapFixer
             {
                 int lineNum = 0;
                 DateTime previousTimestamp = default(DateTime);
+                DateTime timestamp;
                 foreach (string line in File.ReadLines(csvpath))
                 {
                     lineNum += 1;
@@ -277,7 +278,7 @@ namespace MapFixer
                         continue;
                         //Warning: Wrong number of columns at line linNum; Skipping.
                     }
-                    if (!DateTime.TryParse(row[0], out DateTime timestamp))
+                    if (!DateTime.TryParse(row[0], out timestamp))
                     {
                         continue;
                         //Warning: First column at line linNum is not a DateTime; Skipping.
@@ -298,7 +299,8 @@ namespace MapFixer
                         //TODO: Verify row[1] does not start with a UNC or drive letter (no volume information)
                     }
                     esriDatasetType? dataSourceType = null;
-                    if (Enum.TryParse<esriDatasetType>(row[4], out esriDatasetType tempDataSourceType))
+                    esriDatasetType tempDataSourceType;
+                    if (Enum.TryParse<esriDatasetType>(row[4], out tempDataSourceType))
                     {
                         dataSourceType = tempDataSourceType;
                     }

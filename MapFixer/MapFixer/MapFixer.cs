@@ -182,12 +182,14 @@ namespace MapFixer
                 ILayer layer;
                 while((layer = layerEnumerator.Next()) != null)
                 {
-                    if (layer is ILayer2 layer2)
+                    if (layer is ILayer2)
                     {
+                        ILayer2 layer2 = (ILayer2)layer;
                         if (!layer2.Valid)
                         {
-                            if (layer2 is IDataLayer2 dataLayer)
+                            if (layer2 is IDataLayer2)
                             {
+                                IDataLayer2 dataLayer = (IDataLayer2)layer2;
                                 layerList.Add(dataLayer);
                             }
                         }
