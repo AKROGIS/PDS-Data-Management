@@ -62,13 +62,7 @@ namespace MapFixer
                 }
             }
 
-            public string WorkspaceWithoutVolume
-            {
-                get
-                {
-                    return WorkspacePath.Substring(Path.GetPathRoot(WorkspacePath).Length);
-                }
-            }
+            public string WorkspaceWithoutVolume => WorkspacePath.Substring(Path.GetPathRoot(WorkspacePath).Length);
 
             public bool IsInTrash
             {
