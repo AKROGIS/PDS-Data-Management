@@ -14,9 +14,9 @@ namespace MapFixer
     /// The only public method on Moves is <c>GetSolution</c>, which takes a <c>GisDataset</c> (usually obtained from
     /// a map document), and returns an optional <c>Solution</c>, which if non-null represents the move for that
     /// <c>GisDataset</c>.  Look at the <c>Solution</c> sub class for details.</summary>
-    /// <see cref=GetSolution/>
-    /// <see cref=GisDataset/>
-    /// <see cref=Solution/>
+    /// <see cref="GetSolution"/>
+    /// <see cref="GisDataset"/>
+    /// <see cref="Solution"/>
 
     public class Moves
     {
@@ -121,7 +121,7 @@ namespace MapFixer
         }
 
         /// <summary>A <c>Solution</c> represents the moved state of an input <c>GisDataset</c>.
-        /// If a GIS dataset was moved, there is one required attribute <c>Timestamp<c> and 4 optional
+        /// If a GIS dataset was moved, there is one required attribute <c>Timestamp</c> and 4 optional
         /// attributes. At least one of the optional attributes will be provided. A Solution with all
         /// 4 attributes null is invalid and will not be created (a null solution will be returned).
         ///</summary>
