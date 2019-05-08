@@ -28,11 +28,11 @@ namespace MapFixer
             public GisDataset(string workspacePath, string workspaceProgID, string datasourceName, esriDatasetType datasourceType)
             {
                 if (string.IsNullOrWhiteSpace(workspacePath))
-                    throw new ArgumentException("Initial value must not be null, empty or whitespace", "workspacePath");
+                    throw new ArgumentException("Initial value must not be null, empty or whitespace", nameof(workspacePath));
                 if (string.IsNullOrWhiteSpace(workspaceProgID))
-                    throw new ArgumentException("Initial value must not be null, empty or whitespace", "workspaceProgID");
+                    throw new ArgumentException("Initial value must not be null, empty or whitespace", nameof(workspaceProgID));
                 if (string.IsNullOrWhiteSpace(datasourceName))
-                    throw new ArgumentException("Initial value must not be null, empty or whitespace", "datasourceName");
+                    throw new ArgumentException("Initial value must not be null, empty or whitespace", nameof(datasourceName));
                 WorkspacePath = workspacePath;
                 WorkspaceProgID = workspaceProgID;
                 DatasourceName = datasourceName;
@@ -97,7 +97,7 @@ namespace MapFixer
             public PartialGisDataset(string workspacePath, string workspaceProgID=null, string datasourceName=null, esriDatasetType? datasourceType=null)
             {
                 if (string.IsNullOrWhiteSpace(workspacePath))
-                    throw new ArgumentException("Initial value must not be null, empty or whitespace", "workspacePath");
+                    throw new ArgumentException("Initial value must not be null, empty or whitespace", nameof(workspacePath));
                 WorkspacePath = workspacePath;
                 WorkspaceProgID = string.IsNullOrWhiteSpace(workspaceProgID) ? null : workspaceProgID;
                 DatasourceName = string.IsNullOrWhiteSpace(datasourceName) ? null : datasourceName;

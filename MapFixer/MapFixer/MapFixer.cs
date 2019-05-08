@@ -24,15 +24,7 @@ namespace MapFixer
             var unfixableLayers = 0;
             foreach (IDataLayer2 dataLayer in brokenDataSources)
             {
-                string layerName;
-                if (dataLayer is IDataset)
-                {
-                    layerName = ((IDataset)dataLayer).Name;
-                }
-                else
-                {
-                    layerName = ((ILayer2)dataLayer).Name;
-                }
+                var layerName = dataLayer is IDataset ? ((IDataset)dataLayer).Name : ((ILayer2)dataLayer).Name;
                 Moves.GisDataset oldDataset = GetDataset(dataLayer);
                 Moves.Solution? maybeSolution = moves.GetSolution(oldDataset);
                 if (maybeSolution == null)
@@ -44,8 +36,8 @@ namespace MapFixer
                 if (solution.NewDataset == null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath == null)
                 {
                     // This is a very unusual case.  We do not have a solution, only a note.
-                    string msg = string.Format("The layer '{0}' has been removed and there is no replacement.\n\nNote: {1}",
-                        layerName, solution.Remarks);
+                    string msg =
+                        $"The layer '{layerName}' has been removed and there is no replacement.\n\nNote: {solution.Remarks}";
                     //TODO: Remove Cancel button
                     msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
                     continue;
@@ -84,8 +76,8 @@ namespace MapFixer
                     }
                     else
                     {
-                        string msg = string.Format("The layer '{0}' is broken. The data has moved to a new location.  Do you want to fix the layer?",
-                            layerName);
+                        string msg =
+                            $"The layer '{layerName}' is broken. The data has moved to a new location.  Do you want to fix the layer?";
                         msg = msg + "\n\nNote: " + solution.Remarks;
                         bool result = msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
                         if (result)
@@ -125,15 +117,16 @@ namespace MapFixer
             {
                 string msg = "";
                 if (autoFixesApplied > 0) {
-                    msg += String.Format("{0} broken layers were automatically fixed based on the new locations of known data sources. " +
-                    "Close the document without saving if this is not what you want.", autoFixesApplied);
+                    msg +=
+                        $"{autoFixesApplied} broken layers were automatically fixed based on the new locations of known data sources. " +
+                        "Close the document without saving if this is not what you want.";
                 }
                 if (autoFixesApplied > 0 && (unfixableLayers > 0 || brokenDataSources.Count > 0)) {
                     msg += "\n\n";
                 }
                 if (unfixableLayers > 0) {
-                    msg += String.Format("{0} broken layers could not be fixed; breakage is not due to changes on the PDS (X drive).",
-                    unfixableLayers);
+                    msg +=
+                        $"{unfixableLayers} broken layers could not be fixed; breakage is not due to changes on the PDS (X drive).";
                 }
                 if (unfixableLayers < brokenDataSources.Count) {
                     // We know that brokenDataSources.Count must be >= unfixableLayers, therefore some of the fixes need fixing
