@@ -193,8 +193,8 @@ namespace MapFixer
 
             public DateTime Timestamp { get; }
             public PartialGisDataset OldDataset { get; }
-            public PartialGisDataset? NewDataset { get; }
-            public PartialGisDataset? ReplacementDataset { get; }
+            private PartialGisDataset? NewDataset { get; }
+            private PartialGisDataset? ReplacementDataset { get; }
             public string ReplacementLayerFilePath { get; }
             public string Remarks { get; }
 
@@ -219,7 +219,7 @@ namespace MapFixer
                 //The workspace in the move's old dataset must be a prefix of the input source for this method to return a non-null result
 
                 var searchString = OldDataset.WorkspacePath;
-                int positionOfSearchString = source.WorkspacePath.IndexOf(searchString);
+                int positionOfSearchString = source.WorkspacePath.IndexOf(searchString, StringComparison.OrdinalIgnoreCase);
                 if (positionOfSearchString < 0)
                 {
                     return null;
@@ -237,7 +237,7 @@ namespace MapFixer
             }
         }
 
-        private List<Move>  _moves = new List<Move>();
+        private readonly List<Move>  _moves = new List<Move>();
 
         public Moves(string csvpath)
         {
@@ -262,7 +262,6 @@ namespace MapFixer
             {
                 int lineNum = 0;
                 DateTime previousTimestamp = DateTime.MinValue;
-                DateTime timestamp;
                 foreach (string line in File.ReadLines(csvpath))
                 {
                     lineNum += 1;
@@ -272,6 +271,8 @@ namespace MapFixer
                         continue;
                         //Warning: Wrong number of columns at line linNum; Skipping.
                     }
+
+                    DateTime timestamp;
                     if (!DateTime.TryParse(row[0], out timestamp))
                     {
                         continue;
@@ -355,7 +356,7 @@ namespace MapFixer
                 return false;
             if (moveFrom.DatasourceName == null)
                 return false;
-            if (string.Compare(dataset.DatasourceName, moveFrom.DatasourceName, true) != 0)
+            if (String.Compare(dataset.DatasourceName, moveFrom.DatasourceName, StringComparison.OrdinalIgnoreCase) != 0)
                 return false;
             if (moveFrom.DatasourceType != null && moveFrom.DatasourceType.Value != dataset.DatasourceType)
                 return false;
