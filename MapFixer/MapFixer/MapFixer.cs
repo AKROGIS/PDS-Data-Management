@@ -136,7 +136,7 @@ namespace MapFixer
             }
         }
 
-        //FIXME: only need to deal with dataset name changes.  All other changes are not supported
+        //TODO: only need to deal with dataset name changes.  All other changes are not supported
         public void RepairLayer(IDataLayer2 dataLayer, Moves.GisDataset oldDataset, Moves.GisDataset newDataset)
         {
             // TODO: check and skip if (oldDataset.DatasourceType != newDataset.DatasourceType || oldDataset.WorkspaceProgID != newDataset.WorkspaceProgID)
@@ -153,8 +153,8 @@ namespace MapFixer
             {
                 // TODO: Rename the dataset
                 // TODO: Maybe try: http://help.arcgis.com/en/sdk/10.0/arcobjects_net/componenthelp/index.html#/ReplaceName_Method/001200000ss3000000/
-                //FIXME:  This is incomplete an maybe wrong
-                IDataset dataset = OpenDataset(newDataset);
+                // TODO:  This is incomplete an maybe wrong
+                // IDataset dataset = OpenDataset(newDataset);
                 // Patch the layer, and trigger the TOC and map updates, etc...
                 // see http://help.arcgis.com/en/sdk/10.0/arcobjects_net/componenthelp/index.html#//00490000002r000000
             }
