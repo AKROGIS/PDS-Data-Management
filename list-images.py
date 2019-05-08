@@ -53,4 +53,4 @@ if __name__ == '__main__':
     # IKONOS
     # main(r'X:\IKONOS\LACL\BGRN', '.tif')
     # main(r'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR', '.bil', 'c:/Users/RESarwas/Documents/GitHub/pds-reorg/data/ifsar_bil_new_x.csv')
-    main(r'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2019_IFSAR\Summer_2017_Lot8_9', '.tif', 'data/ifsar_tif_2019b.csv')
+    main(r'X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2019_IFSAR\Summer_2017_Lot10to22', '.tif', 'data/ifsar_tif_2019c.csv')

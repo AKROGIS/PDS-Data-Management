@@ -1,9 +1,6 @@
-
--- Add new data to the base table
-INSERT INTO ifsar_tif_all SELECT * FROM ifsar_tif_2019b
-
 -- Specify tiles to skip (do not belong in mosaic)
 -- ================================================
+--   This is now done in the python processing.
 --   alter table ifsar_tif_all add skip char not null default 'N'
 
 -- skip legacy, nga, and unknown kinds
@@ -32,6 +29,18 @@ select * from ifsar_tif_all where skip <> 'O' and cell = 150 and folder like '%S
    on ey.lat = en.lat and ey.lon = en.lon and ey.kind = en.kind
 */
 
+-- Special Adjustments for X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2019_IFSAR\Summer_2017_Lot10to22
+-- 1) cell is not populated for some edge matched tiles
+select * FROM ifsar_tif_2019c where cell is null and folder like '%248_2%'
+update ifsar_tif_2019c set cell = 248 where cell is null and folder like '%248_2%'
+-- three versions of tile 248:61:153.15 1) no edge match, 2) edge match on only east edge, 3) edge match on only south edge
+-- the no edge match was skipped with normal processing. We have to manually skip the only south edge (shorter) to avoid overlapping tiles
+select * FROM ifsar_tif_2019c where edge = 'Y' and cell = 248 and lat = 61 and lon = 153.15 and folder like '%248_2%'
+update ifsar_tif_2019c set skip = 'E' where edge = 'Y' and cell = 248 and lat = 61 and lon = 153.15 and folder like '%248_2%'
+-- Add new data to the base table
+
+-- Add to the 
+INSERT INTO ifsar_tif_all SELECT * FROM ifsar_tif_2019c
 
 
 -- Check list of tiles skipped and not skipped
@@ -187,7 +196,7 @@ select * from ifsar_tif_all where cell = 319
 -- ============
 
 --   3649 each dtm/dsm/ori before 2019
---   288 each dtm/dsm/ori in 2019, part1
+--   288 each dtm/dsm/ori in 2019 part1; 24 each in 2019 part 2; 200 each in 2019 part 3
 select folder + '\' + filename + ext as path from ifsar_tif_all where kind = 'dtm' and skip = 'N' order by cell, lat, lon
 select folder + '\' + filename + ext as path from ifsar_tif_all where kind = 'dsm' and skip = 'N' order by cell, lat, lon
 select folder + '\' + filename + ext as path from ifsar_tif_all where kind = 'ori' and skip = 'N' order by cell, lat, lon
