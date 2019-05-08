@@ -266,7 +266,7 @@ namespace MapFixer
                 {
                     lineNum += 1;
                     var row = line.Split(delimeter);
-                    if (row.Count() != fieldCount)
+                    if (row.Length != fieldCount)
                     {
                         continue;
                         //Warning: Wrong number of columns at line linNum; Skipping.
