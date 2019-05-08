@@ -2,14 +2,14 @@
 {
     public class CheckMapExtension : ESRI.ArcGIS.Desktop.AddIns.Extension
     {
-        public static Moves moves;
-        public static MapFixer mapFixer; 
+        private static Moves _moves;
+        private static MapFixer _mapFixer; 
 
         public CheckMapExtension()
         {
             var dataPath = @"X:\GIS\ThemeMgr\DataMoves.csv";
-            moves = new Moves(dataPath);
-            mapFixer = new MapFixer();
+            _moves = new Moves(dataPath);
+            _mapFixer = new MapFixer();
         }
 
         protected override void OnStartup()
@@ -30,7 +30,7 @@
 
         public static void CheckDocument()
         {
-            mapFixer.FixMap(moves);
+            _mapFixer.FixMap(_moves);
         }
     }
 
