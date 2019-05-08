@@ -7,11 +7,6 @@ namespace MapFixer
 {
     public class MapFixer
     {
-
-        public MapFixer()
-        {
-        }
-
         public void FixMap(Moves moves)
         {
             var brokenDataSources = GetBrokenDataSources();
