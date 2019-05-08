@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geodatabase;
 
@@ -142,7 +143,7 @@ namespace MapFixer
             // This should be impossible by checks against the CSV and during the loading of the moves.
             // If it happens just do nothing and ignore it.
             // TODO: only check for if (oldDataset.DatasourceName == newDataset.DatasourceName)
-            if (oldDataset.DatasourceName == newDataset.DatasourceName && oldDataset.DatasourceType == newDataset.DatasourceType && oldDataset.WorkspaceProgID == newDataset.WorkspaceProgID)
+            if (oldDataset.DatasourceName == newDataset.DatasourceName && oldDataset.DatasourceType == newDataset.DatasourceType && oldDataset.WorkspaceProgId == newDataset.WorkspaceProgId)
             {
                 //TODO: This may fail in 10.6.1  See: https://community.esri.com/thread/221120-set-datasource-with-arcobjects
                 IDataSourceHelperLayer helper = new DataSourceHelper() as IDataSourceHelperLayer;
@@ -200,7 +201,7 @@ namespace MapFixer
         {
             IWorkspaceName workspaceName = new WorkspaceNameClass()
             {
-                WorkspaceFactoryProgID = dataset.WorkspaceProgID, // "esriDataSourcesGDB.AccessWorkspaceFactory";
+                WorkspaceFactoryProgID = dataset.WorkspaceProgId, // "esriDataSourcesGDB.AccessWorkspaceFactory";
                 PathName = dataset.WorkspacePath
             };
             IWorkspace workspace;
@@ -227,6 +228,7 @@ namespace MapFixer
             return null;
         }
 
+        [SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
         private IDataset OpenDataset(Moves.GisDataset dataset, IWorkspace workspace, IDatasetName datasetName)
         {
             if (dataset.DatasourceType == esriDatasetType.esriDTFeatureClass)
