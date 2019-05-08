@@ -44,10 +44,9 @@ namespace MapFixer
                 if (solution.NewDataset == null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath == null)
                 {
                     // This is a very unusual case.  We do not have a solution, only a note.
-                    // TODO: Change the wording - The layer has been removed and there is no replacement.
-                    string msg = string.Format("The layer '{0}' is broken, but it cannot be fixed automatically.",
-                        layerName);
-                    msg = msg + "\n\nNote: " + solution.Remarks;
+                    string msg = string.Format("The layer '{0}' has been removed and there is no replacement.\n\nNote: {1}",
+                        layerName, solution.Remarks);
+                    //TODO: Remove Cancel button
                     msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
                     continue;
                 }
