@@ -20,7 +20,7 @@
 
         private void WireDocumentEvents()
         {
-            ArcMap.Events.OpenDocument += delegate () { ArcMap_OpenDocument(); };
+            ArcMap.Events.OpenDocument += ArcMap_OpenDocument;
         }
 
         void ArcMap_OpenDocument()

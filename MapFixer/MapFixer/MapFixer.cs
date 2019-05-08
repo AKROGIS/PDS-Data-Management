@@ -112,7 +112,6 @@ namespace MapFixer
                 if (solution.NewDataset != null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath != null)
                 {
                     // solution.ReplacementDataset != null is not supported; should be filtered out when moves loaded; IGNORE
-                    continue;
                 }
             }
 
@@ -178,7 +177,8 @@ namespace MapFixer
             for (int i = 0; i < maps.Count; i++)
             {
                 IMap map = maps.Item[i];
-                IEnumLayer layerEnumerator = map.Layers[null, true];
+                // ReSharper disable once RedundantArgumentDefaultValue
+                IEnumLayer layerEnumerator = map.Layers[null];
                 ILayer layer;
                 while((layer = layerEnumerator.Next()) != null)
                 {
@@ -214,7 +214,7 @@ namespace MapFixer
                 WorkspaceFactoryProgID = dataset.WorkspaceProgID, // "esriDataSourcesGDB.AccessWorkspaceFactory";
                 PathName = dataset.WorkspacePath
             };
-            IWorkspace workspace = null;
+            IWorkspace workspace;
             try
             {
                 workspace = workspaceName.WorkspaceFactory.Open(null, 0);
@@ -229,7 +229,7 @@ namespace MapFixer
                 return null;
 
             var datasetNames = workspace.DatasetNames[dataset.DatasourceType];
-            IDatasetName datasetName = null;
+            IDatasetName datasetName;
             while ((datasetName = datasetNames.Next()) != null)
             {
                 if (datasetName.Type == dataset.DatasourceType && string.Compare(datasetName.Name, dataset.DatasourceName, StringComparison.OrdinalIgnoreCase) == 0)

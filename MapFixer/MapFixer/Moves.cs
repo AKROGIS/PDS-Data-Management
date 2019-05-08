@@ -294,7 +294,7 @@ namespace MapFixer
                     }
                     esriDatasetType? dataSourceType = null;
                     esriDatasetType tempDataSourceType;
-                    if (Enum.TryParse<esriDatasetType>(row[4], out tempDataSourceType))
+                    if (Enum.TryParse(row[4], out tempDataSourceType))
                     {
                         dataSourceType = tempDataSourceType;
                     }
@@ -310,7 +310,7 @@ namespace MapFixer
                     {
                         //TODO: Verify row[5] does not start with a UNC or drive letter (no volume information)
                         dataSourceType = null;
-                        if (Enum.TryParse<esriDatasetType>(row[8], out tempDataSourceType))
+                        if (Enum.TryParse(row[8], out tempDataSourceType))
                         {
                             dataSourceType = tempDataSourceType;
                         }
@@ -328,7 +328,6 @@ namespace MapFixer
                         newDataset = new PartialGisDataset(row[5], row[6], row[7], dataSourceType);
                     }
 
-                    PartialGisDataset? replacementDataset = null;
                     if (!string.IsNullOrWhiteSpace(row[9]))
                     {
                         // Warning: Replacement datasets are not supported (Column 10, line lineNum); Ignoring. Use a replacement layerfile instead
@@ -337,14 +336,14 @@ namespace MapFixer
                     //TODO: verify that non-null layerFile is a valid file system object (ending in '.lyr')
 
                     var remarks = string.IsNullOrWhiteSpace(row[14]) ? null : row[14].Trim();
-                    if (newDataset == null && replacementDataset == null && layerFile == null && remarks == null)
+                    if (newDataset == null && layerFile == null && remarks == null)
                     {
                         continue;
                         //Warning: line lineNum is invalid. It must have a newdataset or a layerfile, or a remark
                     }
                     //TODO: if newDataset is null (deleted), trash or archive, then replacement layer must be provided.
 
-                    _moves.Add(new Move(timestamp, oldDataset, newDataset, replacementDataset, layerFile, remarks));
+                    _moves.Add(new Move(timestamp, oldDataset, newDataset, null, layerFile, remarks));
                 }
             }
             catch { }
