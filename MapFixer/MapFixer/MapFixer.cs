@@ -190,14 +190,12 @@ namespace MapFixer
                 ILayer layer;
                 while((layer = layerEnumerator.Next()) != null)
                 {
-                    if (layer is ILayer2)
+                    if (layer is ILayer2 layer2)
                     {
-                        ILayer2 layer2 = (ILayer2)layer;
                         if (!layer2.Valid)
                         {
-                            if (layer2 is IDataLayer2)
+                            if (layer2 is IDataLayer2 dataLayer)
                             {
-                                IDataLayer2 dataLayer = (IDataLayer2)layer2;
                                 layerList.Add(dataLayer);
                             }
                         }
@@ -217,9 +215,11 @@ namespace MapFixer
 
         public IDataset OpenDataset(Moves.GisDataset dataset)
         {
-            IWorkspaceName workspaceName = new WorkspaceNameClass();
-            workspaceName.WorkspaceFactoryProgID = dataset.WorkspaceProgID; // "esriDataSourcesGDB.AccessWorkspaceFactory";
-            workspaceName.PathName = dataset.WorkspacePath;
+            IWorkspaceName workspaceName = new WorkspaceNameClass()
+            {
+                WorkspaceFactoryProgID = dataset.WorkspaceProgID, // "esriDataSourcesGDB.AccessWorkspaceFactory";
+                PathName = dataset.WorkspacePath
+            };
             IWorkspace workspace = null;
             try
             {

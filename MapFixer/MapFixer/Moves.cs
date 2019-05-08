@@ -268,14 +268,15 @@ namespace MapFixer
                     var row = line.Split(delimeter);
                     if (row.Count() != fieldCount)
                         continue;
-                    DateTime timestamp;
-                    if (!DateTime.TryParse(row[0], out timestamp))
+                    if (!DateTime.TryParse(row[0], out DateTime timestamp))
+                    {
                         continue;
+                    }
+
                     if (string.IsNullOrWhiteSpace(row[1]))
                         continue;
-                    esriDatasetType tempDataSourceType;
                     esriDatasetType? dataSourceType = null;
-                    if (Enum.TryParse<esriDatasetType>(row[4], out tempDataSourceType))
+                    if (Enum.TryParse<esriDatasetType>(row[4], out esriDatasetType tempDataSourceType))
                         dataSourceType = tempDataSourceType;
                     var oldDataset = new PartialGisDataset(row[1], row[2], row[3], dataSourceType);
                     PartialGisDataset? newDataset = null;
