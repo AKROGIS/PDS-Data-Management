@@ -61,23 +61,16 @@ namespace MapFixer
                 if (solution.NewDataset == null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath == null)
                 {
                     // solution.ReplacementDataset != null is not supported; should be filtered out when moves loaded; IGNORE
-                    // TODO: Remove all but the continue
-                    string msg = string.Format("The layer '{0}' is broken. The data has moved to a new location.  Do you want to fix the layer?",
-                        layerName);
-                    if (solution.Remarks != null)
-                    {
-                        msg = msg + "\n\nNote: " + solution.Remarks;
-                    }
-                    bool result = msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
-                    if (result)
-                    {
-                        RepairLayer(dataLayer, oldDataset, solution.ReplacementDataset.Value);
-                    }
+                    // If we want to support this in the future, the code is similar to the newDataaset below, BUT
+                    // we must check the symbology, labeling, definition query, and other layer properties for compatibility
+                    // We should check that the old and replacement datasets are "compatible" i.e. it not possible to replace
+                    // a raster with point feature class.
                     continue;
                 }
                 if (solution.NewDataset == null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath != null)
                 {
                     // solution.ReplacementDataset != null is not supported; should be filtered out when moves loaded; IGNORE
+                    // See notes above
                     continue;
                 }
                 if (solution.NewDataset != null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath == null)
