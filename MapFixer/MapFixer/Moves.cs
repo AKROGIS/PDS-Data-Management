@@ -267,7 +267,7 @@ namespace MapFixer
             try
             {
                 int lineNum = 0;
-                DateTime previousTimestamp = default(DateTime);
+                DateTime previousTimestamp = DateTime.MinValue;
                 DateTime timestamp;
                 foreach (string line in File.ReadLines(csvpath))
                 {
