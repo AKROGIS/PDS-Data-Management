@@ -55,9 +55,9 @@ namespace MapFixer
                 {
                     if (WorkspacePath.StartsWith(@"X:\", StringComparison.OrdinalIgnoreCase))
                         return true;
-                    if (WorkspacePath.StartsWith(@"\\inpakrovmdist\gistata\", StringComparison.OrdinalIgnoreCase))
+                    if (WorkspacePath.StartsWith(@"\\inpakrovmdist\gisdata\", StringComparison.OrdinalIgnoreCase))
                         return true;
-                    return WorkspacePath.StartsWith(@"\\inpakrovmdist\gistata2\", StringComparison.OrdinalIgnoreCase);
+                    return WorkspacePath.StartsWith(@"\\inpakrovmdist\gisdata2\", StringComparison.OrdinalIgnoreCase);
                 }
             }
 
@@ -126,15 +126,15 @@ namespace MapFixer
         ///</summary>
         ///
         /// <remarks>
-        /// NewDataset | replacement | layerfile | Comments
-        /// not-null   | not-null    | not-null  | Not supported
-        /// not-null   | not-null    | null      | Not supported
-        /// not-null   | null        | not-null  | Prompt user to select choice
-        /// not-null   | null        | null      | Typical case; Easy fix; no prompt
-        /// null       | not-null    | not-null  | Not supported
-        /// null       | not-null    | null      | Not supported
-        /// null       | null        | not-null  | Easy fix, replace broken layer with new layer (prompt user?)
-        /// null       | null        | null      | Not valid unless remarks provided (very unusual to not provide an upgrade option)
+        /// NewDataset | replacement | layer file | Comments
+        /// not-null   | not-null    | not-null   | Not supported
+        /// not-null   | not-null    | null       | Not supported
+        /// not-null   | null        | not-null   | Prompt user to select choice
+        /// not-null   | null        | null       | Typical case; Easy fix; no prompt
+        /// null       | not-null    | not-null   | Not supported
+        /// null       | not-null    | null       | Not supported
+        /// null       | null        | not-null   | Easy fix, replace broken layer with new layer file (prompt user?)
+        /// null       | null        | null       | Not valid unless remarks provided (very unusual to not provide an upgrade option)
         ///
         /// "Not supported" combinations will be skipped in CSV load; error in CSV check.
         /// When newDataset is not-null it can not differ from the old in workspace type or data type; skipped in CSV load; error in CSV check
@@ -238,9 +238,9 @@ namespace MapFixer
 
         private readonly List<Move>  _moves = new List<Move>();
 
-        public Moves(string csvpath)
+        public Moves(string csvPath)
         {
-            char delimeter = '|';
+            char delimiter = '|';
             var fieldCount = 15;
             //This is a very simple CSV parser, as the input is very simple.
             //The constructor is very forgiving on the input.  It ignores any record which isn't valid.  It doesn't throw any exceptions
@@ -249,9 +249,9 @@ namespace MapFixer
             //Validation rules:
             //   Each row requires a timestamp, and the timestamp must be ordered from oldest to newest
             //   Workspace paths must not have volume information
-            //   Replacement datasets are not supported - use replacement layer
-            //   New and old datasets must not differ in workspace type or dataset type - use replacement layer
-            //   If newDataset is null (i.e old is deleted), trash or archive, then a replacement layerfile should be provided.
+            //   Replacement datasets are not supported - use replacement layer file
+            //   New and old datasets must not differ in workspace type or dataset type - use replacement layer file
+            //   If newDataset is null (i.e old is deleted), trash or archive, then a replacement layer file should be provided.
             //      A remark is all that is mandatory when newDataset is null.
             //   Column 2 and 6 must be progID strings
             //   Columns 4 and 8must be datasetTypes
@@ -261,10 +261,10 @@ namespace MapFixer
             {
                 int lineNum = 0;
                 DateTime previousTimestamp = DateTime.MinValue;
-                foreach (string line in File.ReadLines(csvpath))
+                foreach (string line in File.ReadLines(csvPath))
                 {
                     lineNum += 1;
-                    var row = line.Split(delimeter);
+                    var row = line.Split(delimiter);
                     if (row.Length != fieldCount)
                     {
                         continue;
@@ -320,7 +320,7 @@ namespace MapFixer
                         }
                         if ((row[6] != null && row[2] != row[6]) || (row[8] != null && row[4] != row[8]))
                         {
-                            //Warning: You can't change the workspace or dataset types on line lineNum; Ignoring new values. Use a replacement layerfile instead
+                            //Warning: You can't change the workspace or dataset types on line lineNum; Ignoring new values. Use a replacement layer file instead
                             row[6] = null;
                             dataSourceType = null;
                         }
@@ -330,18 +330,18 @@ namespace MapFixer
 
                     if (!string.IsNullOrWhiteSpace(row[9]))
                     {
-                        // Warning: Replacement datasets are not supported (Column 10, line lineNum); Ignoring. Use a replacement layerfile instead
+                        // Warning: Replacement datasets are not supported (Column 10, line lineNum); Ignoring. Use a replacement layer file instead
                     }
                     var layerFile = string.IsNullOrWhiteSpace(row[13]) ? null : row[13].Trim();
-                    //TODO: verify that non-null layerFile is a valid file system object (ending in '.lyr')
+                    //TODO: verify that non-null layer file is a valid file system object (ending in '.lyr')
 
                     var remarks = string.IsNullOrWhiteSpace(row[14]) ? null : row[14].Trim();
                     if (newDataset == null && layerFile == null && remarks == null)
                     {
                         continue;
-                        //Warning: line lineNum is invalid. It must have a newdataset or a layerfile, or a remark
+                        //Warning: line lineNum is invalid. It must have a newDataset or a layer file, or a remark
                     }
-                    //TODO: if newDataset is null (deleted), trash or archive, then replacement layer must be provided.
+                    //TODO: if newDataset is null (deleted), trash or archive, then replacement layer file must be provided.
 
                     _moves.Add(new Move(timestamp, oldDataset, newDataset, null, layerFile, remarks));
                 }
@@ -380,7 +380,7 @@ namespace MapFixer
             // !!WARNING!! Assumes workspace paths in moves do not have volume information
             string movePath = moveFrom.WorkspacePath;
             string fullPath = dataset.WorkspaceWithoutVolume;
-            // Just searching for oldPath somewhere in newpath could yield some false positives.
+            // Just searching for oldPath somewhere in newPath could yield some false positives.
             // Instead, strip the volume and only match the beginning of the string
             return fullPath.StartsWith(movePath, StringComparison.OrdinalIgnoreCase);
         }
@@ -411,9 +411,9 @@ namespace MapFixer
             // Example: at time 1 /a/b/c is moved to /d/e/f
             // then at time 2 /d/e/f is moved to /g/h/i
             // then at time 3 /g/h/i is deleted and replaced by  /1/2/3.
-            // ulimately, the user should not be given the option to use /d/e/f since it doesn't exist.
+            // ultimately, the user should not be given the option to use /d/e/f since it doesn't exist.
             // however this gets complicated.  For example
-            // At time 1 /a/b/c is moved to the archive and a replcement of /d/e/f is offered
+            // At time 1 /a/b/c is moved to the archive and a replacement of /d/e/f is offered
             // at time 2 archive/a/b/c is moved to the trash and replaced by /1/2/3
             // at time 3 /d/e/f is moved to archive and replaced by /4/5/6
             // The user with /a/b/c might want 1/2/3, 4/5/6, archive/d/e/f or trash/a/b/c.  To resolve this
@@ -425,9 +425,9 @@ namespace MapFixer
 
             // IMPORTANT: the timestamp does not solve this problem:
             // at time 1 dataset /a/b/c is created (creates are not logged in the moves dataset)
-            // at time 2 dataaset /a/b/c is moved to /d/e/f (and logged)
+            // at time 2 dataset /a/b/c is moved to /d/e/f (and logged)
             // at time 3 a new dataset /a/b/c is created (not logged)
-            // at time 4 new dsataset /a/b/c is moved to /g/h/i (logged)
+            // at time 4 new dataset /a/b/c is moved to /g/h/i (logged)
             // GetSolution will always return the move at time 2 when first checking /a/b/c.
             // GetSolution could correctly return the move at time4 if given a start time after time 2.
             // However, we do not know if the map added data /a/b/c before time 2 or after time 3.

@@ -17,7 +17,7 @@ namespace MapFixer
             }
             ESRI.ArcGIS.Framework.IMessageDialog msgBox = new ESRI.ArcGIS.Framework.MessageDialogClass();
             var autoFixesApplied = 0;
-            var unfixableLayers = 0;
+            var unFixableLayers = 0;
             foreach (IDataLayer2 dataLayer in brokenDataSources)
             {
                 var dataset = dataLayer as IDataset;
@@ -26,7 +26,7 @@ namespace MapFixer
                 Moves.Solution? maybeSolution = moves.GetSolution(oldDataset);
                 if (maybeSolution == null)
                 {
-                    unfixableLayers += 1;
+                    unFixableLayers += 1;
                     continue;
                 }
                 Moves.Solution solution = maybeSolution.Value;
@@ -43,14 +43,14 @@ namespace MapFixer
                 {
                     // TODO: messageBox do you want to add layer (yes/no)  add solution.Remarks if not null
                     // TODO: if yes add layer
-                    // TODO: messagebox do you want to delete the old layer (If you have customized this layer, you might want to inspect and apply by hand, then delete manually). Yes/no
+                    // TODO: messageBox do you want to delete the old layer (If you have customized this layer, you might want to inspect and apply by hand, then delete manually). Yes/no
                     // TODO: if yes, delete the broken layer
                     continue;
                 }
                 if (solution.NewDataset == null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath == null)
                 {
                     // solution.ReplacementDataset != null is not supported; should be filtered out when moves loaded; IGNORE
-                    // If we want to support this in the future, the code is similar to the newDataaset below, BUT
+                    // If we want to support this in the future, the code is similar to the newDataset below, BUT
                     // we must check the symbology, labeling, definition query, and other layer properties for compatibility
                     // We should check that the old and replacement datasets are "compatible" i.e. it not possible to replace
                     // a raster with point feature class.
@@ -89,7 +89,7 @@ namespace MapFixer
                     // TODO: prompt user if they want the archive/trash version, or the new layer file (recommended)
                     // TODO: messageBox do you want to add layer (yes/no)  add solution.Remarks if not null
                     // TODO: if yes add layer
-                    // TODO: messagebox do you want to delete the old layer (If you have customized this layer, you might want to inspect and apply by hand, then delete manually). Yes/no
+                    // TODO: messageBox do you want to delete the old layer (If you have customized this layer, you might want to inspect and apply by hand, then delete manually). Yes/no
                     // TODO: if yes, delete the broken layer
                     continue;
                 }
@@ -110,7 +110,7 @@ namespace MapFixer
 
             // Print a Summary
             brokenDataSources = GetBrokenDataSources();
-            if (autoFixesApplied > 0 || unfixableLayers > 0 || brokenDataSources.Count > 0)
+            if (autoFixesApplied > 0 || unFixableLayers > 0 || brokenDataSources.Count > 0)
             {
                 string msg = "";
                 if (autoFixesApplied > 0) {
@@ -118,16 +118,16 @@ namespace MapFixer
                         $"{autoFixesApplied} broken layers were automatically fixed based on the new locations of known data sources. " +
                         "Close the document without saving if this is not what you want.";
                 }
-                if (autoFixesApplied > 0 && (unfixableLayers > 0 || brokenDataSources.Count > 0)) {
+                if (autoFixesApplied > 0 && (unFixableLayers > 0 || brokenDataSources.Count > 0)) {
                     msg += "\n\n";
                 }
-                if (unfixableLayers > 0) {
+                if (unFixableLayers > 0) {
                     msg +=
-                        $"{unfixableLayers} broken layers could not be fixed; breakage is not due to changes on the PDS (X drive).";
+                        $"{unFixableLayers} broken layers could not be fixed; breakage is not due to changes on the PDS (X drive).";
                 }
-                if (unfixableLayers < brokenDataSources.Count) {
+                if (unFixableLayers < brokenDataSources.Count) {
                     // We know that brokenDataSources.Count must be >= unfixableLayers, therefore some of the fixes need fixing
-                    if (unfixableLayers > 0) {
+                    if (unFixableLayers > 0) {
                         msg += "\n\n";
                     }
                     msg += "Additional fixes are possible and needed.  Please save, close and reopen your map.";
@@ -139,7 +139,7 @@ namespace MapFixer
         //TODO: only need to deal with dataset name changes.  All other changes are not supported
         public void RepairLayer(IDataLayer2 dataLayer, Moves.GisDataset oldDataset, Moves.GisDataset newDataset)
         {
-            // TODO: check and skip if (oldDataset.DatasourceType != newDataset.DatasourceType || oldDataset.WorkspaceProgID != newDataset.WorkspaceProgID)
+            // TODO: check and skip if (oldDataset.DatasourceType != newDataset.DatasourceType || oldDataset.WorkspaceProgId != newDataset.WorkspaceProgId)
             // This should be impossible by checks against the CSV and during the loading of the moves.
             // If it happens just do nothing and ignore it.
             // TODO: only check for if (oldDataset.DatasourceName == newDataset.DatasourceName)
