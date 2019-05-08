@@ -146,7 +146,7 @@ namespace MapFixer
             if (oldDataset.DatasourceName == newDataset.DatasourceName && oldDataset.DatasourceType == newDataset.DatasourceType && oldDataset.WorkspaceProgId == newDataset.WorkspaceProgId)
             {
                 //TODO: This may fail in 10.6.1  See: https://community.esri.com/thread/221120-set-datasource-with-arcobjects
-                IDataSourceHelperLayer helper = new DataSourceHelper() as IDataSourceHelperLayer;
+                var helper = (IDataSourceHelperLayer)new DataSourceHelper();
                 helper.FindAndReplaceWorkspaceNamePath((ILayer)dataLayer, oldDataset.WorkspacePath, newDataset.WorkspacePath, false);
             }
             else
@@ -191,7 +191,7 @@ namespace MapFixer
 
         public Moves.GisDataset GetDataset(IDataLayer2 dataLayer)
         {
-            IDatasetName datasetName = dataLayer.DataSourceName as IDatasetName;
+            var datasetName = (IDatasetName)dataLayer.DataSourceName;
             IWorkspaceName workspaceName = datasetName.WorkspaceName;
             return new Moves.GisDataset(workspaceName.PathName, workspaceName.WorkspaceFactoryProgID,
                 datasetName.Name, datasetName.Type);
