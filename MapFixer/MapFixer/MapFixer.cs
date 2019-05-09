@@ -126,7 +126,7 @@ namespace MapFixer
                         $"{unFixableLayers} broken layers could not be fixed; breakage is not due to changes on the PDS (X drive).";
                 }
                 if (unFixableLayers < brokenDataSources.Count) {
-                    // We know that brokenDataSources.Count must be >= unfixableLayers, therefore some of the fixes need fixing
+                    // We know that brokenDataSources.Count must be >= unFixableLayers, therefore some of the fixes need fixing
                     if (unFixableLayers > 0) {
                         msg += "\n\n";
                     }
