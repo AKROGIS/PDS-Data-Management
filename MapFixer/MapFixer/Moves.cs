@@ -255,8 +255,11 @@ namespace MapFixer
             //      A remark is all that is mandatory when newDataset is null.
             //   Column 2 and 6 must be progID strings
             //   Columns 4 and 8must be datasetTypes
+            //   workspace changes (i.e. dataSourceName is null) should be exclusive.
+            //      i.e. if there is a move /a/b => /x/y, we should not have /a/b/c => ...
 
             //TODO: Add a boolean 'check' parameter, which will print the warning comments below
+            //TODO: Check for exclusive workspace changes
             try
             {
                 int lineNum = 0;
