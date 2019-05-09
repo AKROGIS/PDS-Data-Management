@@ -377,6 +377,10 @@ namespace MapFixer
 
         private bool IsPartialWorkspaceMatch(GisDataset dataset, PartialGisDataset moveFrom)
         {
+            // A partial workspace match (i.e. the current or an ancestoral folder has moved) is only valid
+            // if the moveFrom.DatasourceName is null; if not null, then we must do a DataSourceMatch
+            if (moveFrom.DatasourceName != null)
+                return false;
             // !!WARNING!! Assumes workspace paths in moves do not have volume information
             string movePath = moveFrom.WorkspacePath;
             string fullPath = dataset.WorkspaceWithoutVolume;
