@@ -97,7 +97,6 @@ ENV/
 
 # mypy
 .mypy_cache/
-*.csv
 data/*
 
 ## Ignore Visual Studio temporary files, build results, and

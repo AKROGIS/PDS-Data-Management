@@ -1,0 +1,49 @@
+timestamp|old_workspace_path|old_workspace_type|old_dataset_name|old_dataset_type|new_workspace_path|new_workspace_type|new_dataset_name|new_dataset_type|replace_workspace_path|replace_workspace_type|replace_dataset_name|replace_dataset_type|replacement_layerfile_path|remarks
+2017-12-07 08:00:00|AHAP\ANIA||||Extras\AKR\ANIA\AHAP|||||||||
+2017-12-07 08:00:00|Albers\base\biologic\statewid||ak2000_ea||AKR\Statewide\biologic\Landcover|||||||||
+2017-12-07 08:00:00|Albers\base\biologic\statewid||AKNHP_VEG_NorWestInt27oct2013_ra.img||AKR\Statewide\biologic\Landcover|||||||||
+2017-12-07 08:00:00|Albers\base\biologic\statewid||AKNHP_VEG_SoAleu12Apr2013_ra.img||AKR\Statewide\biologic\Landcover|||||||||
+2017-12-07 08:00:00|Albers\base\biologic\statewid\AK_NLCD.gdb||||AKR\Statewide\biologic\Landcover\AK_NLCD.gdb|||||||||
+2017-12-07 08:00:00|too few columns||||new workspace|||||||
+2017-12-07 08:00:00|too many columns||||new workspace|||||||||||
+not a timestamp|bad timestamp||||workspace|||||||||
+2017-12-07 08:00:00|same timestamp is ok||||new workspace|||||||||
+2018-12-07 08:00:00|increasing timestamp is ok||||new workspace|||||||||
+2017-12-07 08:00:00|decreasing timestamp is bad||||new workspace|||||||||
+2019-05-09 08:00:00|||||No Old Workspace Path|||||||||
+2019-05-09 08:00:00|\\UNC\paths\not\allowed (old||||new workspace|||||||||
+2019-05-09 08:00:00|X:\Drive\paths\not\allowed (old)||||new workspace|||||||||
+2019-05-09 08:00:00|/absolute/unix/path (old)||||new workspace|||||||||
+2019-05-09 08:00:00|\absolute\DOS\path (old)||||new workspace|||||||||
+2019-05-09 08:00:00|Good Data Source Type (old)|||esriDTFeatureClass|new workspace|||||||||
+2019-05-09 08:00:00|Bad Data Source Type (old)|||notAdataType|new workspace|||||||||
+2019-05-09 08:00:00|Good Prog ID (old)|esriDataSourcesGDB.AccessWorkspaceFactory|||new workspace|||||||||
+2019-05-09 08:00:00|Bad Prog ID(old)|notAProgID|||new workspace|||||||||
+2019-05-09 08:00:00|UNC\paths\not\allowed (new)||||\\UNC\paths\not\allowed|||||||||
+2019-05-09 08:00:00|XDrive\paths\not\allowed (new)||||X:\Drive\paths\not\allowed|||||||||
+2019-05-09 08:00:00|absolute unix path (new)||||/absolute/unix/path|||||||||
+2019-05-09 08:00:00|absolute\DOS\path (new)||||\absolute\DOS\path|||||||||
+2019-05-09 08:00:00|Good Data Source Type (new)|||esriDTFeatureClass|new workspace|||esriDTFeatureClass||||||
+2019-05-09 08:00:00|Bad Data Source Type (new)|||notAdataType|new workspace|||notAdataType||||||
+2019-05-09 08:00:00|Good Prog ID (new)|esriDataSourcesGDB.AccessWorkspaceFactory|||new workspace|esriDataSourcesGDB.AccessWorkspaceFactory||||||||
+2019-05-09 08:00:00|Bad Prog ID(new)|notAProgID|||new workspace|notAProgID||||||||
+2019-05-09 08:00:00|Cant change Data Source Type (null->new)||||new workspace|||esriDTFeatureClass||||||
+2019-05-09 08:00:00|Cant change Data Source Type (old->new)|||esriDTRasterDataset|new workspace|||esriDTFeatureClass||||||
+2019-05-09 08:00:00|Cant change Prog ID (null->new)||||new workspace|esriDataSourcesGDB.AccessWorkspaceFactory||||||||
+2019-05-09 08:00:00|Cant change Prog ID (old->new)|esriDataSourcesRaster.RasterWorkspaceFactory|||new workspace|esriDataSourcesGDB.AccessWorkspaceFactory||||||||
+2019-05-09 08:00:00|replacements not allowed||||new workspace||||replacement|||||
+2019-05-09 08:00:00|No new data|||||||||||||
+2019-05-09 08:00:00|only replacement data||||||||replacement|||||
+2019-05-09 08:00:00|replacement layer||||||||||||X:\GIS\ThemeMgr\ANIA Themes\Basemap\ANIA Park Brochure Map.lyr|
+2019-05-09 08:00:00|replacement remark|||||||||||||remark
+2019-05-09 08:00:00|bad layer file||||||||||||bad layer file|
+2019-05-09 08:00:00|new workspace and replacement layer||||new workspace||||||||X:\GIS\ThemeMgr\ANIA Themes\Basemap\ANIA Park Brochure Map.lyr|
+2019-05-09 08:00:00|new workspace and remark||||new workspace|||||||||remark
+2019-05-09 08:00:00|trash1 and no layer file||||X:\Trash\2018-10-10\blah~blah~blah|||||||||
+2019-05-09 08:00:00|trash2 and no layer file||||X:\Extras\Trash\2018-10-10\blah~blah~blah|||||||||
+2019-05-09 08:00:00|trash3 and no layer file||||X:\Extras2\Trash\2018-10-10\blah~blah~blah|||||||||
+2019-05-09 08:00:00|archive1 and no layer file||||X:\Archive\2018-10-10\blah~blah~blah|||||||||
+2019-05-09 08:00:00|archive2 and no layer file||||X:\Extras\Archive\2018-10-10\blah~blah~blah|||||||||
+2019-05-09 08:00:00|archive3 and no layer file||||X:\Extras2\Archive\2018-10-10\blah~blah~blah|||||||||
+2019-05-09 08:00:00|trash with layer file||||X:\Trash\2018-10-10\blah~blah~blah||||||||X:\GIS\ThemeMgr\ANIA Themes\Basemap\ANIA Park Brochure Map.lyr|
+2019-05-09 08:00:00|archive with layer file||||X:\Archive\2018-10-10\blah~blah~blah||||||||X:\GIS\ThemeMgr\ANIA Themes\Basemap\ANIA Park Brochure Map.lyr|
