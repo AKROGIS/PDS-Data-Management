@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geodatabase;
 
@@ -7,42 +8,34 @@ namespace MapFixer
 {
     public class MapFixer
     {
-
-        public MapFixer()
-        {
-        }
-
         public void FixMap(Moves moves)
         {
-            ESRI.ArcGIS.Framework.IMessageDialog msgBox = new ESRI.ArcGIS.Framework.MessageDialogClass();
             var brokenDataSources = GetBrokenDataSources();
+            // We do not need to do anything if there was nothing to fix
+            if (brokenDataSources.Count == 0) {
+                return;
+            }
+            ESRI.ArcGIS.Framework.IMessageDialog msgBox = new ESRI.ArcGIS.Framework.MessageDialogClass();
             var autoFixesApplied = 0;
+            var unFixableLayers = 0;
             foreach (IDataLayer2 dataLayer in brokenDataSources)
             {
-                string layerName;
-                if (dataLayer is IDataset)
-                {
-                    layerName = ((IDataset)dataLayer).Name;
-                }
-                else
-                {
-                    layerName = ((ILayer2)dataLayer).Name;
-                }
+                var dataset = dataLayer as IDataset;
+                var layerName = dataset != null ? dataset.Name : ((ILayer2)dataLayer).Name;
                 Moves.GisDataset oldDataset = GetDataset(dataLayer);
                 Moves.Solution? maybeSolution = moves.GetSolution(oldDataset);
                 if (maybeSolution == null)
                 {
-                    string msg = string.Format("Sorry the layer '{0}' is broken, but it isn't due to the X drive reorganization. This addin does not have the information necessary to fix it.",
-                        layerName);
-                    msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
-                    continue; 
+                    unFixableLayers += 1;
+                    continue;
                 }
                 Moves.Solution solution = maybeSolution.Value;
                 if (solution.NewDataset == null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath == null)
                 {
-                    string msg = string.Format("The layer '{0}' is broken, but it cannot be fixed automatically.",
-                        layerName);
-                    msg = msg + "\n\nNote: " + solution.Remarks;
+                    // This is a very unusual case.  We do not have a solution, only a note.
+                    string msg =
+                        $"The layer '{layerName}' has been removed and there is no replacement.\n\nNote: {solution.Remarks}";
+                    //TODO: Remove Cancel button
                     msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
                     continue;
                 }
@@ -50,43 +43,38 @@ namespace MapFixer
                 {
                     // TODO: messageBox do you want to add layer (yes/no)  add solution.Remarks if not null
                     // TODO: if yes add layer
-                    // TODO: messagebox do you want to delete the old layer (If you have customized this layer, you might want to inspect and apply by hand, then delete manually). Yes/no
+                    // TODO: messageBox do you want to delete the old layer (If you have customized this layer, you might want to inspect and apply by hand, then delete manually). Yes/no
                     // TODO: if yes, delete the broken layer
                     continue;
                 }
                 if (solution.NewDataset == null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath == null)
                 {
-                    string msg = string.Format("The layer '{0}' is broken. The data has moved to a new location.  Do you want to fix the layer?",
-                        layerName);
-                    if (solution.Remarks != null)
-                    {
-                        msg = msg + "\n\nNote: " + solution.Remarks;
-                    }
-                    bool result = msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
-                    if (result)
-                    {
-                        RepairLayer(dataLayer, oldDataset, solution.ReplacementDataset.Value);
-                    }
+                    // solution.ReplacementDataset != null is not supported; should be filtered out when moves loaded; IGNORE
+                    // If we want to support this in the future, the code is similar to the newDataset below, BUT
+                    // we must check the symbology, labeling, definition query, and other layer properties for compatibility
+                    // We should check that the old and replacement datasets are "compatible" i.e. it not possible to replace
+                    // a raster with point feature class.
                     continue;
                 }
                 if (solution.NewDataset == null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath != null)
                 {
-                    //TODO
+                    // solution.ReplacementDataset != null is not supported; should be filtered out when moves loaded; IGNORE
+                    // See notes above
                     continue;
                 }
                 if (solution.NewDataset != null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath == null)
                 {
                     if (solution.Remarks == null)
                     {
-                        // This is the optimal action.  There is no good reason for a user not to click OK.
+                        // This is the optimal action.  The user is not prompted, since there is no good reason for a user not to click OK.
                         // The user will be warned that layers have been fixed, and they can choose to not save the changes.
                         autoFixesApplied += 1;
                         RepairLayer(dataLayer, oldDataset, solution.NewDataset.Value);
                     }
                     else
                     {
-                        string msg = string.Format("The layer '{0}' is broken. The data has moved to a new location.  Do you want to fix the layer?",
-                            layerName);
+                        string msg =
+                            $"The layer '{layerName}' is broken. The data has moved to a new location.  Do you want to fix the layer?";
                         msg = msg + "\n\nNote: " + solution.Remarks;
                         bool result = msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
                         if (result)
@@ -98,51 +86,75 @@ namespace MapFixer
                 }
                 if (solution.NewDataset != null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath != null)
                 {
-                    //TODO
+                    // TODO: prompt user if they want the archive/trash version, or the new layer file (recommended)
+                    // TODO: messageBox do you want to add layer (yes/no)  add solution.Remarks if not null
+                    // TODO: if yes add layer
+                    // TODO: messageBox do you want to delete the old layer (If you have customized this layer, you might want to inspect and apply by hand, then delete manually). Yes/no
+                    // TODO: if yes, delete the broken layer
                     continue;
                 }
                 if (solution.NewDataset != null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath == null)
                 {
-                    //TODO
+                    // solution.ReplacementDataset != null is not supported; should be filtered out when moves loaded; IGNORE
                     continue;
                 }
                 if (solution.NewDataset != null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath != null)
                 {
-                    //TODO
-                    continue;
+                    // solution.ReplacementDataset != null is not supported; should be filtered out when moves loaded; IGNORE
                 }
             }
+
             //TODO: Refresh TOC
             ArcMap.Document.ActiveView.Refresh();
             ArcMap.Document.CurrentContentsView.Refresh(null);
-            if (autoFixesApplied > 0)
-            {
-                string msg = String.Format("{0} broken layers were automatically fixed based on the new locations of known data sources. " +
-                    "Close the document without saving if this is not what you want.", autoFixesApplied);
-                msgBox.DoModal("Map has been modified", msg, "OK", null, ArcMap.Application.hWnd);
-            }
-            //Check for completeness
+
+            // Print a Summary
             brokenDataSources = GetBrokenDataSources();
-            if (brokenDataSources.Count > 0)
+            if (autoFixesApplied > 0 || unFixableLayers > 0 || brokenDataSources.Count > 0)
             {
-                string msg = "There are still some broken layers in your map. " +
-                    "If this is unexpected, it may be because some of the datasources have moved multiple times. " +
-                    "Try running the tool again.";
-                msgBox.DoModal("Map Check", msg, "OK", "Cancel", ArcMap.Application.hWnd);
+                string msg = "";
+                if (autoFixesApplied > 0) {
+                    msg +=
+                        $"{autoFixesApplied} broken layers were automatically fixed based on the new locations of known data sources. " +
+                        "Close the document without saving if this is not what you want.";
+                }
+                if (autoFixesApplied > 0 && (unFixableLayers > 0 || brokenDataSources.Count > 0)) {
+                    msg += "\n\n";
+                }
+                if (unFixableLayers > 0) {
+                    msg +=
+                        $"{unFixableLayers} broken layers could not be fixed; breakage is not due to changes on the PDS (X drive).";
+                }
+                if (unFixableLayers < brokenDataSources.Count) {
+                    // We know that brokenDataSources.Count must be >= unFixableLayers, therefore some of the fixes need fixing
+                    if (unFixableLayers > 0) {
+                        msg += "\n\n";
+                    }
+                    msg += "Additional fixes are possible and needed.  Please save, close and reopen your map.";
+                }
+                msgBox.DoModal("Map Fixer Summary", msg, "OK", null, ArcMap.Application.hWnd);
             }
         }
 
+        //TODO: only need to deal with dataset name changes.  All other changes are not supported
         public void RepairLayer(IDataLayer2 dataLayer, Moves.GisDataset oldDataset, Moves.GisDataset newDataset)
         {
-            if (oldDataset.DatasourceName == newDataset.DatasourceName && oldDataset.DatasourceType == newDataset.DatasourceType && oldDataset.WorkspaceProgID == newDataset.WorkspaceProgID)
+            // TODO: check and skip if (oldDataset.DatasourceType != newDataset.DatasourceType || oldDataset.WorkspaceProgId != newDataset.WorkspaceProgId)
+            // This should be impossible by checks against the CSV and during the loading of the moves.
+            // If it happens just do nothing and ignore it.
+            // TODO: only check for if (oldDataset.DatasourceName == newDataset.DatasourceName)
+            if (oldDataset.DatasourceName == newDataset.DatasourceName && oldDataset.DatasourceType == newDataset.DatasourceType && oldDataset.WorkspaceProgId == newDataset.WorkspaceProgId)
             {
-                IDataSourceHelperLayer helper = new DataSourceHelper() as IDataSourceHelperLayer;
+                //TODO: This may fail in 10.6.1  See: https://community.esri.com/thread/221120-set-datasource-with-arcobjects
+                var helper = (IDataSourceHelperLayer)new DataSourceHelper();
                 helper.FindAndReplaceWorkspaceNamePath((ILayer)dataLayer, oldDataset.WorkspacePath, newDataset.WorkspacePath, false);
             }
             else
             {
-                // FIXME:  This is much more complicated
-                IDataset dataset = OpenDataset(newDataset);
+                // TODO: Rename the dataset
+                // TODO: Maybe try: http://help.arcgis.com/en/sdk/10.0/arcobjects_net/componenthelp/index.html#/ReplaceName_Method/001200000ss3000000/
+                // TODO:  This is incomplete an maybe wrong
+                // IDataset dataset = OpenDataset(newDataset);
                 // Patch the layer, and trigger the TOC and map updates, etc...
                 // see http://help.arcgis.com/en/sdk/10.0/arcobjects_net/componenthelp/index.html#//00490000002r000000
             }
@@ -155,18 +167,19 @@ namespace MapFixer
             for (int i = 0; i < maps.Count; i++)
             {
                 IMap map = maps.Item[i];
-                IEnumLayer layerEnumerator = map.Layers[null, true];
+                // ReSharper disable once RedundantArgumentDefaultValue
+                IEnumLayer layerEnumerator = map.Layers[null];
                 ILayer layer;
                 while((layer = layerEnumerator.Next()) != null)
                 {
-                    if (layer is ILayer2)
+                    var layer2 = layer as ILayer2;
+                    if (layer2 != null)
                     {
-                        ILayer2 layer2 = (ILayer2)layer;
                         if (!layer2.Valid)
                         {
-                            if (layer2 is IDataLayer2)
+                            var dataLayer = layer2 as IDataLayer2;
+                            if (dataLayer != null)
                             {
-                                IDataLayer2 dataLayer = (IDataLayer2)layer2;
                                 layerList.Add(dataLayer);
                             }
                         }
@@ -178,7 +191,7 @@ namespace MapFixer
 
         public Moves.GisDataset GetDataset(IDataLayer2 dataLayer)
         {
-            IDatasetName datasetName = dataLayer.DataSourceName as IDatasetName;
+            var datasetName = (IDatasetName)dataLayer.DataSourceName;
             IWorkspaceName workspaceName = datasetName.WorkspaceName;
             return new Moves.GisDataset(workspaceName.PathName, workspaceName.WorkspaceFactoryProgID,
                 datasetName.Name, datasetName.Type);
@@ -186,10 +199,12 @@ namespace MapFixer
 
         public IDataset OpenDataset(Moves.GisDataset dataset)
         {
-            IWorkspaceName workspaceName = new WorkspaceNameClass();
-            workspaceName.WorkspaceFactoryProgID = dataset.WorkspaceProgID; // "esriDataSourcesGDB.AccessWorkspaceFactory";
-            workspaceName.PathName = dataset.WorkspacePath;
-            IWorkspace workspace = null;
+            IWorkspaceName workspaceName = new WorkspaceNameClass()
+            {
+                WorkspaceFactoryProgID = dataset.WorkspaceProgId, // "esriDataSourcesGDB.AccessWorkspaceFactory";
+                PathName = dataset.WorkspacePath
+            };
+            IWorkspace workspace;
             try
             {
                 workspace = workspaceName.WorkspaceFactory.Open(null, 0);
@@ -204,7 +219,7 @@ namespace MapFixer
                 return null;
 
             var datasetNames = workspace.DatasetNames[dataset.DatasourceType];
-            IDatasetName datasetName = null;
+            IDatasetName datasetName;
             while ((datasetName = datasetNames.Next()) != null)
             {
                 if (datasetName.Type == dataset.DatasourceType && string.Compare(datasetName.Name, dataset.DatasourceName, StringComparison.OrdinalIgnoreCase) == 0)
@@ -213,6 +228,7 @@ namespace MapFixer
             return null;
         }
 
+        [SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
         private IDataset OpenDataset(Moves.GisDataset dataset, IWorkspace workspace, IDatasetName datasetName)
         {
             if (dataset.DatasourceType == esriDatasetType.esriDTFeatureClass)
@@ -225,7 +241,7 @@ namespace MapFixer
                 }
                 catch (Exception)
                 {
-                    // TODO: Log or messageBox the error;\
+                    // TODO: Log or messageBox the error;
                     return null;
                 }
             }
@@ -239,7 +255,7 @@ namespace MapFixer
                 }
                 catch (Exception)
                 {
-                    // TODO: Log or messageBox the error;\
+                    // TODO: Log or messageBox the error;
                     return null;
                 }
             }
@@ -253,7 +269,7 @@ namespace MapFixer
                 }
                 catch (Exception)
                 {
-                    // TODO: Log or messageBox the error;\
+                    // TODO: Log or messageBox the error;
                     return null;
                 }
             }

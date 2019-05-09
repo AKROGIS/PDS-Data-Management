@@ -1,11 +1,9 @@
 ﻿namespace MapFixer
 {
+    // ReSharper disable once UnusedMember.Global
+    // Found by the ArcMap Add In Framework
     public class CheckMapButton : ESRI.ArcGIS.Desktop.AddIns.Button
     {
-        public CheckMapButton()
-        {
-        }
-
         protected override void OnClick()
         {
             ArcMap.Application.CurrentTool = null;
