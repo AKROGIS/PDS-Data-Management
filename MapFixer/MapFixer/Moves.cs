@@ -274,6 +274,11 @@ namespace MapFixer
                         }
                         continue;
                     }
+                    if (lineNum == 1 && row[0] == "timestamp")
+                    {
+                        // Skip a header row if present
+                        continue;
+                    }
 
                     DateTime timestamp;
                     if (!DateTime.TryParse(row[0], out timestamp))
@@ -373,6 +378,10 @@ namespace MapFixer
                     //TODO: if newDataset is null (deleted), trash or archive, then replacement layer file must be provided.
 
                     _moves.Add(new Move(timestamp, oldDataset, newDataset, null, layerFile, remarks));
+                }
+                if (check)
+                {
+                    Console.WriteLine($"Scanned {lineNum} lines.");
                 }
             }
             catch
