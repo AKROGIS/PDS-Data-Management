@@ -238,9 +238,8 @@ namespace MapFixer
 
         private readonly List<Move>  _moves = new List<Move>();
 
-        public Moves(string csvPath)
+        public Moves(string csvPath, char delimiter='|', bool check=false)
         {
-            char delimiter = '|';
             var fieldCount = 15;
             //This is a very simple CSV parser, as the input is very simple.
             //The constructor is very forgiving on the input.  It ignores any record which isn't valid.  It doesn't throw any exceptions
@@ -258,7 +257,6 @@ namespace MapFixer
             //   workspace changes (i.e. dataSourceName is null) should be exclusive.
             //      i.e. if there is a move /a/b => /x/y, we should not have /a/b/c => ...
 
-            //TODO: Add a boolean 'check' parameter, which will print the warning comments below
             //TODO: Check for exclusive workspace changes
             try
             {
@@ -270,28 +268,41 @@ namespace MapFixer
                     var row = line.Split(delimiter);
                     if (row.Length != fieldCount)
                     {
+                        if (check)
+                        {
+                            Console.WriteLine($"Warning: Wrong number of columns at line {lineNum}; Skipping.");
+                        }
                         continue;
-                        //Warning: Wrong number of columns at line linNum; Skipping.
                     }
 
                     DateTime timestamp;
                     if (!DateTime.TryParse(row[0], out timestamp))
                     {
+                        if (check)
+                        {
+                            Console.WriteLine($"Warning: First column at line {lineNum} is not a DateTime; Skipping.");
+                        }
                         continue;
-                        //Warning: First column at line linNum is not a DateTime; Skipping.
                     }
                     if (timestamp < previousTimestamp)
                     {
+                        if (check)
+                        {
+                            Console.WriteLine($"Warning: Timestamp in column 1 must be increasing. Skipping line {lineNum} for being out of order.");
+                        }
                         continue;
-                        //Warning: Timestamp in column 1 must be increasing. Skipping line linNum for being out of order.
                     }
                     previousTimestamp = timestamp;
 
                     if (string.IsNullOrWhiteSpace(row[1]))
                     {
+                        if (check)
+                        {
+                            Console.WriteLine($"Warning: Old Workspace Path (column 2) not provided at line {lineNum}; Skipping.");
+                        }
                         continue;
-                        //Warning: Old Workspace Path (column 2) not provided at line lineNum; Skipping.
-                    } else
+                    }
+                    else
                     {
                         //TODO: Verify row[1] does not start with a UNC or drive letter (no volume information)
                     }
@@ -303,7 +314,10 @@ namespace MapFixer
                     }
                     if (dataSourceType == null && !string.IsNullOrWhiteSpace(row[4]))
                     {
-                        //Warning: esriDatasetType provided at column 5 line lineNum is not valid; Using null
+                        if (check)
+                        {
+                            Console.WriteLine($"Warning: esriDatasetType provided at column 5 line {lineNum} is not valid; Using null.");
+                        }
                     }
                     //TODO: Check that row[2] is a progID strings (https://desktop.arcgis.com/en/arcobjects/latest/net/webframe.htm#IWorkspaceName_WorkspaceFactoryProgID.htm)
                     var oldDataset = new PartialGisDataset(row[1], row[2], row[3], dataSourceType);
@@ -319,11 +333,17 @@ namespace MapFixer
                         }
                         if (dataSourceType == null && !string.IsNullOrWhiteSpace(row[8]))
                         {
-                            //Warning: esriDatasetType provided at column 9 line lineNum is not valid; Using null
+                            if (check)
+                            {
+                                Console.WriteLine($"Warning: esriDatasetType provided at column 9 line {lineNum} is not valid; Using null.");
+                            }
                         }
                         if ((row[6] != null && row[2] != row[6]) || (row[8] != null && row[4] != row[8]))
                         {
-                            //Warning: You can't change the workspace or dataset types on line lineNum; Ignoring new values. Use a replacement layer file instead
+                            if (check)
+                            {
+                                Console.WriteLine($"Warning: You can't change the workspace or dataset types on line {lineNum}; Ignoring new values. Use a replacement layer file instead.");
+                            }
                             row[6] = null;
                             dataSourceType = null;
                         }
@@ -333,7 +353,10 @@ namespace MapFixer
 
                     if (!string.IsNullOrWhiteSpace(row[9]))
                     {
-                        // Warning: Replacement datasets are not supported (Column 10, line lineNum); Ignoring. Use a replacement layer file instead
+                        if (check)
+                        {
+                            Console.WriteLine($"Warning: Replacement datasets are not supported (Column 10, line {lineNum}); Ignoring. Use a replacement layer file instead.");
+                        }
                     }
                     var layerFile = string.IsNullOrWhiteSpace(row[13]) ? null : row[13].Trim();
                     //TODO: verify that non-null layer file is a valid file system object (ending in '.lyr')
@@ -341,8 +364,11 @@ namespace MapFixer
                     var remarks = string.IsNullOrWhiteSpace(row[14]) ? null : row[14].Trim();
                     if (newDataset == null && layerFile == null && remarks == null)
                     {
+                        if (check)
+                        {
+                            Console.WriteLine($"Warning: line {lineNum} is invalid. It must have a newDataset or a layer file, or a remark.");
+                        }
                         continue;
-                        //Warning: line lineNum is invalid. It must have a newDataset or a layer file, or a remark
                     }
                     //TODO: if newDataset is null (deleted), trash or archive, then replacement layer file must be provided.
 
