@@ -317,9 +317,9 @@ namespace MapFixer
                     {
                         dataSourceType = tempDataSourceType;
                     }
-                    if (dataSourceType == null && !string.IsNullOrWhiteSpace(row[4]))
+                    if (check)
                     {
-                        if (check)
+                        if (dataSourceType == null && !string.IsNullOrWhiteSpace(row[4]))
                         {
                             Console.WriteLine($"Warning: esriDatasetType provided at column 5 line {lineNum} is not valid; Using null.");
                         }
@@ -336,9 +336,9 @@ namespace MapFixer
                         {
                             dataSourceType = tempDataSourceType;
                         }
-                        if (dataSourceType == null && !string.IsNullOrWhiteSpace(row[8]))
+                        if (check)
                         {
-                            if (check)
+                            if (dataSourceType == null && !string.IsNullOrWhiteSpace(row[8]))
                             {
                                 Console.WriteLine($"Warning: esriDatasetType provided at column 9 line {lineNum} is not valid; Using null.");
                             }
@@ -356,17 +356,23 @@ namespace MapFixer
                         newDataset = new PartialGisDataset(row[5], row[6], row[7], dataSourceType);
                     }
 
-                    if (!string.IsNullOrWhiteSpace(row[9]))
+                    // replacement data source is not supported, so we ignore row[9] to row[12]
+                    if (check)
                     {
-                        if (check)
+                        if (!string.IsNullOrWhiteSpace(row[9]))
                         {
                             Console.WriteLine($"Warning: Replacement datasets are not supported (Column 10, line {lineNum}); Ignoring. Use a replacement layer file instead.");
                         }
                     }
+
                     var layerFile = string.IsNullOrWhiteSpace(row[13]) ? null : row[13].Trim();
-                    //TODO: verify that non-null layer file is a valid file system object (ending in '.lyr')
+                    if (check)
+                    {
+                        //TODO: verify that non-null layer file is a valid file system object (ending in '.lyr')
+                    }
 
                     var remarks = string.IsNullOrWhiteSpace(row[14]) ? null : row[14].Trim();
+
                     if (newDataset == null && layerFile == null && remarks == null)
                     {
                         if (check)
@@ -375,7 +381,10 @@ namespace MapFixer
                         }
                         continue;
                     }
-                    //TODO: if newDataset is null (deleted), trash or archive, then replacement layer file must be provided.
+                    if (check)
+                    {
+                        //TODO: if newDataset is null (deleted), trash or archive, then replacement layer file must be provided.
+                    }
 
                     _moves.Add(new Move(timestamp, oldDataset, newDataset, null, layerFile, remarks));
                 }
