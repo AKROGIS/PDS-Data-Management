@@ -451,11 +451,20 @@ namespace MapFixer
 
         private bool IsSimpleRelativePath(string path)
         {
-            //TODO: Implement Method
             // Verify path is a simple relative path, i.e. it does not start with a UNC or drive letter slash, or dot.
             // Could also check that it is a valid path
             // Assume that all ArcGIS work spaces appear to be file system objects
             // (This may not always be true, but is for all work spaces that we currently use.)
+            if (path == null)
+                return false;
+            if (path.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+                return false;
+            if (Path.IsPathRooted(path))
+                return false;
+            if (path.StartsWith("."))
+                return false;
+            if (path.StartsWith("/"))
+                return false;
             return true;
         }
 

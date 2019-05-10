@@ -31,10 +31,10 @@ not a timestamp|Bad timestamp||||workspace|||||||||
 2019-05-09 08:00:00|Bad Data Source Type (new)|||notDataType|new workspace|||notDataType||||||
 2019-05-09 08:00:00|Good Prog ID (new)|esriDataSourcesGDB.AccessWorkspaceFactory|||new workspace|esriDataSourcesGDB.AccessWorkspaceFactory||||||||
 2019-05-09 08:00:00|Bad Prog ID (new)|notProgID|||new workspace|notProgID||||||||
-2019-05-09 08:00:00|Cant change Data Source Type (null->new)||||new workspace|||esriDTFeatureClass||||||
-2019-05-09 08:00:00|Cant change Data Source Type (old->new)|||esriDTRasterDataset|new workspace|||esriDTFeatureClass||||||
-2019-05-09 08:00:00|Cant change Prog ID (null->new)||||new workspace|esriDataSourcesGDB.AccessWorkspaceFactory||||||||
-2019-05-09 08:00:00|Cant change Prog ID (old->new)|esriDataSourcesRaster.RasterWorkspaceFactory|||new workspace|esriDataSourcesGDB.AccessWorkspaceFactory||||||||
+2019-05-09 08:00:00|Cant change Data Source Type (null-new)||||new workspace|||esriDTFeatureClass||||||
+2019-05-09 08:00:00|Cant change Data Source Type (old-new)|||esriDTRasterDataset|new workspace|||esriDTFeatureClass||||||
+2019-05-09 08:00:00|Cant change Prog ID (null-new)||||new workspace|esriDataSourcesGDB.AccessWorkspaceFactory||||||||
+2019-05-09 08:00:00|Cant change Prog ID (old-new)|esriDataSourcesRaster.RasterWorkspaceFactory|||new workspace|esriDataSourcesGDB.AccessWorkspaceFactory||||||||
 2019-05-09 08:00:00|Replacements not allowed||||new workspace||||replacement|||||
 2019-05-09 08:00:00|No new data|||||||||||||
 2019-05-09 08:00:00|only replacement data||||||||replacement|||||
@@ -44,14 +44,14 @@ not a timestamp|Bad timestamp||||workspace|||||||||
 2019-05-09 08:00:00|Maybe bad layer file||||||||||||X:\bad layer file.lyr|
 2019-05-09 08:00:00|New workspace and replacement layer||||new workspace||||||||X:\GIS\ThemeMgr\ANIA Themes\Basemap\ANIA Park Brochure Map.lyr|
 2019-05-09 08:00:00|New workspace and remark||||new workspace|||||||||remark
-2019-05-09 08:00:00|Trash1 and no layer file||||X:\Trash\2018-10-10\blah~blah~blah|||||||||
-2019-05-09 08:00:00|Trash2 and no layer file||||X:\Extras\Trash\2018-10-10\blah~blah~blah|||||||||
-2019-05-09 08:00:00|Trash3 and no layer file||||X:\Extras2\Trash\2018-10-10\blah~blah~blah|||||||||
-2019-05-09 08:00:00|Archive1 and no layer file||||X:\Archive\2018-10-10\blah~blah~blah|||||||||
-2019-05-09 08:00:00|Archive2 and no layer file||||X:\Extras\Archive\2018-10-10\blah~blah~blah|||||||||
-2019-05-09 08:00:00|Archive3 and no layer file||||X:\Extras2\Archive\2018-10-10\blah~blah~blah|||||||||
-2019-05-09 08:00:00|Trash with layer file||||X:\Trash\2018-10-10\blah~blah~blah||||||||X:\GIS\ThemeMgr\ANIA Themes\Basemap\ANIA Park Brochure Map.lyr|
-2019-05-09 08:00:00|Archive with layer file||||X:\Archive\2018-10-10\blah~blah~blah||||||||X:\GIS\ThemeMgr\ANIA Themes\Basemap\ANIA Park Brochure Map.lyr|
+2019-05-09 08:00:00|Trash1 and no layer file||||Trash\2018-10-10\blah~blah~blah|||||||||
+2019-05-09 08:00:00|Trash2 and no layer file||||Extras\Trash\2018-10-10\blah~blah~blah|||||||||
+2019-05-09 08:00:00|Trash3 and no layer file||||Extras2\Trash\2018-10-10\blah~blah~blah|||||||||
+2019-05-09 08:00:00|Archive1 and no layer file||||Archive\2018-10-10\blah~blah~blah|||||||||
+2019-05-09 08:00:00|Archive2 and no layer file||||Extras\Archive\2018-10-10\blah~blah~blah|||||||||
+2019-05-09 08:00:00|Archive3 and no layer file||||Extras2\Archive\2018-10-10\blah~blah~blah|||||||||
+2019-05-09 08:00:00|Trash with layer file||||Trash\2018-10-10\blah~blah~blah||||||||X:\GIS\ThemeMgr\ANIA Themes\Basemap\ANIA Park Brochure Map.lyr|
+2019-05-09 08:00:00|Archive with layer file||||Archive\2018-10-10\blah~blah~blah||||||||X:\GIS\ThemeMgr\ANIA Themes\Basemap\ANIA Park Brochure Map.lyr|
 2019-05-09 08:00:00|Expecting skip at 7 8 9 12-19 21 23-29 31 33-37 39 40 43 ||||new workspace|||||||||
 2019-05-09 08:00:00|Expecting other warnings at 38 40 42 47-52||||new workspace|||||||||
 2019-05-09 08:00:00|Expecting Scanned 57 lines. Found 28 moves||||new workspace|||||||||
