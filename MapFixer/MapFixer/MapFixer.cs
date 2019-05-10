@@ -41,10 +41,7 @@ namespace MapFixer
                 }
                 if (solution.NewDataset == null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath != null)
                 {
-                    // TODO: messageBox do you want to add layer (yes/no)  add solution.Remarks if not null
-                    // TODO: if yes add layer
-                    // TODO: messageBox do you want to delete the old layer (If you have customized this layer, you might want to inspect and apply by hand, then delete manually). Yes/no
-                    // TODO: if yes, delete the broken layer
+                    MaybeReplaceWithLayerFile(solution);
                     continue;
                 }
                 if (solution.NewDataset == null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath == null)
@@ -86,11 +83,7 @@ namespace MapFixer
                 }
                 if (solution.NewDataset != null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath != null)
                 {
-                    // TODO: prompt user if they want the archive/trash version, or the new layer file (recommended)
-                    // TODO: messageBox do you want to add layer (yes/no)  add solution.Remarks if not null
-                    // TODO: if yes add layer
-                    // TODO: messageBox do you want to delete the old layer (If you have customized this layer, you might want to inspect and apply by hand, then delete manually). Yes/no
-                    // TODO: if yes, delete the broken layer
+                    MaybeReplaceWithLayerFile(solution);
                     continue;
                 }
                 if (solution.NewDataset != null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath == null)
@@ -134,6 +127,19 @@ namespace MapFixer
                 }
                 msgBox.DoModal("Map Fixer Summary", msg, "OK", null, ArcMap.Application.hWnd);
             }
+        }
+
+        private void MaybeReplaceWithLayerFile(Moves.Solution solution)
+        {
+            // TODO: Implement this option
+            // Assume solution.ReplacementDataset is null, and solution.ReplacementLayerFilePath is not null
+            // solution.NewDataset may be null (old dataset was deleted), or more likely it is in the Trash/Archive.
+            // If solution.NewDataset is not null, user must choose: 1) leave broken, 2) use NewDataset, 3) Use LayerFile
+            // If solution.NewDataset is null, user must choose: 1) leave broken, 2) Use LayerFile
+            // If there is a solution.Remarks then present to the user on the dialog box.
+            // Ask the user if they want to delete the broken layer (If you have customized this layer, you might want
+            //     to inspect and apply by hand, then delete manually). Yes/no
+            // TODO: layerFile may be missing, corrupt, or experience some other IOError
         }
 
         //TODO: only need to deal with dataset name changes.  All other changes are not supported

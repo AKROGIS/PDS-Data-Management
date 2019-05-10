@@ -254,11 +254,10 @@ namespace MapFixer
             //   If newDataset is null (i.e old is deleted), trash or archive, then a replacement layer file should be provided.
             //      A remark is all that is mandatory when newDataset is null.
             //   Column 2 and 6 must be progID strings
-            //   Columns 4 and 8must be datasetTypes
+            //   Columns 4 and 8 must be datasetTypes
             //   workspace changes (i.e. dataSourceName is null) should be exclusive.
             //      i.e. if there is a move /a/b => /x/y, we should not have /a/b/c => ...
 
-            //TODO: Check for exclusive workspace changes
             try
             {
                 DateTime previousTimestamp = DateTime.MinValue;
@@ -270,7 +269,7 @@ namespace MapFixer
                     {
                         if (check)
                         {
-                            Console.WriteLine($"Warning: Wrong number of columns at line {lineNum}; Skipping.");
+                            Console.WriteLine($"Warning: Wrong number of columns ({row.Length} not {fieldCount}) at line {lineNum}; Skipping.");
                         }
                         continue;
                     }
@@ -285,7 +284,7 @@ namespace MapFixer
                     {
                         if (check)
                         {
-                            Console.WriteLine($"Warning: First column at line {lineNum} is not a DateTime; Skipping.");
+                            Console.WriteLine($"Warning: Value in column #1 ({row[0]}) at line {lineNum} is not a DateTime; Skipping.");
                         }
                         continue;
                     }
@@ -293,7 +292,7 @@ namespace MapFixer
                     {
                         if (check)
                         {
-                            Console.WriteLine($"Warning: Timestamp in column 1 must be increasing. Skipping line {lineNum} for being out of order.");
+                            Console.WriteLine($"Warning: Timestamp in column #1 must be increasing. Line {lineNum} is out of order; Skipping.");
                         }
                         continue;
                     }
@@ -303,7 +302,7 @@ namespace MapFixer
                     {
                         if (check)
                         {
-                            Console.WriteLine($"Warning: Old Workspace Path (column 2) not provided at line {lineNum}; Skipping.");
+                            Console.WriteLine($"Warning: No value provided for column #2 (Old Workspace Path) at line {lineNum}; Skipping.");
                         }
                         continue;
                     }
@@ -311,7 +310,7 @@ namespace MapFixer
                     {
                         if (check)
                         {
-                            Console.WriteLine($"Warning: Old Workspace Path (column 2) at line {lineNum} is not a simple relative path (no drive letter, server name or leading slash or dot); Skipping.");
+                            Console.WriteLine($"Warning: Value in column #1 ({row[1]}) at line {lineNum} is not a simple relative path; Skipping.");
                         }
                         continue;
                     }
@@ -321,65 +320,94 @@ namespace MapFixer
                     {
                         dataSourceType = tempDataSourceType;
                     }
-                    if (check)
+                    if (dataSourceType == null && !string.IsNullOrWhiteSpace(row[4]))
                     {
-                        if (dataSourceType == null && !string.IsNullOrWhiteSpace(row[4]))
+                        if (check)
                         {
-                            Console.WriteLine($"Warning: esriDatasetType provided at column 5 line {lineNum} is not valid; Using null.");
+                            Console.WriteLine($"Warning: Value in column #5 ({row[4]}) at line {lineNum} is not an esriDatasetType; Skipping.");
                         }
+                        continue;
                     }
-                    //TODO: Check that row[2] is a progID strings (https://desktop.arcgis.com/en/arcobjects/latest/net/webframe.htm#IWorkspaceName_WorkspaceFactoryProgID.htm)
+
+                    if (!string.IsNullOrWhiteSpace(row[2]) && !IsWorkspaceFactoryProgId(row[2]))
+                    {
+                        if (check)
+                        {
+                            Console.WriteLine($"Warning: Value in column #3 ({row[2]}) at line {lineNum} is not an esriProgID; Skipping.");
+                        }
+                        continue;
+                    }
+
                     var oldDataset = new PartialGisDataset(row[1], row[2], row[3], dataSourceType);
 
                     PartialGisDataset? newDataset = null;
                     if (!string.IsNullOrWhiteSpace(row[5]))
                     {
-                        if (!IsSimpleRelativePath(row[1]))
+                        if (!IsSimpleRelativePath(row[5]))
                         {
                             if (check)
                             {
-                                Console.WriteLine($"Warning: New Workspace Path (column 6) at line {lineNum} is not a simple relative path (no drive letter, server name or leading slash or dot); Skipping.");
+                                Console.WriteLine($"Warning: Value in column #6 ({row[5]}) at line {lineNum} is not a simple relative path; Skipping.");
                             }
                             continue;
                         }
-                        dataSourceType = null;
-                        if (Enum.TryParse(row[8], out tempDataSourceType))
-                        {
-                            dataSourceType = tempDataSourceType;
-                        }
-                        if (check)
-                        {
-                            if (dataSourceType == null && !string.IsNullOrWhiteSpace(row[8]))
-                            {
-                                Console.WriteLine($"Warning: esriDatasetType provided at column 9 line {lineNum} is not valid; Using null.");
-                            }
-                        }
-                        if ((row[6] != null && row[2] != row[6]) || (row[8] != null && row[4] != row[8]))
+                        if (!string.IsNullOrWhiteSpace(row[6]) && row[2] != row[6])
                         {
                             if (check)
                             {
-                                Console.WriteLine($"Warning: You can't change the workspace or dataset types on line {lineNum}; Ignoring new values. Use a replacement layer file instead.");
+                                Console.WriteLine($"Warning: Column #7 does not match column #3 at line {lineNum} (new_workspace_type = {row[6]} <> old_workspace_type = {row[2]}); Skipping.");
                             }
-                            row[6] = null;
-                            dataSourceType = null;
+                            continue;
                         }
-                        // We do not need to check that row[6] is a progID, because it must be null or the same as row[2]
+                        // We do not need to check that row[6] is a progID, because it must be null or the same as row[2], which has already been checked.
+                        dataSourceType = null;
+                        if (!string.IsNullOrWhiteSpace(row[8]))
+                        {
+                            if (Enum.TryParse(row[8], out tempDataSourceType))
+                            {
+                                dataSourceType = tempDataSourceType;
+                            }
+                            if (dataSourceType == null)
+                            {
+                                if (check)
+                                {
+                                    Console.WriteLine($"Warning: Value in column #9 ({row[8]}) at line {lineNum} is not an esriDatasetType; Skipping.");
+                                }
+                                continue;
+                            }
+                            if (row[4] != row[8])
+                            {
+                                if (check)
+                                {
+                                    Console.WriteLine($"Warning: Column #9 does not match column #5 at line {lineNum} (new_dataset_type = {row[8]} <> old_dataset_type = {row[4]}); Skipping.");
+                                }
+                                continue;
+                            }
+                        }
                         newDataset = new PartialGisDataset(row[5], row[6], row[7], dataSourceType);
                     }
 
                     // replacement data source is not supported, so we ignore row[9] to row[12]
                     if (check)
                     {
-                        if (!string.IsNullOrWhiteSpace(row[9]))
+                        if (!string.IsNullOrWhiteSpace(row[9]) || !string.IsNullOrWhiteSpace(row[10]) || 
+                            !string.IsNullOrWhiteSpace(row[11]) || !string.IsNullOrWhiteSpace(row[12]))
                         {
-                            Console.WriteLine($"Warning: Replacement datasets are not supported (Column 10, line {lineNum}); Ignoring. Use a replacement layer file instead.");
+                            Console.WriteLine($"Warning: Values in columns 10 to 13 (Replacement datasets) at line {lineNum} are not supported; Using null for replacement dataset.");
                         }
                     }
 
                     var layerFile = string.IsNullOrWhiteSpace(row[13]) ? null : row[13].Trim();
-                    if (check)
+                    if (layerFile != null)
                     {
-                        //TODO: verify that non-null layer file is a valid file system object (ending in '.lyr')
+                        if (!IsSimilarToLayerFile(layerFile))
+                        {
+                            if (check)
+                            {
+                                Console.WriteLine($"Warning: Value in column #14 ({layerFile}) at line {lineNum} is not a valid layer file; Skipping.");
+                            }
+                            continue;
+                        }
                     }
 
                     var remarks = string.IsNullOrWhiteSpace(row[14]) ? null : row[14].Trim();
@@ -388,37 +416,72 @@ namespace MapFixer
                     {
                         if (check)
                         {
-                            Console.WriteLine($"Warning: line {lineNum} is invalid. It must have a newDataset or a layer file, or a remark.");
+                            Console.WriteLine($"Warning: Incomplete move at line {lineNum}. Neither a new dataset (column #6), nor a replacement layer file (column #14), nor a remark (column #15) was provided; Skipping.");
                         }
                         continue;
                     }
                     if (check)
                     {
-                        //TODO: if newDataset is null (deleted), trash or archive, then replacement layer file must be provided.
+                        //TODO: IsInTrash is not a property on PartialGisDataset (it should be) and GisDataset is also a PartialGisDataset
+                        //if ((newDataset == null || newDataset.IsInTrash || newDataset.IsInArchive) && layerFile == null)
+                        if (newDataset == null && layerFile == null)
+                        {
+                            Console.WriteLine($"Warning: A value in column #14 (replacement_layerFile_path) at line {lineNum} is STRONGLY encouraged when column #5-8 (new_dataset) is null or in the Trash/Archive.");
+                        }
                     }
 
                     _moves.Add(new Move(timestamp, oldDataset, newDataset, null, layerFile, remarks));
                 }
                 if (check)
                 {
-                    Console.WriteLine($"Scanned {lineNum} lines. Found {_moves.Count} moves");
+                    Console.WriteLine($"Scanned {lineNum} lines. Found {_moves.Count} moves.");
+                    Console.WriteLine("Checking consistency of moves");
+                    ConsistencyCheck(_moves);
                 }
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 if (check)
                 {
-                    Console.WriteLine($"Exception at line {lineNum}: {e.Message}");
+                    Console.WriteLine($"Aborting due to error at line {lineNum}: {e.Message}.");
                 }
             }
         }
 
         private bool IsSimpleRelativePath(string path)
         {
-            //TODO: Verify path is a simple relative path, i.e. it does not start with a UNC or drive letter slash, or dot.
-            // Could also check that it is a valid path (verify that all ArcGIS workspaces are file system objects)
+            //TODO: Implement Method
+            // Verify path is a simple relative path, i.e. it does not start with a UNC or drive letter slash, or dot.
+            // Could also check that it is a valid path
+            // Assume that all ArcGIS work spaces appear to be file system objects
+            // (This may not always be true, but is for all work spaces that we currently use.)
             return true;
         }
+
+        private bool IsWorkspaceFactoryProgId(string progId)
+        {
+            // TODO: Implement Method
+            // Verify that progId is a valid WorkspaceFactoryProgID
+            // See https://desktop.arcgis.com/en/arcobjects/latest/net/webframe.htm#IWorkspaceName_WorkspaceFactoryProgID.htm)
+            return true;
+        }
+
+        private bool IsSimilarToLayerFile(string layerFile)
+        {
+            // TODO: Implement Method
+            // Verify layerFile appears to be a valid file system object ending in '.lyr'
+            // Just check the string. Do not perform any IO as this is called in a loop
+            return true;
+        }
+
+        private void ConsistencyCheck(List<Move> moves)
+        {
+            //TODO: Implement Method
+            // Checks each move in the list against all others moves to ensure
+            // 1) There are no duplicates (WorkspacePath/DatasourceName matches) in the oldDataset
+            // 2) If moves have the same DatasourceName (null == null), then one WorkspacePath cannot be a proper subset of the other
+        }
+
         private bool IsDataSourceMatch(GisDataset dataset, PartialGisDataset moveFrom)
         {
             if (dataset.DatasourceName == null)

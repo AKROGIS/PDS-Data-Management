@@ -15,18 +15,22 @@ not a timestamp|bad timestamp||||workspace|||||||||
 2019-05-09 08:00:00|X:\Drive\paths\not\allowed (old)||||new workspace|||||||||
 2019-05-09 08:00:00|/absolute/unix/path (old)||||new workspace|||||||||
 2019-05-09 08:00:00|\absolute\DOS\path (old)||||new workspace|||||||||
+2019-05-09 08:00:00|.\relative\DOS\path (old)||||new workspace|||||||||
+2019-05-09 08:00:00|..\relative\DOS\path (old)||||new workspace|||||||||
 2019-05-09 08:00:00|Good Data Source Type (old)|||esriDTFeatureClass|new workspace|||||||||
-2019-05-09 08:00:00|Bad Data Source Type (old)|||notAdataType|new workspace|||||||||
+2019-05-09 08:00:00|Bad Data Source Type (old)|||notDataType|new workspace|||||||||
 2019-05-09 08:00:00|Good Prog ID (old)|esriDataSourcesGDB.AccessWorkspaceFactory|||new workspace|||||||||
-2019-05-09 08:00:00|Bad Prog ID(old)|notAProgID|||new workspace|||||||||
+2019-05-09 08:00:00|Bad Prog ID(old)|notProgID|||new workspace|||||||||
 2019-05-09 08:00:00|UNC\paths\not\allowed (new)||||\\UNC\paths\not\allowed|||||||||
 2019-05-09 08:00:00|XDrive\paths\not\allowed (new)||||X:\Drive\paths\not\allowed|||||||||
 2019-05-09 08:00:00|absolute unix path (new)||||/absolute/unix/path|||||||||
 2019-05-09 08:00:00|absolute\DOS\path (new)||||\absolute\DOS\path|||||||||
+2019-05-09 08:00:00|absolute\DOS\path (new)||||.\relative\DOS\path|||||||||
+2019-05-09 08:00:00|absolute\DOS\path (new)||||..\relative\DOS\path|||||||||
 2019-05-09 08:00:00|Good Data Source Type (new)|||esriDTFeatureClass|new workspace|||esriDTFeatureClass||||||
-2019-05-09 08:00:00|Bad Data Source Type (new)|||notAdataType|new workspace|||notAdataType||||||
+2019-05-09 08:00:00|Bad Data Source Type (new)|||notAdataType|new workspace|||notDataType||||||
 2019-05-09 08:00:00|Good Prog ID (new)|esriDataSourcesGDB.AccessWorkspaceFactory|||new workspace|esriDataSourcesGDB.AccessWorkspaceFactory||||||||
-2019-05-09 08:00:00|Bad Prog ID(new)|notAProgID|||new workspace|notAProgID||||||||
+2019-05-09 08:00:00|Bad Prog ID(new)|notAProgID|||new workspace|notProgID||||||||
 2019-05-09 08:00:00|Cant change Data Source Type (null->new)||||new workspace|||esriDTFeatureClass||||||
 2019-05-09 08:00:00|Cant change Data Source Type (old->new)|||esriDTRasterDataset|new workspace|||esriDTFeatureClass||||||
 2019-05-09 08:00:00|Cant change Prog ID (null->new)||||new workspace|esriDataSourcesGDB.AccessWorkspaceFactory||||||||
@@ -37,6 +41,7 @@ not a timestamp|bad timestamp||||workspace|||||||||
 2019-05-09 08:00:00|replacement layer||||||||||||X:\GIS\ThemeMgr\ANIA Themes\Basemap\ANIA Park Brochure Map.lyr|
 2019-05-09 08:00:00|replacement remark|||||||||||||remark
 2019-05-09 08:00:00|bad layer file||||||||||||bad layer file|
+2019-05-09 08:00:00|maybe bad layer file||||||||||||X:\bad layer file.lyr|
 2019-05-09 08:00:00|new workspace and replacement layer||||new workspace||||||||X:\GIS\ThemeMgr\ANIA Themes\Basemap\ANIA Park Brochure Map.lyr|
 2019-05-09 08:00:00|new workspace and remark||||new workspace|||||||||remark
 2019-05-09 08:00:00|trash1 and no layer file||||X:\Trash\2018-10-10\blah~blah~blah|||||||||
@@ -47,3 +52,6 @@ not a timestamp|bad timestamp||||workspace|||||||||
 2019-05-09 08:00:00|archive3 and no layer file||||X:\Extras2\Archive\2018-10-10\blah~blah~blah|||||||||
 2019-05-09 08:00:00|trash with layer file||||X:\Trash\2018-10-10\blah~blah~blah||||||||X:\GIS\ThemeMgr\ANIA Themes\Basemap\ANIA Park Brochure Map.lyr|
 2019-05-09 08:00:00|archive with layer file||||X:\Archive\2018-10-10\blah~blah~blah||||||||X:\GIS\ThemeMgr\ANIA Themes\Basemap\ANIA Park Brochure Map.lyr|
+2019-05-09 08:00:00|expecting skip at 7 8 9 12-19 21 23-29 31 33-37 39 40 43 ||||new workspace|||||||||
+2019-05-09 08:00:00|expecting other warnings at 38 40 42 47-52||||new workspace|||||||||
+2019-05-09 08:00:00|Expect Scanned 57 lines. Found 28 moves||||new workspace|||||||||
