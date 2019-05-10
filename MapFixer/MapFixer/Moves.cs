@@ -450,6 +450,7 @@ namespace MapFixer
                     Console.WriteLine($"Scanned {lineNum} lines. Found {_moves.Count} moves.");
                     Console.WriteLine("Checking consistency of moves");
                     ConsistencyCheck(_moves);
+                    Console.WriteLine("Done.");
                 }
             }
             catch (Exception e)
@@ -526,10 +527,52 @@ namespace MapFixer
 
         private void ConsistencyCheck(List<Move> moves)
         {
-            //TODO: Implement Method
             // Checks each move in the list against all others moves to ensure
             // 1) There are no duplicates (WorkspacePath/DatasourceName matches) in the oldDataset
             // 2) If moves have the same DatasourceName (null == null), then one WorkspacePath cannot be a proper subset of the other
+            int next = 0;
+            foreach (Move move in moves)
+            {
+                string path = move.OldDataset.WorkspacePath;
+                string name = move.OldDataset.DatasourceName;
+                next += 1;
+                for (int i = next; i < moves.Count; i++)
+                {
+                    string otherPath = moves[i].OldDataset.WorkspacePath;
+                    string otherName = moves[i].OldDataset.DatasourceName;
+                    //path and otherPath are guaranteed to be non-null
+                    //name and otherName may be null, but not whitespace only
+                    // from String.Compare: One or both comparands can be null. By definition, any string,
+                    //   including the empty string (""), compares greater than a null reference;
+                    //   and two null references compare equal to each other.
+
+                    // If the names do not match, I do not care about the path, we are ok regardless
+                    if (String.Compare(name, otherName, StringComparison.OrdinalIgnoreCase) != 0)
+                    {
+                        continue;
+                    }
+                    // We know the names match (including null == null)
+                    if (String.Compare(path, otherPath, StringComparison.OrdinalIgnoreCase) == 0)
+                    {
+                        Console.WriteLine($"ERROR: Move {next - 1} has the same workspace/dataset ({path}\\{name}) as move {i}.");
+                        continue;
+                    }
+                    // /a/b/name is different from /a/b/c/name, and ok.
+                    // /a/b/{null} is a prefix for /a/b/c/{null} and will cause confusion.
+                    if (name != null)
+                        continue;
+                    if (path.StartsWith(otherPath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        Console.WriteLine($"ERROR: The workspace for Move {next} ({path}) starts with the workspace in move {i + 1} ({otherPath}).");
+                        continue;
+                    }
+                    if (otherPath.StartsWith(path, StringComparison.OrdinalIgnoreCase))
+                    {
+                        Console.WriteLine($"ERROR: The workspace for Move {i + 1} ({otherPath}) starts with the workspace in move {next} ({path}).");
+                    }
+                }
+
+            }
         }
 
         private bool IsDataSourceMatch(GisDataset dataset, PartialGisDataset moveFrom)

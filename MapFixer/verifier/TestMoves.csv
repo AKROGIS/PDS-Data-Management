@@ -54,6 +54,14 @@ not a timestamp|Bad timestamp||||workspace|||||||||
 2019-05-09 08:00:00|Archive1 and no layer file||||Archive\2018-10-10\blah~blah~blah|||||||||
 2019-05-09 08:00:00|Archive2 and no layer file||||Extras\Archive\2018-10-10\blah~blah~blah|||||||||
 2019-05-09 08:00:00|Archive3 and no layer file||||Extras2\Archive\2018-10-10\blah~blah~blah|||||||||
+2019-05-09 08:00:00|A\B\C||||1\2\3|||||||||
+2019-05-09 08:00:00|A\B||||1\2\4|||||||||
+2019-05-09 08:00:00|A\B\C\D||||1\2\5|||||||||
+2019-05-09 08:00:00|A\B\C||Me||1\2\6|||||||||
+2019-05-09 08:00:00|A\B\C||You||1\2\7|||||||||
+2019-05-09 08:00:00|A\B\C||Me||1\2\8|||||||||
+2019-05-09 08:00:00|A\B||Me||1\2\4|||||||||
+2019-05-09 08:00:00|A\B||You||1\2\4|||||||||
 2019-05-09 08:00:00|Expecting skip at 13-42 (30) ||||new workspace|||||||||
 2019-05-09 08:00:00|Expecting other warnings at 39 49-56||||new workspace|||||||||
 2019-05-09 08:00:00|Expecting Scanned 59 lines. Found 28 moves||||new workspace|||||||||
