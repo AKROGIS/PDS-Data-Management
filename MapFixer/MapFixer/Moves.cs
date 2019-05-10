@@ -64,32 +64,6 @@ namespace MapFixer
 
             public string WorkspaceWithoutVolume => WorkspacePath.Substring(Path.GetPathRoot(WorkspacePath).Length);
 
-            public bool IsInTrash
-            {
-                get
-                {
-                    if (!IsOnPds)
-                        return false;
-                    var path = WorkspaceWithoutVolume;
-                    return path.StartsWith(@"\Trash\", StringComparison.OrdinalIgnoreCase) ||
-                        path.StartsWith(@"\Extras\Trash\", StringComparison.OrdinalIgnoreCase) ||
-                        path.StartsWith(@"\Extras2\Trash\", StringComparison.OrdinalIgnoreCase);
-                }
-            }
-
-            public bool IsInArchive
-            {
-                get
-                {
-                    if (!IsOnPds)
-                        return false;
-                    var path = WorkspaceWithoutVolume;
-                    return path.StartsWith(@"\Archive\", StringComparison.OrdinalIgnoreCase) ||
-                        path.StartsWith(@"\Extras\Archive\", StringComparison.OrdinalIgnoreCase) ||
-                        path.StartsWith(@"\Extras2\Archive\", StringComparison.OrdinalIgnoreCase);
-                }
-            }
-
         }
 
         struct PartialGisDataset
@@ -118,6 +92,46 @@ namespace MapFixer
                     DatasourceType ?? gisDataset.DatasourceType
                 );
             }
+
+            public bool IsInTrash
+            {
+                get
+                {
+                    if (Path.IsPathRooted(WorkspacePath) && !IsOnPds)
+                        return false;
+                    var path = WorkspaceWithoutVolume;
+                    return path.StartsWith(@"Trash\", StringComparison.OrdinalIgnoreCase) ||
+                        path.StartsWith(@"Extras\Trash\", StringComparison.OrdinalIgnoreCase) ||
+                        path.StartsWith(@"Extras2\Trash\", StringComparison.OrdinalIgnoreCase);
+                }
+            }
+
+            public bool IsInArchive
+            {
+                get
+                {
+                    if (Path.IsPathRooted(WorkspacePath) && !IsOnPds)
+                        return false;
+                    var path = WorkspaceWithoutVolume;
+                    return path.StartsWith(@"Archive\", StringComparison.OrdinalIgnoreCase) ||
+                        path.StartsWith(@"Extras\Archive\", StringComparison.OrdinalIgnoreCase) ||
+                        path.StartsWith(@"Extras2\Archive\", StringComparison.OrdinalIgnoreCase);
+                }
+            }
+
+            private bool IsOnPds
+            {
+                get
+                {
+                    if (WorkspacePath.StartsWith(@"X:\", StringComparison.OrdinalIgnoreCase))
+                        return true;
+                    if (WorkspacePath.StartsWith(@"\\inpakrovmdist\gisdata\", StringComparison.OrdinalIgnoreCase))
+                        return true;
+                    return WorkspacePath.StartsWith(@"\\inpakrovmdist\gisdata2\", StringComparison.OrdinalIgnoreCase);
+                }
+            }
+
+            private string WorkspaceWithoutVolume => WorkspacePath.Substring(Path.GetPathRoot(WorkspacePath).Length);
         }
 
         /// <summary>A <c>Solution</c> represents the moved state of an input <c>GisDataset</c>.
@@ -423,9 +437,7 @@ namespace MapFixer
                     }
                     if (check)
                     {
-                        //TODO: IsInTrash is not a property on PartialGisDataset (it should be) and GisDataset is also a PartialGisDataset
-                        //if ((newDataset == null || newDataset.IsInTrash || newDataset.IsInArchive) && layerFile == null)
-                        if (newDataset == null && layerFile == null)
+                        if ((newDataset == null || newDataset.Value.IsInTrash || newDataset.Value.IsInArchive) && layerFile == null)
                         {
                             Console.WriteLine($"Warning: A value in column #14 (replacement_layerFile_path) at line {lineNum} is STRONGLY encouraged when column #5-8 (new_dataset) is null or in the Trash/Archive.");
                         }
