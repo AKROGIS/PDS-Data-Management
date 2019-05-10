@@ -240,7 +240,8 @@ namespace MapFixer
 
         public Moves(string csvPath, char delimiter='|', bool check=false)
         {
-            var fieldCount = 15;
+            const int fieldCount = 15;
+            int lineNum = 0;
             //This is a very simple CSV parser, as the input is very simple.
             //The constructor is very forgiving on the input.  It ignores any record which isn't valid.  It doesn't throw any exceptions
             //It may contain an empty list of moves, which will is dealt with appropriately
@@ -260,7 +261,6 @@ namespace MapFixer
             //TODO: Check for exclusive workspace changes
             try
             {
-                int lineNum = 0;
                 DateTime previousTimestamp = DateTime.MinValue;
                 foreach (string line in File.ReadLines(csvPath))
                 {
