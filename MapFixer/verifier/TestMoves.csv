@@ -40,8 +40,10 @@ not a timestamp|Bad timestamp||||workspace|||||||||
 2019-05-09 08:00:00|only replacement data||||||||replacement|||||
 2019-05-09 08:00:00|Replacement layer||||||||||||X:\GIS\ThemeMgr\ANIA Themes\Basemap\ANIA Park Brochure Map.lyr|
 2019-05-09 08:00:00|Replacement remark|||||||||||||remark
-2019-05-09 08:00:00|Bad layer file||||||||||||bad layer file|
-2019-05-09 08:00:00|Maybe bad layer file||||||||||||X:\bad layer file.lyr|
+2019-05-09 08:00:00|Bad layer file1||||||||||||bad layer file|
+2019-05-09 08:00:00|Bad layer file2||||||||||||x:\bad\layer\file|
+2019-05-09 08:00:00|Bad layer file3||||||||||||bad.layer.file.LYR|
+2019-05-09 08:00:00|Maybe bad layer file||||||||||||X:\bad\layer\file.lyr|
 2019-05-09 08:00:00|New workspace and replacement layer||||new workspace||||||||X:\GIS\ThemeMgr\ANIA Themes\Basemap\ANIA Park Brochure Map.lyr|
 2019-05-09 08:00:00|New workspace and remark||||new workspace|||||||||remark
 2019-05-09 08:00:00|Trash1 and no layer file||||Trash\2018-10-10\blah~blah~blah|||||||||
@@ -52,6 +54,6 @@ not a timestamp|Bad timestamp||||workspace|||||||||
 2019-05-09 08:00:00|Archive3 and no layer file||||Extras2\Archive\2018-10-10\blah~blah~blah|||||||||
 2019-05-09 08:00:00|Trash with layer file||||Trash\2018-10-10\blah~blah~blah||||||||X:\GIS\ThemeMgr\ANIA Themes\Basemap\ANIA Park Brochure Map.lyr|
 2019-05-09 08:00:00|Archive with layer file||||Archive\2018-10-10\blah~blah~blah||||||||X:\GIS\ThemeMgr\ANIA Themes\Basemap\ANIA Park Brochure Map.lyr|
-2019-05-09 08:00:00|Expecting skip at 7 8 9 12-19 21 23-29 31 33-37 39 40 43 ||||new workspace|||||||||
+2019-05-09 08:00:00|Expecting skip at 7 8 9 12-19 21 23-29 31 33-37 39 40 43-45 ||||new workspace|||||||||
 2019-05-09 08:00:00|Expecting other warnings at 38 40 42 47-52||||new workspace|||||||||
-2019-05-09 08:00:00|Expecting Scanned 57 lines. Found 28 moves||||new workspace|||||||||
+2019-05-09 08:00:00|Expecting Scanned 59 lines. Found 28 moves||||new workspace|||||||||

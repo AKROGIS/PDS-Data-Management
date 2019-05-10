@@ -501,10 +501,15 @@ namespace MapFixer
 
         private bool IsSimilarToLayerFile(string layerFile)
         {
-            // TODO: Implement Method
             // Verify layerFile appears to be a valid file system object ending in '.lyr'
             // Just check the string. Do not perform any IO as this is called in a loop
-            return true;
+            if (layerFile == null)
+                return false;
+            if (layerFile.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+                return false;
+            if (!layerFile.StartsWith("X:\\", StringComparison.OrdinalIgnoreCase))
+                return false;
+            return layerFile.EndsWith(".lyr", StringComparison.OrdinalIgnoreCase);
         }
 
         private void ConsistencyCheck(List<Move> moves)
@@ -530,7 +535,7 @@ namespace MapFixer
 
         private bool IsWorkspaceMatch(GisDataset dataset, PartialGisDataset moveFrom)
         {
-            // !!WARNING!! Assumes workspace paths in moves do not have volume information
+            // Assumes workspace paths in moves do not have volume information
             string movePath = moveFrom.WorkspacePath;
             string fullPath = dataset.WorkspaceWithoutVolume;
             if (moveFrom.WorkspaceProgId != null && moveFrom.WorkspaceProgId == dataset.WorkspaceProgId)
@@ -544,7 +549,7 @@ namespace MapFixer
             // if the moveFrom.DatasourceName is null; if not null, then we must do a DataSourceMatch
             if (moveFrom.DatasourceName != null)
                 return false;
-            // !!WARNING!! Assumes workspace paths in moves do not have volume information
+            // Assumes workspace paths in moves do not have volume information
             string movePath = moveFrom.WorkspacePath;
             string fullPath = dataset.WorkspaceWithoutVolume;
             // Just searching for oldPath somewhere in newPath could yield some false positives.
@@ -554,7 +559,7 @@ namespace MapFixer
 
         private Move? FindFirstMatchingMove(GisDataset dataset, DateTime since)
         {
-            // !!WARNING!! Assumes moves list is in chronological order
+            // Assumes moves list is in chronological order
             foreach (Move move in _moves)
             {
                 if (move.Timestamp <= since)
