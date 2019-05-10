@@ -1,6 +1,7 @@
 ﻿using ESRI.ArcGIS.Geodatabase;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace MapFixer
@@ -458,12 +459,35 @@ namespace MapFixer
             return true;
         }
 
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
+        [SuppressMessage("ReSharper", "IdentifierTypo")]
+        [SuppressMessage("ReSharper", "UnusedMember.Global")]
+        [SuppressMessage("ReSharper", "UnusedMember.Local")]
+        // See https://desktop.arcgis.com/en/arcobjects/latest/net/webframe.htm#IWorkspaceName_WorkspaceFactoryProgID.htm)
+        // To comply with C# enum member naming rules, the '.' in the progId has been replaced with a '_'
+        private enum WellKnownWorkspaceProgIds
+        {
+            esriDataSourcesGDB_AccessWorkspaceFactory,
+            esriDataSourcesFile_ArcInfoWorkspaceFactory,
+            esriDataSourcesFile_CadWorkspaceFactory,
+            esriDataSourcesGDB_FileGDBWorkspaceFactory,
+            esriDataSourcesOleDB_OLEDBWorkspaceFactory,
+            esriDataSourcesFile_PCCoverageWorkspaceFactory,
+            esriDataSourcesRaster_RasterWorkspaceFactory,
+            esriDataSourcesGDB_SdeWorkspaceFactory,
+            esriDataSourcesFile_ShapefileWorkspaceFactory,
+            esriDataSourcesOleDB_TextFileWorkspaceFactory,
+            esriDataSourcesFile_TextFileWorkspaceFactory,
+            esriDataSourcesFile_TinWorkspaceFactory,
+            esriDataSourcesFile_VpfWorkspaceFactory,
+        }
+
         private bool IsWorkspaceFactoryProgId(string progId)
         {
-            // TODO: Implement Method
             // Verify that progId is a valid WorkspaceFactoryProgID
-            // See https://desktop.arcgis.com/en/arcobjects/latest/net/webframe.htm#IWorkspaceName_WorkspaceFactoryProgID.htm)
-            return true;
+            // There may be other valid progId that I have not identified, so this may produce some false positives
+            WellKnownWorkspaceProgIds temp;
+            return Enum.TryParse(progId.Replace('.','_'), out temp);
         }
 
         private bool IsSimilarToLayerFile(string layerFile)
