@@ -381,12 +381,15 @@ namespace MapFixer
                 }
                 if (check)
                 {
-                    Console.WriteLine($"Scanned {lineNum} lines.");
+                    Console.WriteLine($"Scanned {lineNum} lines. Found {_moves.Count} moves");
                 }
             }
-            catch
+            catch (System.Exception e)
             {
-                // ignored; Never fail for any reason when reading input
+                if (check)
+                {
+                    Console.WriteLine($"Exception at line {lineNum}: {e.Message}");
+                }
             }
         }
 
