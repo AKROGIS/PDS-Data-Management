@@ -307,9 +307,13 @@ namespace MapFixer
                         }
                         continue;
                     }
-                    else
+                    else if (!IsSimpleRelativePath(row[1]))
                     {
-                        //TODO: Verify row[1] does not start with a UNC or drive letter (no volume information)
+                        if (check)
+                        {
+                            Console.WriteLine($"Warning: Old Workspace Path (column 2) at line {lineNum} is not a simple relative path (no drive letter, server name or leading slash or dot); Skipping.");
+                        }
+                        continue;
                     }
                     esriDatasetType? dataSourceType = null;
                     esriDatasetType tempDataSourceType;
@@ -330,7 +334,14 @@ namespace MapFixer
                     PartialGisDataset? newDataset = null;
                     if (!string.IsNullOrWhiteSpace(row[5]))
                     {
-                        //TODO: Verify row[5] does not start with a UNC or drive letter (no volume information)
+                        if (!IsSimpleRelativePath(row[1]))
+                        {
+                            if (check)
+                            {
+                                Console.WriteLine($"Warning: New Workspace Path (column 6) at line {lineNum} is not a simple relative path (no drive letter, server name or leading slash or dot); Skipping.");
+                            }
+                            continue;
+                        }
                         dataSourceType = null;
                         if (Enum.TryParse(row[8], out tempDataSourceType))
                         {
@@ -402,6 +413,12 @@ namespace MapFixer
             }
         }
 
+        private bool IsSimpleRelativePath(string path)
+        {
+            //TODO: Verify path is a simple relative path, i.e. it does not start with a UNC or drive letter slash, or dot.
+            // Could also check that it is a valid path (verify that all ArcGIS workspaces are file system objects)
+            return true;
+        }
         private bool IsDataSourceMatch(GisDataset dataset, PartialGisDataset moveFrom)
         {
             if (dataset.DatasourceName == null)
