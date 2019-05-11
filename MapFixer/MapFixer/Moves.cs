@@ -561,12 +561,16 @@ namespace MapFixer
                     // /a/b/{null} is a prefix for /a/b/c/{null} and will cause confusion.
                     if (name != null)
                         continue;
-                    if (path.StartsWith(otherPath, StringComparison.OrdinalIgnoreCase))
+                    // We need to append a \ to avoid a match like
+                    // A\B\C as a prefix for A\B\CDE  (it is a prefix for A\B\C\DE)
+                    string prefix = otherPath.EndsWith("\\", StringComparison.OrdinalIgnoreCase) ? otherPath : otherPath + "\\";
+                    if (path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                     {
                         Console.WriteLine($"ERROR: The workspace for Move {next} ({path}) starts with the workspace in move {i + 1} ({otherPath}).");
                         continue;
                     }
-                    if (otherPath.StartsWith(path, StringComparison.OrdinalIgnoreCase))
+                    prefix = path.EndsWith("\\", StringComparison.OrdinalIgnoreCase) ? path : path + "\\";
+                    if (otherPath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                     {
                         Console.WriteLine($"ERROR: The workspace for Move {i + 1} ({otherPath}) starts with the workspace in move {next} ({path}).");
                     }
