@@ -16,6 +16,7 @@ namespace MapFixer
                 return;
             }
             ESRI.ArcGIS.Framework.IMessageDialog msgBox = new ESRI.ArcGIS.Framework.MessageDialogClass();
+            var alert = new AlertForm();
             var autoFixesApplied = 0;
             var unFixableLayers = 0;
             foreach (IDataLayer2 dataLayer in brokenDataSources)
@@ -33,10 +34,10 @@ namespace MapFixer
                 if (solution.NewDataset == null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath == null)
                 {
                     // This is a very unusual case.  We do not have a solution, only a note.
-                    string msg =
-                        $"The layer '{layerName}' has been removed and there is no replacement.\n\nNote: {solution.Remarks}";
-                    //TODO: Remove Cancel button
-                    msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
+                    string msg = $"The layer '{layerName}' has been removed and there is no replacement.\n\nNote: {solution.Remarks}";
+                    alert.Text = @"Broken Data Source";
+                    alert.msgBox.Text = msg;
+                    alert.ShowDialog(new WindowWrapper(new IntPtr(ArcMap.Application.hWnd)));
                     continue;
                 }
                 if (solution.NewDataset == null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath != null)
@@ -125,7 +126,9 @@ namespace MapFixer
                     }
                     msg += "Additional fixes are possible and needed.  Please save, close and reopen your map.";
                 }
-                msgBox.DoModal("Map Fixer Summary", msg, "OK", null, ArcMap.Application.hWnd);
+                alert.Text = @"Map Fixer Summary";
+                alert.msgBox.Text = msg;
+                alert.ShowDialog(new WindowWrapper(new IntPtr(ArcMap.Application.hWnd)));
             }
         }
 
