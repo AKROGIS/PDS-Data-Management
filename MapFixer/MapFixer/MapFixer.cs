@@ -60,9 +60,9 @@ namespace MapFixer
                 }
             }
 
-            //TODO: Refresh TOC
-            ArcMap.Document.ActiveView.Refresh();
-            ArcMap.Document.CurrentContentsView.Refresh(null);
+            // Refresh TOC
+            ArcMap.Document.UpdateContents(); //update the TOC
+            ArcMap.Document.ActivatedView.Refresh(); // refresh the view
 
             // Print a Summary
             brokenDataSources = GetBrokenDataSources();
