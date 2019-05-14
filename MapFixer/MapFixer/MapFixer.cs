@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geodatabase;
 
@@ -15,10 +14,11 @@ namespace MapFixer
             if (brokenDataSources.Count == 0) {
                 return;
             }
-            ESRI.ArcGIS.Framework.IMessageDialog msgBox = new ESRI.ArcGIS.Framework.MessageDialogClass();
             var alert = new AlertForm();
+            var selector = new SelectionForm();
             var autoFixesApplied = 0;
             var unFixableLayers = 0;
+            var intentionallyBroken = 0;
             foreach (IDataLayer2 dataLayer in brokenDataSources)
             {
                 var dataset = dataLayer as IDataset;
@@ -31,70 +31,32 @@ namespace MapFixer
                     continue;
                 }
                 Moves.Solution solution = maybeSolution.Value;
-                if (solution.NewDataset == null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath == null)
-                {
-                    // This is a very unusual case.  We do not have a solution, only a note.
-                    string msg = $"The layer '{layerName}' has been removed and there is no replacement.\n\nNote: {solution.Remarks}";
-                    alert.Text = @"Broken Data Source";
-                    alert.msgBox.Text = msg;
-                    alert.ShowDialog(new WindowWrapper(new IntPtr(ArcMap.Application.hWnd)));
-                    continue;
-                }
-                if (solution.NewDataset == null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath != null)
-                {
-                    MaybeReplaceWithLayerFile(solution);
-                    continue;
-                }
-                if (solution.NewDataset == null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath == null)
-                {
-                    // solution.ReplacementDataset != null is not supported; should be filtered out when moves loaded; IGNORE
-                    // If we want to support this in the future, the code is similar to the newDataset below, BUT
-                    // we must check the symbology, labeling, definition query, and other layer properties for compatibility
-                    // We should check that the old and replacement datasets are "compatible" i.e. it not possible to replace
-                    // a raster with point feature class.
-                    continue;
-                }
-                if (solution.NewDataset == null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath != null)
-                {
-                    // solution.ReplacementDataset != null is not supported; should be filtered out when moves loaded; IGNORE
-                    // See notes above
-                    continue;
-                }
-                if (solution.NewDataset != null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath == null)
-                {
-                    if (solution.Remarks == null)
+                if (solution.NewDataset != null && solution.ReplacementDataset == null &&
+                    solution.ReplacementLayerFilePath == null && solution.Remarks == null)
                     {
-                        // This is the optimal action.  The user is not prompted, since there is no good reason for a user not to click OK.
+                        // This is the optimal action.
+                        // The user is not prompted, since there is no good reason for a user not to click OK.
                         // The user will be warned that layers have been fixed, and they can choose to not save the changes.
                         autoFixesApplied += 1;
-                        RepairLayer(dataLayer, oldDataset, solution.NewDataset.Value);
+                        RepairWithDataset(dataLayer, oldDataset, solution.NewDataset.Value);
+                    }
+                else
+                {
+                    selector.LayerName = layerName;
+                    selector.Solution = solution;
+                    selector.ShowDialog(new WindowWrapper(new IntPtr(ArcMap.Application.hWnd)));
+                    if (selector.UseLayerFile)
+                    {
+                        RepairWithLayerFile(dataLayer, oldDataset, selector.LayerFile, selector.KeepBrokenLayer);
+                    }
+                    else if (selector.UseDataset && selector.Dataset.HasValue)
+                    {
+                        RepairWithDataset(dataLayer, oldDataset, selector.Dataset.Value);
                     }
                     else
                     {
-                        string msg =
-                            $"The layer '{layerName}' is broken. The data has moved to a new location.  Do you want to fix the layer?";
-                        msg = msg + "\n\nNote: " + solution.Remarks;
-                        bool result = msgBox.DoModal("Broken Data Source", msg, "OK", "Cancel", ArcMap.Application.hWnd);
-                        if (result)
-                        {
-                            RepairLayer(dataLayer, oldDataset, solution.NewDataset.Value);
-                        }
+                        intentionallyBroken += 1;
                     }
-                    continue;
-                }
-                if (solution.NewDataset != null && solution.ReplacementDataset == null && solution.ReplacementLayerFilePath != null)
-                {
-                    MaybeReplaceWithLayerFile(solution);
-                    continue;
-                }
-                if (solution.NewDataset != null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath == null)
-                {
-                    // solution.ReplacementDataset != null is not supported; should be filtered out when moves loaded; IGNORE
-                    continue;
-                }
-                if (solution.NewDataset != null && solution.ReplacementDataset != null && solution.ReplacementLayerFilePath != null)
-                {
-                    // solution.ReplacementDataset != null is not supported; should be filtered out when moves loaded; IGNORE
                 }
             }
 
@@ -104,7 +66,7 @@ namespace MapFixer
 
             // Print a Summary
             brokenDataSources = GetBrokenDataSources();
-            if (autoFixesApplied > 0 || unFixableLayers > 0 || brokenDataSources.Count > 0)
+            if (autoFixesApplied > 0 || unFixableLayers > 0 || brokenDataSources.Count > intentionallyBroken)
             {
                 string msg = "";
                 if (autoFixesApplied > 0) {
@@ -119,7 +81,7 @@ namespace MapFixer
                     msg +=
                         $"{unFixableLayers} broken layers could not be fixed; breakage is not due to changes on the PDS (X drive).";
                 }
-                if (unFixableLayers < brokenDataSources.Count) {
+                if (unFixableLayers < brokenDataSources.Count - intentionallyBroken) {
                     // We know that brokenDataSources.Count must be >= unFixableLayers, therefore some of the fixes need fixing
                     if (unFixableLayers > 0) {
                         msg += "\n\n";
@@ -132,21 +94,17 @@ namespace MapFixer
             }
         }
 
-        private void MaybeReplaceWithLayerFile(Moves.Solution solution)
+        private void RepairWithLayerFile(IDataLayer2 dataLayer, Moves.GisDataset oldDataset, string newLayerFile, bool keepBrokenLayer)
         {
             // TODO: Implement this option
-            // Assume solution.ReplacementDataset is null, and solution.ReplacementLayerFilePath is not null
-            // solution.NewDataset may be null (old dataset was deleted), or more likely it is in the Trash/Archive.
-            // If solution.NewDataset is not null, user must choose: 1) leave broken, 2) use NewDataset, 3) Use LayerFile
-            // If solution.NewDataset is null, user must choose: 1) leave broken, 2) Use LayerFile
-            // If there is a solution.Remarks then present to the user on the dialog box.
-            // Ask the user if they want to delete the broken layer (If you have customized this layer, you might want
-            //     to inspect and apply by hand, then delete manually). Yes/no
+            // Add the newLayerFile to the TOC directly below dataLayer
+            // if not keepBrokenLayer then remove dataLayer
             // TODO: layerFile may be missing, corrupt, or experience some other IOError
         }
 
+
         //TODO: only need to deal with dataset name changes.  All other changes are not supported
-        public void RepairLayer(IDataLayer2 dataLayer, Moves.GisDataset oldDataset, Moves.GisDataset newDataset)
+        public void RepairWithDataset(IDataLayer2 dataLayer, Moves.GisDataset oldDataset, Moves.GisDataset newDataset)
         {
             // TODO: check and skip if (oldDataset.DatasourceType != newDataset.DatasourceType || oldDataset.WorkspaceProgId != newDataset.WorkspaceProgId)
             // This should be impossible by checks against the CSV and during the loading of the moves.
@@ -206,6 +164,7 @@ namespace MapFixer
                 datasetName.Name, datasetName.Type);
         }
 
+        /*
         public IDataset OpenDataset(Moves.GisDataset dataset)
         {
             IWorkspaceName workspaceName = new WorkspaceNameClass()
@@ -284,5 +243,6 @@ namespace MapFixer
             }
             return null;
         }
+        */
     }
 }
