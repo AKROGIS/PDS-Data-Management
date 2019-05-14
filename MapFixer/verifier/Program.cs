@@ -3,7 +3,7 @@ using MapFixer;
 
 namespace verifier
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {

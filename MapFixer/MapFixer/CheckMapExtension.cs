@@ -1,5 +1,6 @@
 ﻿namespace MapFixer
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class CheckMapExtension : ESRI.ArcGIS.Desktop.AddIns.Extension
     {
         private static Moves _moves;

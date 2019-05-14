@@ -11,11 +11,11 @@ namespace MapFixer
             InitializeComponent();
         }
 
-        public string LayerName { get; set; }
+        public string LayerName { private get; set; }
 
         public Moves.Solution Solution
         {
-            get { return _solution; }
+            private get { return _solution; }
             set
             {
                 _solution = value;
@@ -29,7 +29,7 @@ namespace MapFixer
         // The new path/name of the dataset
         // based on the user's selection of the datasets in the solution
         // Currently I am only allowing the user to choose the NewDataset; assuming the ReplacementDataset is null 
-        public Moves.GisDataset? Dataset => _solution.NewDataset;
+        public Moves.GisDataset? Dataset => Solution.NewDataset;
 
         // if true, the user would like to add a layer file to the map
         public bool UseLayerFile => radioButton2.Checked || radioButton3.Checked;
@@ -37,7 +37,7 @@ namespace MapFixer
         // The layer file the user would like to use as a replacement
         // Currently the solution only supports on layer file.
         // In the future, we might support multiple layer files
-        public string LayerFile => _solution.ReplacementLayerFilePath;
+        public string LayerFile => Solution.ReplacementLayerFilePath;
 
         // Does the user want to keep or remove the broken layer?
         // only applicable if the user is adding a new layer file.

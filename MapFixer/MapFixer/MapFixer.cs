@@ -123,7 +123,7 @@ namespace MapFixer
         }
 
         //TODO: only need to deal with dataset name changes.  All other changes are not supported
-        public void RepairWithDataset(IDataLayer2 dataLayer, Moves.GisDataset oldDataset, Moves.GisDataset newDataset)
+        private void RepairWithDataset(IDataLayer2 dataLayer, Moves.GisDataset oldDataset, Moves.GisDataset newDataset)
         {
             // TODO: check and skip if (oldDataset.DatasourceType != newDataset.DatasourceType || oldDataset.WorkspaceProgId != newDataset.WorkspaceProgId)
             // This should be impossible by checks against the CSV and during the loading of the moves.
@@ -146,7 +146,7 @@ namespace MapFixer
             }
         }
 
-        public List<IDataLayer2> GetBrokenDataSources()
+        private List<IDataLayer2> GetBrokenDataSources()
         {
             List<IDataLayer2> layerList = new List<IDataLayer2>();
             IMaps maps = ArcMap.Document.Maps;
@@ -175,7 +175,7 @@ namespace MapFixer
             return layerList;
         }
 
-        public Moves.GisDataset GetDataset(IDataLayer2 dataLayer)
+        private Moves.GisDataset GetDataset(IDataLayer2 dataLayer)
         {
             var datasetName = (IDatasetName)dataLayer.DataSourceName;
             IWorkspaceName workspaceName = datasetName.WorkspaceName;

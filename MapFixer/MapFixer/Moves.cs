@@ -170,6 +170,8 @@ namespace MapFixer
             }
 
             /// <summary>When the input GisDataset was moved</summary>
+            // ReSharper disable once MemberCanBePrivate.Global
+            // ReSharper disable once UnusedAutoPropertyAccessor.Global
             public DateTime Timestamp { get; }
 
             /// <summary>The new location of the input GisDataset.  This will almost always be non-null.
