@@ -20,20 +20,23 @@ namespace MapFixer
             var autoFixesApplied = 0;
             var unFixableLayers = 0;
             var intentionallyBroken = 0;
-            foreach (IDataLayer2 dataLayer in brokenDataSources)
+            foreach (var item in brokenDataSources)
             {
-                var dataset = dataLayer as IDataset;
-                var layerName = dataset != null ? dataset.Name : ((ILayer2)dataLayer).Name;
-                Moves.GisDataset oldDataset = GetDataset(dataLayer);
-                Moves.Solution? maybeSolution = moves.GetSolution(oldDataset);
-                if (maybeSolution == null)
+                var mapIndex = item.Key;
+                foreach (IDataLayer2 dataLayer in item.Value)
                 {
-                    unFixableLayers += 1;
-                    continue;
-                }
-                Moves.Solution solution = maybeSolution.Value;
-                if (solution.NewDataset != null && solution.ReplacementDataset == null &&
-                    solution.ReplacementLayerFilePath == null && solution.Remarks == null)
+                    var dataset = dataLayer as IDataset;
+                    var layerName = dataset != null ? dataset.Name : ((ILayer2)dataLayer).Name;
+                    Moves.GisDataset oldDataset = GetDataset(dataLayer);
+                    Moves.Solution? maybeSolution = moves.GetSolution(oldDataset);
+                    if (maybeSolution == null)
+                    {
+                        unFixableLayers += 1;
+                        continue;
+                    }
+                    Moves.Solution solution = maybeSolution.Value;
+                    if (solution.NewDataset != null && solution.ReplacementDataset == null &&
+                        solution.ReplacementLayerFilePath == null && solution.Remarks == null)
                     {
                         // This is the optimal action.
                         // The user is not prompted, since there is no good reason for a user not to click OK.
@@ -41,22 +44,23 @@ namespace MapFixer
                         autoFixesApplied += 1;
                         RepairWithDataset(dataLayer, oldDataset, solution.NewDataset.Value);
                     }
-                else
-                {
-                    selector.LayerName = layerName;
-                    selector.Solution = solution;
-                    selector.ShowDialog(new WindowWrapper(new IntPtr(ArcMap.Application.hWnd)));
-                    if (selector.UseLayerFile)
-                    {
-                        RepairWithLayerFile(dataLayer, selector.LayerFile, selector.KeepBrokenLayer, alert);
-                    }
-                    else if (selector.UseDataset && selector.Dataset.HasValue)
-                    {
-                        RepairWithDataset(dataLayer, oldDataset, selector.Dataset.Value);
-                    }
                     else
                     {
-                        intentionallyBroken += 1;
+                        selector.LayerName = layerName;
+                        selector.Solution = solution;
+                        selector.ShowDialog(new WindowWrapper(new IntPtr(ArcMap.Application.hWnd)));
+                        if (selector.UseLayerFile)
+                        {
+                            RepairWithLayerFile(mapIndex, dataLayer, selector.LayerFile, selector.KeepBrokenLayer, alert);
+                        }
+                        else if (selector.UseDataset && selector.Dataset.HasValue)
+                        {
+                            RepairWithDataset(dataLayer, oldDataset, selector.Dataset.Value);
+                        }
+                        else
+                        {
+                            intentionallyBroken += 1;
+                        }
                     }
                 }
             }
@@ -95,22 +99,20 @@ namespace MapFixer
             }
         }
 
-        private void RepairWithLayerFile(IDataLayer2 dataLayer, string newLayerFile, bool keepBrokenLayer, AlertForm alert)
+        private void RepairWithLayerFile(int mapIndex, IDataLayer2 dataLayer, string newLayerFile, bool keepBrokenLayer, AlertForm alert)
         {
             // Add Layer File to ActiveView Snippet: (http://help.arcgis.com/en/sdk/10.0/arcobjects_net/componenthelp/index.html#//004900000050000000)
             IGxLayer gxLayer = new GxLayer();
             IGxFile gxFile = (IGxFile)gxLayer;
             gxFile.Path = newLayerFile;
-            //TODO: we need to save this value when we get the broken data layers
-            int map_index = 0; // Map with the dataLayer
             if (gxLayer.Layer != null)
             {
                 // AddLayer will add the new layer at the most appropriate point in the TOC.
                 //   This is much easier and potentially less confusing than adding at the old data location. 
-                ArcMap.Document.Maps.Item[map_index].AddLayer(gxLayer.Layer);
+                ArcMap.Document.Maps.Item[mapIndex].AddLayer(gxLayer.Layer);
                 if (!keepBrokenLayer)
                 {
-                    ArcMap.Document.Maps.Item[map_index].DeleteLayer((ILayer)dataLayer);
+                    ArcMap.Document.Maps.Item[mapIndex].DeleteLayer((ILayer)dataLayer);
                 }
             }
             else
@@ -146,9 +148,9 @@ namespace MapFixer
             }
         }
 
-        private List<IDataLayer2> GetBrokenDataSources()
+        private Dictionary<int,List<IDataLayer2>> GetBrokenDataSources()
         {
-            List<IDataLayer2> layerList = new List<IDataLayer2>();
+            var brokenDataSources = new Dictionary<int, List<IDataLayer2>>();
             IMaps maps = ArcMap.Document.Maps;
             for (int i = 0; i < maps.Count; i++)
             {
@@ -166,13 +168,17 @@ namespace MapFixer
                             var dataLayer = layer2 as IDataLayer2;
                             if (dataLayer != null)
                             {
-                                layerList.Add(dataLayer);
+                                if (!brokenDataSources.ContainsKey(i))
+                                {
+                                    brokenDataSources[i] = new List<IDataLayer2>();
+                                }
+                                brokenDataSources[i].Add(dataLayer);
                             }
                         }
                     }
                 }
             }
-            return layerList;
+            return brokenDataSources;
         }
 
         private Moves.GisDataset GetDataset(IDataLayer2 dataLayer)
