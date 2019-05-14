@@ -48,7 +48,7 @@ namespace MapFixer
                     selector.ShowDialog(new WindowWrapper(new IntPtr(ArcMap.Application.hWnd)));
                     if (selector.UseLayerFile)
                     {
-                        RepairWithLayerFile(dataLayer, oldDataset, selector.LayerFile, selector.KeepBrokenLayer);
+                        RepairWithLayerFile(dataLayer, selector.LayerFile, selector.KeepBrokenLayer, alert);
                     }
                     else if (selector.UseDataset && selector.Dataset.HasValue)
                     {
@@ -95,23 +95,32 @@ namespace MapFixer
             }
         }
 
-        private void RepairWithLayerFile(IDataLayer2 dataLayer, Moves.GisDataset oldDataset, string newLayerFile, bool keepBrokenLayer)
+        private void RepairWithLayerFile(IDataLayer2 dataLayer, string newLayerFile, bool keepBrokenLayer, AlertForm alert)
         {
-            // TODO: Implement this option
-            // Add the newLayerFile to the TOC directly below dataLayer
-            // if not keepBrokenLayer then remove dataLayer
-
             // Add Layer File to ActiveView Snippet: (http://help.arcgis.com/en/sdk/10.0/arcobjects_net/componenthelp/index.html#//004900000050000000)
             IGxLayer gxLayer = new GxLayer();
             IGxFile gxFile = (IGxFile)gxLayer;
             gxFile.Path = newLayerFile;
+            //TODO: we need to save this value when we get the broken data layers
+            int map_index = 0; // Map with the dataLayer
             if (gxLayer.Layer != null)
             {
-                ArcMap.Document.FocusMap.AddLayer(gxLayer.Layer);
+                // AddLayer will add the new layer at the most appropriate point in the TOC.
+                //   This is much easier and potentially less confusing than adding at the old data location. 
+                ArcMap.Document.Maps.Item[map_index].AddLayer(gxLayer.Layer);
+                if (!keepBrokenLayer)
+                {
+                    ArcMap.Document.Maps.Item[map_index].DeleteLayer((ILayer)dataLayer);
+                }
             }
-            // TODO: layerFile may be missing, corrupt, or experience some other IOError
+            else
+            {
+                // Notify the user that the LayerFile could not be opened (missing, corrupt, ...)
+                alert.Text = @"Error";
+                alert.msgBox.Text = $"The layer file '{newLayerFile}' could not be opened.";
+                alert.ShowDialog(new WindowWrapper(new IntPtr(ArcMap.Application.hWnd)));
+            }
         }
-
 
         //TODO: only need to deal with dataset name changes.  All other changes are not supported
         public void RepairWithDataset(IDataLayer2 dataLayer, Moves.GisDataset oldDataset, Moves.GisDataset newDataset)
