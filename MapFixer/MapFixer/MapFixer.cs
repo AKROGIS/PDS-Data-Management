@@ -42,7 +42,7 @@ namespace MapFixer
                         // The user is not prompted, since there is no good reason for a user not to click OK.
                         // The user will be warned that layers have been fixed, and they can choose to not save the changes.
                         autoFixesApplied += 1;
-                        RepairWithDataset(dataLayer, oldDataset, solution.NewDataset.Value);
+                        RepairWithDataset(dataLayer, oldDataset, solution.NewDataset.Value, alert);
                     }
                     else
                     {
@@ -55,7 +55,7 @@ namespace MapFixer
                         }
                         else if (selector.UseDataset && selector.Dataset.HasValue)
                         {
-                            RepairWithDataset(dataLayer, oldDataset, selector.Dataset.Value);
+                            RepairWithDataset(dataLayer, oldDataset, selector.Dataset.Value, alert);
                         }
                         else
                         {
@@ -124,27 +124,38 @@ namespace MapFixer
             }
         }
 
-        //TODO: only need to deal with dataset name changes.  All other changes are not supported
-        private void RepairWithDataset(IDataLayer2 dataLayer, Moves.GisDataset oldDataset, Moves.GisDataset newDataset)
+        private void RepairWithDataset(IDataLayer2 dataLayer, Moves.GisDataset oldDataset, Moves.GisDataset newDataset, AlertForm alert)
         {
-            // TODO: check and skip if (oldDataset.DatasourceType != newDataset.DatasourceType || oldDataset.WorkspaceProgId != newDataset.WorkspaceProgId)
-            // This should be impossible by checks against the CSV and during the loading of the moves.
-            // If it happens just do nothing and ignore it.
-            // TODO: only check for if (oldDataset.DatasourceName == newDataset.DatasourceName)
-            if (oldDataset.DatasourceName == newDataset.DatasourceName && oldDataset.DatasourceType == newDataset.DatasourceType && oldDataset.WorkspaceProgId == newDataset.WorkspaceProgId)
+            // This routine, can only repair workspace path, and dataset name.
+            // The workspace type and data type must be the same.
+            // This can be checked with the CSV verifier. Violations will be ignored in the CSV loader
+            if (oldDataset.DatasourceType != newDataset.DatasourceType ||
+                oldDataset.WorkspaceProgId != newDataset.WorkspaceProgId)
+            {
+                return;
+            }
+            var helper = (IDataSourceHelperLayer)new DataSourceHelper();
+            if (oldDataset.DatasourceName == newDataset.DatasourceName)
             {
                 //TODO: This may fail in 10.6.1  See: https://community.esri.com/thread/221120-set-datasource-with-arcobjects
-                var helper = (IDataSourceHelperLayer)new DataSourceHelper();
                 helper.FindAndReplaceWorkspaceNamePath((ILayer)dataLayer, oldDataset.WorkspacePath, newDataset.WorkspacePath, false);
             }
             else
             {
-                // TODO: Rename the dataset
-                // TODO: Maybe try: http://help.arcgis.com/en/sdk/10.0/arcobjects_net/componenthelp/index.html#/ReplaceName_Method/001200000ss3000000/
-                // TODO:  This is incomplete an maybe wrong
-                // IDataset dataset = OpenDataset(newDataset);
-                // Patch the layer, and trigger the TOC and map updates, etc...
-                // see http://help.arcgis.com/en/sdk/10.0/arcobjects_net/componenthelp/index.html#//00490000002r000000
+                // I can't find a way to simply change the name of the dataset in a layer.
+                // To set the data source of a layer I need to first open the data source (using the newDataset properties)
+                // I can then use the Name (as IName) of the data source to fix the layer.
+                IDataset dataset = TryOpenDataset(newDataset);
+                if (dataset == null)
+                {
+                    alert.Text = @"Error";
+                    alert.msgBox.Text = $"Map Fixer is unable to repair the layer {((ILayer2)dataLayer).Name}. " +
+                                        "Use the 'Set Data Source button' on the Source tab of the layer properties dialog to " + 
+                                        $"set the data source to {newDataset.WorkspacePath}\\{newDataset.DatasourceName}";
+                    alert.ShowDialog(new WindowWrapper(new IntPtr(ArcMap.Application.hWnd)));
+                    return;
+                }
+                helper.ReplaceName((ILayer)dataLayer, dataset.FullName, false);
             }
         }
 
@@ -189,12 +200,11 @@ namespace MapFixer
                 datasetName.Name, datasetName.Type);
         }
 
-        /*
-        public IDataset OpenDataset(Moves.GisDataset dataset)
+        private IDataset TryOpenDataset(Moves.GisDataset dataset)
         {
             IWorkspaceName workspaceName = new WorkspaceNameClass()
             {
-                WorkspaceFactoryProgID = dataset.WorkspaceProgId, // "esriDataSourcesGDB.AccessWorkspaceFactory";
+                WorkspaceFactoryProgID = dataset.WorkspaceProgId, // i.e. "esriDataSourcesGDB.AccessWorkspaceFactory";
                 PathName = dataset.WorkspacePath
             };
             IWorkspace workspace;
@@ -205,7 +215,6 @@ namespace MapFixer
             catch (Exception)
             {
                 // This may fail for any number of reasons, bad input (progID or path), network or filesystem error permissions, ...
-                // TODO: Log or messageBox the error;
                 return null;
             }
             if (workspace == null)
@@ -216,13 +225,12 @@ namespace MapFixer
             while ((datasetName = datasetNames.Next()) != null)
             {
                 if (datasetName.Type == dataset.DatasourceType && string.Compare(datasetName.Name, dataset.DatasourceName, StringComparison.OrdinalIgnoreCase) == 0)
-                    return OpenDataset(dataset, workspace, datasetName);
+                    return TryOpenDataset(dataset, workspace, datasetName);
             }
             return null;
         }
 
-        [SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
-        private IDataset OpenDataset(Moves.GisDataset dataset, IWorkspace workspace, IDatasetName datasetName)
+        private IDataset TryOpenDataset(Moves.GisDataset dataset, IWorkspace workspace, IDatasetName datasetName)
         {
             if (dataset.DatasourceType == esriDatasetType.esriDTFeatureClass)
             {
@@ -234,21 +242,24 @@ namespace MapFixer
                 }
                 catch (Exception)
                 {
-                    // TODO: Log or messageBox the error;
                     return null;
                 }
             }
+            // For opening raster data see https://desktop.arcgis.com/en/arcobjects/10.5/net/webframe.htm#62937a09-b1c5-47d7-a1ac-f7a5daab3c89.htm
             if (dataset.DatasourceType == esriDatasetType.esriDTRasterDataset)
             {
                 try
                 {
+                    // ReSharper disable once SuspiciousTypeConversion.Global
+                    // Raster Workspace Class is in ESRI.ArcGIS.DataSourcesRaster
                     IRasterWorkspace2 rasterWorkspace = (IRasterWorkspace2)workspace;
                     IRasterDataset rasterDataset = rasterWorkspace.OpenRasterDataset(datasetName.Name);
+                    // ReSharper disable once SuspiciousTypeConversion.Global
+                    // Three possible co-classes FunctionRasterDataset, RasterBand, RasterDataset are in ESRI.ArcGIS.DataSourcesRaster
                     return (IDataset)rasterDataset;
                 }
                 catch (Exception)
                 {
-                    // TODO: Log or messageBox the error;
                     return null;
                 }
             }
@@ -258,16 +269,18 @@ namespace MapFixer
                 {
                     IRasterWorkspaceEx rasterWorkspace = (IRasterWorkspaceEx)workspace;
                     IRasterDataset rasterDataset = rasterWorkspace.OpenRasterDataset(datasetName.Name);
+                    // ReSharper disable once SuspiciousTypeConversion.Global
+                    // Three possible co-classes FunctionRasterDataset, RasterBand, RasterDataset are in ESRI.ArcGIS.DataSourcesRaster
                     return (IDataset)rasterDataset;
                 }
                 catch (Exception)
                 {
-                    // TODO: Log or messageBox the error;
                     return null;
                 }
             }
+            //TODO: Open additional types of data sources
+
             return null;
         }
-        */
     }
 }
