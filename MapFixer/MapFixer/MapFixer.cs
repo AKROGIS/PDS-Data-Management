@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geodatabase;
+using ESRI.ArcGIS.Catalog;
 
 namespace MapFixer
 {
@@ -99,6 +100,15 @@ namespace MapFixer
             // TODO: Implement this option
             // Add the newLayerFile to the TOC directly below dataLayer
             // if not keepBrokenLayer then remove dataLayer
+
+            // Add Layer File to ActiveView Snippet: (http://help.arcgis.com/en/sdk/10.0/arcobjects_net/componenthelp/index.html#//004900000050000000)
+            IGxLayer gxLayer = new GxLayer();
+            IGxFile gxFile = (IGxFile)gxLayer;
+            gxFile.Path = newLayerFile;
+            if (gxLayer.Layer != null)
+            {
+                ArcMap.Document.FocusMap.AddLayer(gxLayer.Layer);
+            }
             // TODO: layerFile may be missing, corrupt, or experience some other IOError
         }
 
