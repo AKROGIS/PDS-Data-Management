@@ -50,11 +50,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -68,6 +63,8 @@
     <ProjectReference Include="..\MapFixer\MapFixer.csproj">
       <Project>{5c68b92a-b0fd-4a0c-8ba1-9b4a685925fe}</Project>
       <Name>MapFixer</Name>
+      <Private>False</Private>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
