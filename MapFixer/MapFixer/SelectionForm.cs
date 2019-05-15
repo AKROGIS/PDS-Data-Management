@@ -13,6 +13,7 @@ namespace MapFixer
 
         public string LayerName { private get; set; }
 
+        //public Moves.GisDataset GisDataset { get; set; }
         public Moves.Solution Solution
         {
             private get { return _solution; }
@@ -102,6 +103,7 @@ namespace MapFixer
 
             msgBox.Text = $"The layer '{LayerName}' is broken.";
             msgBox.Text += dataLocation;
+            //msgBox.Text += $"\nSolution: {GisDataset.Workspace.Folder}/{GisDataset.DatasourceName} -> {Solution.NewDataset?.Workspace.Folder}/{Solution.NewDataset?.DatasourceName}";
             var optionalNot = Solution.ReplacementLayerFilePath == null ? " not " : " ";
             msgBox.Text += $"\nA replacement theme (layer file) is{optionalNot}available.";
             if (Solution.Remarks != null)

@@ -47,6 +47,7 @@ namespace MapFixer
                     else
                     {
                         selector.LayerName = layerName;
+                        //selector.GisDataset = oldDataset;
                         selector.Solution = solution;
                         selector.ShowDialog(new WindowWrapper(new IntPtr(ArcMap.Application.hWnd)));
                         if (selector.UseLayerFile)
