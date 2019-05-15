@@ -75,14 +75,13 @@ namespace MapFixer
             }
             else
             {
-                //TODO: add IsInArchive property to GisDataSet
-                if (Solution.NewDataset == null) //Is in Archive
+                var workspace = Solution.NewDataset.Value.Workspace;
+                if (workspace.IsInArchive)
                 {
                     radioButton4.Text = "Use the archived data set";
                     dataLocation = "\nThe data has been archived.";
                 }
-                //TODO: add IsInTrash property to GisDataSet
-                if (Solution.NewDataset == null) // Is in Trash
+                if (workspace.IsInTrash)
                 {
                     radioButton4.Text = "Use the data set in the trash";
                     dataLocation = "\nThe data has been moved to the trash.";
