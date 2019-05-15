@@ -74,15 +74,17 @@ namespace MapFixer
             }
             else
             {
+                //TODO: add IsInArchive property to GisDataSet
                 if (Solution.NewDataset == null) //Is in Archive
                 {
                     radioButton4.Text = "Use the archived data set";
-                    dataLocation = " The data has been archived.";
+                    dataLocation = "\nThe data has been archived.";
                 }
+                //TODO: add IsInTrash property to GisDataSet
                 if (Solution.NewDataset == null) // Is in Trash
                 {
                     radioButton4.Text = "Use the data set in the trash";
-                    dataLocation = " The data has been moved to the trash.";
+                    dataLocation = "\nThe data has been moved to the trash.";
                 }
             }
             
@@ -100,11 +102,12 @@ namespace MapFixer
 
             msgBox.Text = $"The layer '{LayerName}' is broken.";
             msgBox.Text += dataLocation;
-            var optionalNot = Solution.ReplacementLayerFilePath == null ? "" : "not";
-            msgBox.Text += $" A replacement theme (layer file) is {optionalNot} available.";
+            var optionalNot = Solution.ReplacementLayerFilePath == null ? " not " : " ";
+            msgBox.Text += $"\nA replacement theme (layer file) is{optionalNot}available.";
             if (Solution.Remarks != null)
             {
                 msgBox.Text += "\n\nNOTE: " + Solution.Remarks;
+                //TODO: Make the form about 30pts taller
             }
             msgBox.Text += "\n\nHow would you like to fix this layer?";
         }
