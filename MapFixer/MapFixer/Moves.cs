@@ -487,23 +487,43 @@ namespace MapFixer
         [SuppressMessage("ReSharper", "IdentifierTypo")]
         [SuppressMessage("ReSharper", "UnusedMember.Global")]
         [SuppressMessage("ReSharper", "UnusedMember.Local")]
-        // See https://desktop.arcgis.com/en/arcobjects/latest/net/webframe.htm#IWorkspaceName_WorkspaceFactoryProgID.htm)
+        // For examples, See https://desktop.arcgis.com/en/arcobjects/latest/net/webframe.htm#IWorkspaceName_WorkspaceFactoryProgID.htm)
         // To comply with C# enum member naming rules, the '.' in the progId has been replaced with a '_'
+        // Derived from list of CoClasses at https://desktop.arcgis.com/en/arcobjects/10.5/net/webframe.htm#IWorkspaceFactory.htm
         private enum WellKnownWorkspaceProgIds
         {
-            esriDataSourcesGDB_AccessWorkspaceFactory,
             esriDataSourcesFile_ArcInfoWorkspaceFactory,
             esriDataSourcesFile_CadWorkspaceFactory,
-            esriDataSourcesGDB_FileGDBWorkspaceFactory,
-            esriDataSourcesOleDB_OLEDBWorkspaceFactory,
+            esriDataSourcesFile_GeoRSSWorkspaceFactory,
             esriDataSourcesFile_PCCoverageWorkspaceFactory,
-            esriDataSourcesRaster_RasterWorkspaceFactory,
-            esriDataSourcesGDB_SdeWorkspaceFactory,
+            esriDataSourcesFile_SDCWorkspaceFactory,
             esriDataSourcesFile_ShapefileWorkspaceFactory,
-            esriDataSourcesOleDB_TextFileWorkspaceFactory,
-            esriDataSourcesFile_TextFileWorkspaceFactory,
+            esriDataSourcesFile_StreetMapWorkspaceFactory,
             esriDataSourcesFile_TinWorkspaceFactory,
             esriDataSourcesFile_VpfWorkspaceFactory,
+
+            esriDataSourcesGDB_AccessWorkspaceFactory,
+            esriDataSourcesGDB_FileGDBScratchWorkspaceFactory,  //Not supported
+            esriDataSourcesGDB_FileGDBWorkspaceFactory,
+            esriDataSourcesGDB_InMemoryWorkspaceFactory,   //Not supported
+            esriDataSourcesGDB_ScratchWorkspaceFactory,  //Not supported
+            esriDataSourcesGDB_SdeWorkspaceFactory,  //Not supported
+            esriDataSourcesGDB_SqlWorkspaceFactory,  //Not supported
+
+            esriDataSourcesNetCDF_NetCDFWorkspaceFactory,  //Not supported
+
+            esriDataSourcesOleDB_ExcelWorkspaceFactory,
+            esriDataSourcesOleDB_OLEDBWorkspaceFactory,  //Not supported
+            esriDataSourcesOleDB_TextFileWorkspaceFactory,
+
+            esriDataSourcesRaster_RasterWorkspaceFactory,
+
+            esriTrackingAnalyst_AMSWorkspaceFactory,
+            esriCarto_FeatureServiceWorkspaceFactory,  //Not supported
+            esriGISClient_IMSWorkspaceFactory,  //Not supported
+            esriGeoDatabase_PlugInWorkspaceFactory,  //Not supported
+            esriGeoDatabaseExtensions_LasDatasetWorkspaceFactory,
+            esriGeoprocessing_ToolboxWorkspaceFactory
         }
 
         private bool IsWorkspaceFactoryProgId(string progId)
