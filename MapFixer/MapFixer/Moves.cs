@@ -125,6 +125,7 @@ namespace MapFixer
 
             public bool Equals(GisDataset other)
             {
+                // TODO: The WorkspaceProgId from map data may have a ".1" (or other number?) suffix  (everything in Theme Manager ends in '.1')
                 return Workspace == other.Workspace && WorkspaceProgId == other.WorkspaceProgId &&
                     DatasourceName == other.DatasourceName && DatasourceType == other.DatasourceType;
             }
@@ -517,22 +518,22 @@ namespace MapFixer
         // Derived from list of CoClasses at https://desktop.arcgis.com/en/arcobjects/10.5/net/webframe.htm#IWorkspaceFactory.htm
         private enum WellKnownWorkspaceProgIds
         {
-            esriDataSourcesFile_ArcInfoWorkspaceFactory,
-            esriDataSourcesFile_CadWorkspaceFactory,
+            esriDataSourcesFile_ArcInfoWorkspaceFactory,  // In Theme Manager
+            esriDataSourcesFile_CadWorkspaceFactory,  // In Theme Manager
             esriDataSourcesFile_GeoRSSWorkspaceFactory,
             esriDataSourcesFile_PCCoverageWorkspaceFactory,
-            esriDataSourcesFile_SDCWorkspaceFactory,
-            esriDataSourcesFile_ShapefileWorkspaceFactory,
+            esriDataSourcesFile_SDCWorkspaceFactory,     // In Theme Manager
+            esriDataSourcesFile_ShapefileWorkspaceFactory,     // In Theme Manager
             esriDataSourcesFile_StreetMapWorkspaceFactory,
-            esriDataSourcesFile_TinWorkspaceFactory,
+            esriDataSourcesFile_TinWorkspaceFactory,     // In Theme Manager
             esriDataSourcesFile_VpfWorkspaceFactory,
 
-            esriDataSourcesGDB_AccessWorkspaceFactory,
+            esriDataSourcesGDB_AccessWorkspaceFactory,     // In Theme Manager
             esriDataSourcesGDB_FileGDBScratchWorkspaceFactory,  //Not supported
-            esriDataSourcesGDB_FileGDBWorkspaceFactory,
+            esriDataSourcesGDB_FileGDBWorkspaceFactory,     // In Theme Manager
             esriDataSourcesGDB_InMemoryWorkspaceFactory,   //Not supported
             esriDataSourcesGDB_ScratchWorkspaceFactory,  //Not supported
-            esriDataSourcesGDB_SdeWorkspaceFactory,  //Not supported
+            esriDataSourcesGDB_SdeWorkspaceFactory,    // In Theme Manager   //Not supported
             esriDataSourcesGDB_SqlWorkspaceFactory,  //Not supported
 
             esriDataSourcesNetCDF_NetCDFWorkspaceFactory,  //Not supported
@@ -541,13 +542,13 @@ namespace MapFixer
             esriDataSourcesOleDB_OLEDBWorkspaceFactory,  //Not supported
             esriDataSourcesOleDB_TextFileWorkspaceFactory,
 
-            esriDataSourcesRaster_RasterWorkspaceFactory,
+            esriDataSourcesRaster_RasterWorkspaceFactory,     // In Theme Manager
 
             esriTrackingAnalyst_AMSWorkspaceFactory,
-            esriCarto_FeatureServiceWorkspaceFactory,  //Not supported
+            esriCarto_FeatureServiceWorkspaceFactory,    // In Theme Manager  //Not supported (weirdly, type = esriFileSystemWorkspace)
             esriGISClient_IMSWorkspaceFactory,  //Not supported
             esriGeoDatabase_PlugInWorkspaceFactory,  //Not supported
-            esriGeoDatabaseExtensions_LasDatasetWorkspaceFactory,
+            esriGeoDatabaseExtensions_LasDatasetWorkspaceFactory,    // In Theme Manager
             esriGeoprocessing_ToolboxWorkspaceFactory
         }
 
@@ -644,6 +645,7 @@ namespace MapFixer
             // Assumes workspace paths in moves do not have volume information
             string movePath = moveFrom.Workspace.Folder;
             string fullPath = dataset.Workspace.WithoutVolume;
+            // TODO: The WorkspaceProgId from map data may have a ".1" (or other number?) suffix  (everything in Theme Manager ends in '.1')
             if (moveFrom.WorkspaceProgId != null && moveFrom.WorkspaceProgId == dataset.WorkspaceProgId)
                 return false;
             return string.Compare(fullPath, movePath, StringComparison.OrdinalIgnoreCase) == 0;

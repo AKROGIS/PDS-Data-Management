@@ -200,6 +200,7 @@ namespace MapFixer
             IWorkspaceName workspaceName = datasetName.WorkspaceName;
             //TODO: If the workspace.PathName is null (probably true for SDE or OleDB) then the GisDataset ctor will throw an exception.
             // Maybe check IWorkspaceName.Type != esriWorkspaceType.esriRemoteDatabaseWorkspace (esriFileSystemWorkspace and esriLocalDatabaseWorkspace are ok)
+            // Looking at ~6300 data sources in Theme Manager, all have a pathName, for SDE it is the connection file, for web services it is the URL
             return new Moves.GisDataset(workspaceName.PathName, workspaceName.WorkspaceFactoryProgID,
                 datasetName.Name, datasetName.Type);
         }
@@ -282,7 +283,7 @@ namespace MapFixer
                     return null;
                 }
             }
-            //TODO: Open additional types of data sources
+            //TODO: Open additional types of data sources, support at least all in theme Manager
 
             return null;
         }
