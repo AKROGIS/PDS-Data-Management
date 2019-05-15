@@ -266,7 +266,7 @@ namespace MapFixer
                     return null;
                 }
                 var newWorkspace = source.Workspace.Folder.Substring(0, positionOfSearchString) +
-                    newDataset.Workspace +
+                    newDataset.Workspace.Folder +
                     source.Workspace.Folder.Substring(positionOfSearchString + searchString.Length);
 
                 return new PartialGisDataset(
