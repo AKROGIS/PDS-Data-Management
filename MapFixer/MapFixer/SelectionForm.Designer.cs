@@ -46,9 +46,9 @@
             this.groupBox1.Controls.Add(this.radioButton2);
             this.groupBox1.Controls.Add(this.radioButton3);
             this.groupBox1.Controls.Add(this.radioButton1);
-            this.groupBox1.Location = new System.Drawing.Point(13, 239);
+            this.groupBox1.Location = new System.Drawing.Point(13, 121);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(462, 151);
+            this.groupBox1.Size = new System.Drawing.Size(479, 151);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             // 
@@ -96,7 +96,7 @@
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.okButton.Location = new System.Drawing.Point(528, 356);
+            this.okButton.Location = new System.Drawing.Point(516, 238);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(100, 34);
             this.okButton.TabIndex = 1;
@@ -112,7 +112,7 @@
             this.msgBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.msgBox.Location = new System.Drawing.Point(13, 13);
             this.msgBox.Name = "msgBox";
-            this.msgBox.Size = new System.Drawing.Size(615, 220);
+            this.msgBox.Size = new System.Drawing.Size(603, 102);
             this.msgBox.TabIndex = 2;
             this.msgBox.Text = "Message";
             // 
@@ -120,11 +120,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(640, 402);
+            this.ClientSize = new System.Drawing.Size(628, 284);
+            this.ControlBox = false;
             this.Controls.Add(this.msgBox);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.groupBox1);
-            this.MinimumSize = new System.Drawing.Size(622, 314);
+            this.MinimumSize = new System.Drawing.Size(650, 340);
             this.Name = "SelectionForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Data Selection";

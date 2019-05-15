@@ -45,6 +45,7 @@ namespace MapFixer
 
         private void SetupForm()
         {
+            Size = MinimumSize;
             if (Solution.ReplacementLayerFilePath != null)
             {
                 radioButton2.Checked = true;
@@ -65,12 +66,12 @@ namespace MapFixer
             radioButton4.Visible = true;
             radioButton2.Text = "Replace with the new layer file";
             radioButton4.Text = "Fix the path/name of the data set";
-            var dataLocation = " The data has been moved and/or renamed.";
+            var dataLocation = "\nThe data has been moved and/or renamed.";
             if (Solution.NewDataset == null)
             {
                 radioButton4.Enabled = false;
                 radioButton4.Visible = false;
-                dataLocation = " The data has been deleted.";
+                dataLocation = "\nThe data has been deleted.";
             }
             else
             {
@@ -107,7 +108,7 @@ namespace MapFixer
             if (Solution.Remarks != null)
             {
                 msgBox.Text += "\n\nNOTE: " + Solution.Remarks;
-                //TODO: Make the form about 30pts taller
+                Size = new System.Drawing.Size(Size.Width, Size.Height + 25);
             }
             msgBox.Text += "\n\nHow would you like to fix this layer?";
         }
