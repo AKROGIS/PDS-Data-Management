@@ -20,6 +20,85 @@ namespace MapFixer
 
     public class Moves
     {
+        // Moves only deals with filesystem objects, so workspace is always a filesystem path
+        public struct Workspace : IEquatable<Workspace>
+        {
+            public Workspace(string folder)
+            {
+                Folder = folder;
+            }
+            public string Folder { get; }
+
+            public bool IsOnPds
+            {
+                get
+                {
+                    if (Folder.StartsWith(@"X:\", StringComparison.OrdinalIgnoreCase))
+                        return true;
+                    if (Folder.StartsWith(@"\\inpakrovmdist\gisdata\", StringComparison.OrdinalIgnoreCase))
+                        return true;
+                    return Folder.StartsWith(@"\\inpakrovmdist\gisdata2\", StringComparison.OrdinalIgnoreCase);
+                }
+            }
+
+            public bool IsInTrash
+            {
+                get
+                {
+                    if (Path.IsPathRooted(Folder) && !IsOnPds)
+                        return false;
+                    var path = WithoutVolume;
+                    return path.StartsWith(@"Trash\", StringComparison.OrdinalIgnoreCase) ||
+                           path.StartsWith(@"Extras\Trash\", StringComparison.OrdinalIgnoreCase) ||
+                           path.StartsWith(@"Extras2\Trash\", StringComparison.OrdinalIgnoreCase);
+                }
+            }
+
+            public bool IsInArchive
+            {
+                get
+                {
+                    if (Path.IsPathRooted(Folder) && !IsOnPds)
+                        return false;
+                    var path = WithoutVolume;
+                    return path.StartsWith(@"Archive\", StringComparison.OrdinalIgnoreCase) ||
+                           path.StartsWith(@"Extras\Archive\", StringComparison.OrdinalIgnoreCase) ||
+                           path.StartsWith(@"Extras2\Archive\", StringComparison.OrdinalIgnoreCase);
+                }
+            }
+
+            public string WithoutVolume => Folder.Substring(Path.GetPathRoot(Folder).Length);
+
+
+            #region Equality
+
+            public override bool Equals(object obj)
+            {
+                return obj is Workspace && Equals((Workspace)obj);
+            }
+
+            public bool Equals(Workspace other)
+            {
+                return Folder == other.Folder;
+            }
+
+            public override int GetHashCode()
+            {
+                return Folder.GetHashCode();
+            }
+
+            public static bool operator ==(Workspace lhs, Workspace rhs)
+            {
+                return lhs.Equals(rhs);
+            }
+
+            public static bool operator !=(Workspace lhs, Workspace rhs)
+            {
+                return !(lhs == rhs);
+            }
+            #endregion
+        }
+
         public struct GisDataset: IEquatable<GisDataset>
         {
             // esriDatasetType: https://desktop.arcgis.com/en/arcobjects/latest/net/webframe.htm#esriDatasetType.htm
@@ -33,36 +112,22 @@ namespace MapFixer
                     throw new ArgumentException("Initial value must not be null, empty or whitespace", nameof(workspaceProgId));
                 if (string.IsNullOrWhiteSpace(datasourceName))
                     throw new ArgumentException("Initial value must not be null, empty or whitespace", nameof(datasourceName));
-                WorkspacePath = workspacePath;
+                Workspace = new Workspace(workspacePath);
                 WorkspaceProgId = workspaceProgId;
                 DatasourceName = datasourceName;
                 DatasourceType = datasourceType;
             }
 
-            public string WorkspacePath { get; }
+            public Workspace Workspace { get; }
             public string WorkspaceProgId { get; }
             public string DatasourceName { get; }
             public esriDatasetType DatasourceType { get; }
 
             public bool Equals(GisDataset other)
             {
-                return WorkspacePath == other.WorkspacePath && WorkspaceProgId == other.WorkspaceProgId &&
+                return Workspace == other.Workspace && WorkspaceProgId == other.WorkspaceProgId &&
                     DatasourceName == other.DatasourceName && DatasourceType == other.DatasourceType;
             }
-
-            public bool IsOnPds
-            {
-                get
-                {
-                    if (WorkspacePath.StartsWith(@"X:\", StringComparison.OrdinalIgnoreCase))
-                        return true;
-                    if (WorkspacePath.StartsWith(@"\\inpakrovmdist\gisdata\", StringComparison.OrdinalIgnoreCase))
-                        return true;
-                    return WorkspacePath.StartsWith(@"\\inpakrovmdist\gisdata2\", StringComparison.OrdinalIgnoreCase);
-                }
-            }
-
-            public string WorkspaceWithoutVolume => WorkspacePath.Substring(Path.GetPathRoot(WorkspacePath).Length);
 
         }
 
@@ -72,13 +137,13 @@ namespace MapFixer
             {
                 if (string.IsNullOrWhiteSpace(workspacePath))
                     throw new ArgumentException("Initial value must not be null, empty or whitespace", nameof(workspacePath));
-                WorkspacePath = workspacePath;
+                Workspace = new Workspace(workspacePath);
                 WorkspaceProgId = string.IsNullOrWhiteSpace(workspaceProgId) ? null : workspaceProgId;
                 DatasourceName = string.IsNullOrWhiteSpace(datasourceName) ? null : datasourceName;
                 DatasourceType = datasourceType;
             }
 
-            public string WorkspacePath { get; }
+            public Workspace Workspace { get; }
             public string WorkspaceProgId { get; }
             public string DatasourceName { get; }
             public esriDatasetType? DatasourceType { get; }
@@ -86,52 +151,12 @@ namespace MapFixer
             public GisDataset ToGisDataset(GisDataset gisDataset)
             {
                 return new GisDataset(
-                    WorkspacePath,
+                    Workspace.Folder,
                     WorkspaceProgId ?? gisDataset.WorkspaceProgId,
                     DatasourceName ?? gisDataset.DatasourceName,
                     DatasourceType ?? gisDataset.DatasourceType
                 );
             }
-
-            public bool IsInTrash
-            {
-                get
-                {
-                    if (Path.IsPathRooted(WorkspacePath) && !IsOnPds)
-                        return false;
-                    var path = WorkspaceWithoutVolume;
-                    return path.StartsWith(@"Trash\", StringComparison.OrdinalIgnoreCase) ||
-                        path.StartsWith(@"Extras\Trash\", StringComparison.OrdinalIgnoreCase) ||
-                        path.StartsWith(@"Extras2\Trash\", StringComparison.OrdinalIgnoreCase);
-                }
-            }
-
-            public bool IsInArchive
-            {
-                get
-                {
-                    if (Path.IsPathRooted(WorkspacePath) && !IsOnPds)
-                        return false;
-                    var path = WorkspaceWithoutVolume;
-                    return path.StartsWith(@"Archive\", StringComparison.OrdinalIgnoreCase) ||
-                        path.StartsWith(@"Extras\Archive\", StringComparison.OrdinalIgnoreCase) ||
-                        path.StartsWith(@"Extras2\Archive\", StringComparison.OrdinalIgnoreCase);
-                }
-            }
-
-            private bool IsOnPds
-            {
-                get
-                {
-                    if (WorkspacePath.StartsWith(@"X:\", StringComparison.OrdinalIgnoreCase))
-                        return true;
-                    if (WorkspacePath.StartsWith(@"\\inpakrovmdist\gisdata\", StringComparison.OrdinalIgnoreCase))
-                        return true;
-                    return WorkspacePath.StartsWith(@"\\inpakrovmdist\gisdata2\", StringComparison.OrdinalIgnoreCase);
-                }
-            }
-
-            private string WorkspaceWithoutVolume => WorkspacePath.Substring(Path.GetPathRoot(WorkspacePath).Length);
         }
 
         /// <summary>A <c>Solution</c> represents the moved state of an input <c>GisDataset</c>.
@@ -234,15 +259,15 @@ namespace MapFixer
                 //This method patches the new dataset by applying the move to the source workspace
                 //The workspace in the move's old dataset must be a prefix of the input source for this method to return a non-null result
 
-                var searchString = OldDataset.WorkspacePath;
-                int positionOfSearchString = source.WorkspacePath.IndexOf(searchString, StringComparison.OrdinalIgnoreCase);
+                var searchString = OldDataset.Workspace.Folder;
+                int positionOfSearchString = source.Workspace.Folder.IndexOf(searchString, StringComparison.OrdinalIgnoreCase);
                 if (positionOfSearchString < 0)
                 {
                     return null;
                 }
-                var newWorkspace = source.WorkspacePath.Substring(0, positionOfSearchString) +
-                    newDataset.WorkspacePath +
-                    source.WorkspacePath.Substring(positionOfSearchString + searchString.Length);
+                var newWorkspace = source.Workspace.Folder.Substring(0, positionOfSearchString) +
+                    newDataset.Workspace +
+                    source.Workspace.Folder.Substring(positionOfSearchString + searchString.Length);
 
                 return new PartialGisDataset(
                     newWorkspace,
@@ -439,7 +464,7 @@ namespace MapFixer
                     }
                     if (check)
                     {
-                        if ((newDataset == null || newDataset.Value.IsInTrash || newDataset.Value.IsInArchive) && layerFile == null)
+                        if ((newDataset == null || newDataset.Value.Workspace.IsInTrash || newDataset.Value.Workspace.IsInArchive) && layerFile == null)
                         {
                             Console.WriteLine($"Warning: A value in column #14 (replacement_layerFile_path) at line {lineNum} is STRONGLY encouraged when column #5-8 (new_dataset) is null or in the Trash/Archive.");
                         }
@@ -550,17 +575,17 @@ namespace MapFixer
         private void ConsistencyCheck(List<Move> moves)
         {
             // Checks each move in the list against all others moves to ensure
-            // 1) There are no duplicates (WorkspacePath/DatasourceName matches) in the oldDataset
-            // 2) If moves have the same DatasourceName (null == null), then one WorkspacePath cannot be a proper subset of the other
+            // 1) There are no duplicates (Workspace.Folder/DatasourceName matches) in the oldDataset
+            // 2) If moves have the same DatasourceName (null == null), then one Workspace.Folder cannot be a proper subset of the other
             int next = 0;
             foreach (Move move in moves)
             {
-                string path = move.OldDataset.WorkspacePath;
+                string path = move.OldDataset.Workspace.Folder;
                 string name = move.OldDataset.DatasourceName;
                 next += 1;
                 for (int i = next; i < moves.Count; i++)
                 {
-                    string otherPath = moves[i].OldDataset.WorkspacePath;
+                    string otherPath = moves[i].OldDataset.Workspace.Folder;
                     string otherName = moves[i].OldDataset.DatasourceName;
                     //path and otherPath are guaranteed to be non-null
                     //name and otherName may be null, but not whitespace only
@@ -617,8 +642,8 @@ namespace MapFixer
         private bool IsWorkspaceMatch(GisDataset dataset, PartialGisDataset moveFrom)
         {
             // Assumes workspace paths in moves do not have volume information
-            string movePath = moveFrom.WorkspacePath;
-            string fullPath = dataset.WorkspaceWithoutVolume;
+            string movePath = moveFrom.Workspace.Folder;
+            string fullPath = dataset.Workspace.WithoutVolume;
             if (moveFrom.WorkspaceProgId != null && moveFrom.WorkspaceProgId == dataset.WorkspaceProgId)
                 return false;
             return string.Compare(fullPath, movePath, StringComparison.OrdinalIgnoreCase) == 0;
@@ -631,8 +656,8 @@ namespace MapFixer
             if (moveFrom.DatasourceName != null)
                 return false;
             // Assumes workspace paths in moves do not have volume information
-            string movePath = moveFrom.WorkspacePath;
-            string fullPath = dataset.WorkspaceWithoutVolume;
+            string movePath = moveFrom.Workspace.Folder;
+            string fullPath = dataset.Workspace.WithoutVolume;
             // Just searching for oldPath somewhere in newPath could yield some false positives.
             // Instead, strip the volume and only match the beginning of the string
             return fullPath.StartsWith(movePath, StringComparison.OrdinalIgnoreCase);
@@ -687,7 +712,7 @@ namespace MapFixer
             // The date a layer is added is not stored in the map document.
             // We will try to discourage this kind of renaming situation.
 
-            if (!oldDataset.IsOnPds)
+            if (!oldDataset.Workspace.IsOnPds)
                 return null;
 
             Move? maybeMove = FindFirstMatchingMove(oldDataset, since);

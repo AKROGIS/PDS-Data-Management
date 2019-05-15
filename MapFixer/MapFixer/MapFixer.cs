@@ -138,7 +138,7 @@ namespace MapFixer
             if (oldDataset.DatasourceName == newDataset.DatasourceName)
             {
                 //TODO: This may fail in 10.6.1  See: https://community.esri.com/thread/221120-set-datasource-with-arcobjects
-                helper.FindAndReplaceWorkspaceNamePath((ILayer)dataLayer, oldDataset.WorkspacePath, newDataset.WorkspacePath, false);
+                helper.FindAndReplaceWorkspaceNamePath((ILayer)dataLayer, oldDataset.Workspace.Folder, newDataset.Workspace.Folder, false);
             }
             else
             {
@@ -151,7 +151,7 @@ namespace MapFixer
                     alert.Text = @"Error";
                     alert.msgBox.Text = $"Map Fixer is unable to repair the layer {((ILayer2)dataLayer).Name}. " +
                                         "Use the 'Set Data Source button' on the Source tab of the layer properties dialog to " + 
-                                        $"set the data source to {newDataset.WorkspacePath}\\{newDataset.DatasourceName}";
+                                        $"set the data source to {newDataset.Workspace.Folder}\\{newDataset.DatasourceName}";
                     alert.ShowDialog(new WindowWrapper(new IntPtr(ArcMap.Application.hWnd)));
                     return;
                 }
@@ -208,7 +208,7 @@ namespace MapFixer
             IWorkspaceName workspaceName = new WorkspaceNameClass()
             {
                 WorkspaceFactoryProgID = dataset.WorkspaceProgId, // i.e. "esriDataSourcesGDB.AccessWorkspaceFactory";
-                PathName = dataset.WorkspacePath
+                PathName = dataset.Workspace.Folder
             };
             IWorkspace workspace;
             try
