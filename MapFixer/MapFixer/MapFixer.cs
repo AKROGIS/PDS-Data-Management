@@ -194,8 +194,11 @@ namespace MapFixer
 
         private Moves.GisDataset GetDataset(IDataLayer2 dataLayer)
         {
+            //TODO: dataLayer.DataSourceName is an IName.  Are we guaranteed this cast will not throw an exception?
             var datasetName = (IDatasetName)dataLayer.DataSourceName;
             IWorkspaceName workspaceName = datasetName.WorkspaceName;
+            //TODO: If the workspace.PathName is null (probably true for SDE or OleDB) then the GisDataset ctor will throw an exception.
+            // Maybe check IWorkspaceName.Type != esriWorkspaceType.esriRemoteDatabaseWorkspace (esriFileSystemWorkspace and esriLocalDatabaseWorkspace are ok)
             return new Moves.GisDataset(workspaceName.PathName, workspaceName.WorkspaceFactoryProgID,
                 datasetName.Name, datasetName.Type);
         }
