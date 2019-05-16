@@ -2,11 +2,11 @@
   <Name>MapFixer</Name>
   <AddInID>{5c68b92a-b0fd-4a0c-8ba1-9b4a685925fe}</AddInID>
   <Description>This tool will look for any broken data sources and provide a potential fix for each one. It should run as soon as the map or this tool loads as well as upon any user request. </Description>
-  <Version>1.1</Version>
+  <Version>1.2</Version>
   <Image>Images\MapFixer.png</Image>
   <Author>Regan Sarwas</Author>
   <Company>NPS Alaska GIS Team</Company>
-  <Date>5/8/18</Date>
+  <Date>5/16/18</Date>
   <Targets>
     <Target name="Desktop" version="10.5" />
   </Targets>
