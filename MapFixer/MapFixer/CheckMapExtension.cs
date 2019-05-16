@@ -8,7 +8,7 @@
 
         public CheckMapExtension()
         {
-            var dataPath = @"C:\tmp\DataMoves.csv";
+            var dataPath = @"X:\GIS\ThemeMgr\DataMoves.csv";
             _moves = new Moves(dataPath);
             _mapFixer = new MapFixer();
         }
