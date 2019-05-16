@@ -53,6 +53,10 @@ namespace MapFixer
                         if (selector.UseLayerFile)
                         {
                             RepairWithLayerFile(mapIndex, dataLayer, selector.LayerFile, selector.KeepBrokenLayer, alert);
+                            if (selector.KeepBrokenLayer)
+                            {
+                                intentionallyBroken += 1;
+                            }
                         }
                         else if (selector.UseDataset && selector.Dataset.HasValue)
                         {
