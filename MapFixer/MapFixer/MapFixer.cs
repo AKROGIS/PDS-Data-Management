@@ -178,17 +178,42 @@ namespace MapFixer
                     var layer2 = layer as ILayer2;
                     if (layer2 != null)
                     {
+                        IDataLayer2 dataLayer = null;
                         if (!layer2.Valid)
                         {
-                            var dataLayer = layer2 as IDataLayer2;
-                            if (dataLayer != null)
+                            dataLayer = layer2 as IDataLayer2;
+                        }
+                        // An IMosaicLayer (raster mosaic dataset) will report valid when it is not; need to check the sub layers.
+                        // Repairing the sub layers is insufficient.  The IMosaicLayer must be repaired (this will repair the sub layers as well)
+                        // NOTE: It would be nice to remove the sub-layers (they will report invalid),
+                        //       1) they do not need to be fixed if the parent layer is fixed (must do)
+                        //       2) they will report as unfixable after the parent layer is fixed because the new, correct path isn't in the moves db 
+                        else if (layer is IMosaicLayer)
+                        {
+                            var groupLayer = layer as ICompositeLayer;
+                            var groupCount = groupLayer?.Count ?? 0;
+                            for (int j = 0; j < groupCount; j++)
                             {
-                                if (!brokenDataSources.ContainsKey(i))
+                                var subLayer = groupLayer?.Layer[j] as ILayer2;
+                                // Checking the Valid property on a Mosaic sublayer as ILayer will crash; Casting to ILayer2 is works.  Why????
+                                // The raster sub layer does not implement ILayer2.  That is ok, since the boundary and footprint will indicate validity
+                                if (subLayer != null) 
                                 {
-                                    brokenDataSources[i] = new List<IDataLayer2>();
+                                    if (!subLayer.Valid)
+                                    {
+                                        dataLayer = layer as IDataLayer2;
+                                        break;
+                                    }
                                 }
-                                brokenDataSources[i].Add(dataLayer);
                             }
+                        }
+                        if (dataLayer != null)
+                        {
+                            if (!brokenDataSources.ContainsKey(i))
+                            {
+                                brokenDataSources[i] = new List<IDataLayer2>();
+                            }
+                            brokenDataSources[i].Add(dataLayer);
                         }
                     }
                 }
