@@ -76,6 +76,9 @@ namespace MapFixer
 
             // Print a Summary
             brokenDataSources = GetBrokenDataSources();
+            // Some unfixable layers may actually have been corrected by fixing the Mosaic Dataset Layer
+            // Limit unfixable to no more than the actual number of broken layers
+            unFixableLayers = Math.Min(unFixableLayers, brokenDataSources.Count);
             if (autoFixesApplied > 0 || unFixableLayers > 0 || brokenDataSources.Count > intentionallyBroken)
             {
                 string msg = "";
