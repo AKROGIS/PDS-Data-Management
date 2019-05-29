@@ -142,7 +142,6 @@ namespace MapFixer
             var helper = (IDataSourceHelperLayer)new DataSourceHelper();
             if (oldDataset.DatasourceName == newDataset.DatasourceName)
             {
-                //TODO: This may fail in 10.6.1  See: https://community.esri.com/thread/221120-set-datasource-with-arcobjects
                 helper.FindAndReplaceWorkspaceNamePath((ILayer)dataLayer, oldDataset.Workspace.Folder, newDataset.Workspace.Folder, false);
             }
             else
