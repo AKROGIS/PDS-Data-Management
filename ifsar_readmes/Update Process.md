@@ -27,7 +27,7 @@ PDS Update Process for IFSAR data
    - Run `pds-reorg/organize_ifsar.py`
    - Use Atom (not VS Code) to replace CRLF line endings with LF endings
      (required for SQL import)
-   - Either replace or append to the table `ifsar_tif_new_x_supp2` in the
+   - Either replace or append to the table `ifsar_tif_all` in the
      SQLServer database `reorg` on `INPAKRO42492` depending on if a full or
      just new search of the SDMI_IFSAR tree was done.
    - If the database or table does not exist, it can be created from scratch
@@ -68,6 +68,8 @@ PDS Update Process for IFSAR data
     - Add no data masks to the dtm and dsm if needed (typically only along border).
 11. Update Overviews
     - If you made a copy, fix the paths of the writable copy of the overviews
+      - **Not required** toolbox will create necessary folders (paths to existing
+         overviews need to be valid)
       - right click, `Remove` -> `Reset Relative Path`
       - right click, `Modify` -> `Repair...` and replace the X drive path to the
         overviews to the writable copy.
@@ -81,11 +83,10 @@ PDS Update Process for IFSAR data
       - Generate Stale Overview Images Only (optional): ON
       - The second two will be grayed out, when the second option is off,
         but I think they still apply.
-    - Get objectID of new overviews (bottom of the list), and only Build
-      Overviews for new overviews
+    - Build Overviews for new overviews
       - Use `Optimize` -> `Build Overviews...` in the context menu with the
         following options:
-      - Query Definition (optional): `OBJECTID >= xxx` (replace `XXX` with first new overview)
+      - Query Definition (optional): `Category = 3`
       - Define Missing Overview Tiles (optional): OFF
       - Generate Overviews (optional): ON
       - Generate Missing Overview Images Only (optional): ON

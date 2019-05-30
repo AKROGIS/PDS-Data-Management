@@ -99,11 +99,15 @@ _README
 2019_IFSAR
 ----------
  * Summer_2017_Lot01a
-   - X18 - AlaskaDEM_Drive1\Summer_2017_Lot_1a
+   - X18 - IFSAR_Delivery_7Feb2019\AlaskaDEM_Drive1\Summer_2017_Lot_1a
  * Summer_2017_Lot01b
-   - X18 - AK2017_TO4_Lot1_b_drive2\Alaska_MidAccuracy_DEM\Summer_2017_Lot01b
+   - X18 - IFSAR_Delivery_7Feb2019\AK2017_TO4_Lot1_b_drive2\Alaska_MidAccuracy_DEM\Summer_2017_Lot01b
  * Summer_2017_Lot01c
-   - X18 - Alaska_drive4\Alaska_MidAccuracy_DEM\Summer_2017_Lot1c
+   - X18 - IFSAR_Delivery_7Feb2019\Alaska_drive4\Alaska_MidAccuracy_DEM\Summer_2017_Lot1c
+ * Summer_2017_Lot8_9
+   - X17 - IFSAR_Delivery_3Apr2019\Alaska_DEM\Alaska_MidAccuracy_DEM\Summer_2017_Lot8_9
+ * Summer_2017_Lot10to22
+   - X18 - IFSAR_Delivery_30Apr2019\Alaska_MidAccuracy_DEM\Summer_2017_Lots_10_through_22_Redelivery
 
 FEDI_Data
 ---------

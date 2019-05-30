@@ -698,6 +698,13 @@ Fuchia WD MyPassport Ultra 1TB  SN: WX21A466XJZR
     4,444 Files, 226 Folders
     138 GB (148,984,029,714 bytes)
     {Did not copy 2 *.lock file; 0 bytes}
+### IFSAR_Delivery_3Apr2019\Alaska_DEM\Alaska_MidAccuracy_DEM\Summer_2017_Lot8_9s
+    1,100 Files, 40 Folders
+    82.5 GB (88,619,674,536 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2019_IFSAR\Summer_2017_Lot8_9
+    1,096 Files, 40 Folders
+    82.5 GB (88,619,619,752 bytes)
+    {Did not copy 4 Thumbs.db files; 53.5 KB (54,784 bytes)}
 ### Other Files/Folders
 *Did not copy - Not IFSAR data*
 
@@ -719,33 +726,43 @@ Black WD Easystore 1TB  SN: WXF1A288VALS
 
 *Checked contents with X drive:  Good, 2019-07-08, RES*
 
-### AK2017_TO4_Lot1_b_drive2\Alaska_MidAccuracy_DEM\Summer_2017_Lot01b
+### IFSAR_Delivery_7Feb2019\AK2017_TO4_Lot1_b_drive2\Alaska_MidAccuracy_DEM\Summer_2017_Lot01b
     3,108 Files, 111 Folders
     123 GB (132,986,431,428 bytes)
 #### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2019_IFSAR\Summer_2017_Lot01b
     3,108 Files, 111 Folders
     123 GB (132,986,431,428 bytes)
-### Alaska_drive4\Alaska_MidAccuracy_DEM\Summer_2017_Lot1c
+### IFSAR_Delivery_7Feb2019\Alaska_drive4\Alaska_MidAccuracy_DEM\Summer_2017_Lot1c
     3,299 Files, 118 Folders
     159 GB (171,212,951,936 bytes)
 #### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2019_IFSAR\Summer_2017_Lot01c
     3,299 Files, 118 Folders
     159 GB (171,212,951,936 bytes)
-### AlaskaDEM_Drive1\Summer_2017_Lot_1a
+### IFSAR_Delivery_7Feb2019\AlaskaDEM_Drive1\Summer_2017_Lot_1a
     3,334 Files, 121 Folders
     145 GB (156,090,504,822 bytes)
 #### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2019_IFSAR\Summer_2017_Lot01a
-    3,334 Files, 121 Folders
-    145 GB (156,090,504,822 bytes)
+    3,332 Files, 121 Folders
+    145 GB (156,090,493,558 bytes)
+    {Did not copy 2 Thumbs.db files; 11.0 KB (11,264 bytes))}
+### IFSAR_Delivery_30Apr2019\Alaska_MidAccuracy_DEM\Summer_2017_Lots_10_through_22_Redelivery
+    7,652 Files, 239 Folders
+    479 GB (514,425,156,753 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2019_IFSAR\Summer_2017_Lot10to22
+    7,480 Files, 239 Folders
+    479 GB (514,424,299,665 bytes)
+    {Did not copy 1 *.lock file; 0 bytes}
+    {Did not copy 171 Thumbs.db files; 837 KB (857,088 bytes)}
+
 ### Other Files/Folders
 *Did not copy - Not IFSAR data*
 
     $RECYCLE.BIN
+    IFSAR_Delivery_7Feb2019\IFSAR Delivery 7Feb2019  3 WD 1T drives.doc
+    IFSAR_Delivery_7Feb2019\ifsar_drives_delivery7Feb2019.pdf
     System Volume Information
     WD Discovery
     WD Software Offline Installers
-    IFSAR Delivery 7Feb2019  3 WD 1T drives.doc
-    ifsar_drives_delivery7Feb2019.pdf
     readme.txt
     User Manual.url
     WD Discovery for Mac.dmg
