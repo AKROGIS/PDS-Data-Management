@@ -98,6 +98,10 @@ _README
 
 2019_IFSAR
 ----------
+ * Eastern_Aleutians_Lot1
+   - X17 - IFSAR_Delivery_22Aug2019_disk2\Alaska_MidAccuracy_DEM\Eastern_Aleutians_Lot1
+ * NPRA_Recollect_2018
+   - X15 - from_MyPassport_WXM1A78A7LLS\Alaska_MidAccuracy_DEM
  * Summer_2017_Lot01a
    - X18 - IFSAR_Delivery_7Feb2019\AlaskaDEM_Drive1\Summer_2017_Lot_1a
  * Summer_2017_Lot01b
@@ -108,6 +112,10 @@ _README
    - X17 - IFSAR_Delivery_3Apr2019\Alaska_DEM\Alaska_MidAccuracy_DEM\Summer_2017_Lot8_9
  * Summer_2017_Lot10to22
    - X18 - IFSAR_Delivery_30Apr2019\Alaska_MidAccuracy_DEM\Summer_2017_Lots_10_through_22_Redelivery
+ * Summer_2017_Lots_2_through_7_QAQC
+   - X17 - IFSAR_Delivery_22Aug2019_disk1\Alaska_MidAccuracy_DEM\Summer_2017_Lots_2_through_7_QAQC
+ * YukonDelta_BaseOrder_2018
+   - X14 - from_MyPassport_WXM1A78841YV\Alaska_MidAccuracy_DEM
 
 FEDI_Data
 ---------

@@ -91,12 +91,23 @@ PDS Update Process for IFSAR data
       - Generate Overviews (optional): ON
       - Generate Missing Overview Images Only (optional): ON
       - Generate Stale Overview Images Only (optional): ON
-    - Use ArcMap to find the OBJECTID of the overviews at a higher level than the new
+    - Use ArcMap to find the overviews at a higher level than the new
       ones, in the same area as the new tiles.  These overviews exist but will need to
-      be updated.  Close ArcMap and update them with following:
+      be updated.  My experience has been that using the GP tools to update just
+      the stale overviews, tends to update all overviews, resulting in a unacceptably
+      large update for robocopying to the parks.
+      - In ArcMap:
+      - Open the attribute table and select all the new tiles (bottom of the table
+        but above the new overviews)
+      - Open Select by location, and select all the footprints that intersect
+        with the selected features (all in the same feature class)
+      - show only selected in the attribute table,
+      - highlight, and reselect the overviews that have a smaller OID than
+        the new tiles (above in the list)
+      - Close ArcMap and update them with following:
       - Use `Optimize` -> `Build Overviews...` in the context menu with the
         following options:
-      - Query Definition (optional): `OBJECTID in (xx, yy, ... zz)` (replace `xx`,
+      - Query Definition (optional): `Category = 3`,
         etc with the overview needing updating)
       - Define Missing Overview Tiles (optional): OFF
       - Generate Overviews (optional): ON

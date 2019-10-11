@@ -523,7 +523,7 @@ X14
 
 Black WD Easystore 2TB  SN: WXA1A37J41JT
 
-*Loaded contents to the X drive: 2018-05-09, RES*
+*Loaded contents to the X drive: 2018-05-09, RES, added YukonDelta 2019-10-10*
 
 ### Deliveries_5Dec2017\AK_Summer_2016_lots1-3_redilivery_corrected_header\Summer_2016_Lot1
     4,222 Files, 124 Folders
@@ -574,6 +574,13 @@ in **Deliveries_5Dec2017\AK_Summer_2016_lots1-3_redilivery_corrected_header**
     125 KB (128,997 bytes)
 #### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2017_IFSAR\Deliveries_5Dec2017\Nov2017_IFSARdeliveries.pdf
     125 KB (128,997 bytes)
+### from_MyPassport_WXM1A78841YV\Alaska_MidAccuracy_DEM
+    5,236 Files, 210 Folders
+    264 GB (284,397,731,126 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2019_IFSAR\YukonDelta_BaseOrder_2018
+    5,234 Files, 210 Folders
+    264 GB (284,397,731,126 bytes)
+    {Did not copy 2 *.lock file; 0 bytes}
 ### Other Files/Folders
 *Did not copy - Not IFSAR data*
 
@@ -594,7 +601,7 @@ X15
 
 Black WD My Passport Ultra 2TB  SN: WX71A16RLL94
 
-*Checked contents with X drive:  Good, 2018-05-15, RES*
+*Checked contents with X drive: Good, 2018-05-15, RES, added NPRA 2019-10-10*
 
 ### Delivery_3April2017
     6 Files, 0 Folders
@@ -608,6 +615,13 @@ Black WD My Passport Ultra 2TB  SN: WX71A16RLL94
 #### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2017_IFSAR\disk1
     4,883 Files, 218 Folders
     183 GB (196,715,060,906 bytes)
+### from_MyPassport_WXM1A78A7LLS\Alaska_MidAccuracy_DEM
+    7,015 Files, 259 Folders
+    199 GB (214,081,775,345 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2019_IFSAR\NPRA_Recollect_2018
+    7,013 Files, 259 Folders
+    199 GB (214,081,775,345 bytes)
+    {Did not copy 2 *.lock file; 0 bytes}
 ### from_PassportUltra2T_SN_WX31AA5C46A0
     8,391 Files, 369 Folders
     383 GB (411,618,734,928 bytes)
@@ -641,7 +655,7 @@ Black WD My Passport Ultra 2TB  SN: WX71A16RLL94
 ### Missing_Source_Disk\Intermap_Data
     14,446 Files, 700 Folders
     534 GB (573,405,455,180 bytes)
-##### -> X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\Intermap_Data
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\Intermap_Data
     {only these folders: Lot1, Lot2, Lot3, Lot4, Lot5, Lot8a}
     14,446 Files, 700 Folders
     534 GB (573,405,455,180 bytes)
@@ -689,7 +703,7 @@ X17
 
 Fuchia WD MyPassport Ultra 1TB  SN: WX21A466XJZR
 
-*Checked contents with X drive:  Good, 2018-05-16, RES*
+*Checked contents with X drive:  Good, 2019-08-22, RES*
 
 ### IfSAR Delieveries
     4,446 Files, 226 Folders
@@ -705,6 +719,21 @@ Fuchia WD MyPassport Ultra 1TB  SN: WX21A466XJZR
     1,096 Files, 40 Folders
     82.5 GB (88,619,619,752 bytes)
     {Did not copy 4 Thumbs.db files; 53.5 KB (54,784 bytes)}
+### IFSAR_Delivery_22Aug2019_disk1\Alaska_MidAccuracy_DEM\Summer_2017_Lots_2_through_7_QAQC
+    3,142 Files, 105 Folders
+    158 GB (169,859,640,824 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2019_IFSAR\Summer_2017_Lots_2_through_7_QAQC
+    3,050 Files, 105 Folders
+    158 GB (169,859,098,104 bytes)
+    {Did not copy 4 *.lock file; 0 bytes}
+    {Did not copy 88 Thumbs.db files; 530 KB (542,720 bytes)}
+### IFSAR_Delivery_22Aug2019_disk2\Alaska_MidAccuracy_DEM\Eastern_Aleutians_Lot1
+    2,197 Files, 75 Folders
+    158 GB (169,828,865,944 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2019_IFSAR\Eastern_Aleutians_Lot1
+    2,196 Files, 75 Folders
+    158 GB (169,828,856,216 bytes)
+    {Did not copy 1 Thumbs.db file; 9.50 KB (9,728 bytes)}
 ### Other Files/Folders
 *Did not copy - Not IFSAR data*
 
