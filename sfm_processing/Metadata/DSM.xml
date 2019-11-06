@@ -1,0 +1,617 @@
+﻿<MD_Metadata xmlns="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <language>
+    <LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng" codeSpace="ISO639-2">eng</LanguageCode>
+  </language>
+  <characterSet>
+    <MD_CharacterSetCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8" codeSpace="ISOTC211/19115">utf8</MD_CharacterSetCode>
+  </characterSet>
+  <hierarchyLevel>
+    <MD_ScopeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset" codeSpace="ISOTC211/19115">dataset</MD_ScopeCode>
+  </hierarchyLevel>
+  <hierarchyLevelName>
+    <gco:CharacterString>dataset</gco:CharacterString>
+  </hierarchyLevelName>
+  <contact>
+    <CI_ResponsibleParty>
+      <individualName>
+        <gco:CharacterString>AKR GIS Team</gco:CharacterString>
+      </individualName>
+      <organisationName>
+        <gco:CharacterString>National Park Service, Alaska Regional Office</gco:CharacterString>
+      </organisationName>
+      <positionName>
+        <gco:CharacterString>GIS Specialist</gco:CharacterString>
+      </positionName>
+      <contactInfo>
+        <CI_Contact>
+          <phone>
+            <CI_Telephone>
+              <voice>
+                <gco:CharacterString>contact us via email</gco:CharacterString>
+              </voice>
+            </CI_Telephone>
+          </phone>
+          <address>
+            <CI_Address>
+              <deliveryPoint>
+                <gco:CharacterString>240 W 5th Avenue</gco:CharacterString>
+              </deliveryPoint>
+              <city>
+                <gco:CharacterString>Anchorage</gco:CharacterString>
+              </city>
+              <administrativeArea>
+                <gco:CharacterString>AK</gco:CharacterString>
+              </administrativeArea>
+              <postalCode>
+                <gco:CharacterString>99501</gco:CharacterString>
+              </postalCode>
+              <country>
+                <Country codeList="http://www.iso.org/iso/country_codes/iso_3166_code_lists.htm" codeListValue="US" codeSpace="ISO3166-1">US</Country>
+              </country>
+              <electronicMailAddress>
+                <gco:CharacterString>akro_gis_helpdesk@nps.gov</gco:CharacterString>
+              </electronicMailAddress>
+            </CI_Address>
+          </address>
+          <hoursOfService>
+            <gco:CharacterString>8:00 am to 5:00 pm AST</gco:CharacterString>
+          </hoursOfService>
+          <contactInstructions>
+            <gco:CharacterString>Please contact us via email.</gco:CharacterString>
+          </contactInstructions>
+        </CI_Contact>
+      </contactInfo>
+      <role>
+        <CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="distributor" codeSpace="ISOTC211/19115">distributor</CI_RoleCode>
+      </role>
+    </CI_ResponsibleParty>
+  </contact>
+  <dateStamp>
+    <gco:Date>2019-11-05</gco:Date>
+  </dateStamp>
+  <metadataStandardName>
+    <gco:CharacterString>ISO 19139 Geographic Information - Metadata - Implementation Specification</gco:CharacterString>
+  </metadataStandardName>
+  <metadataStandardVersion>
+    <gco:CharacterString>2007</gco:CharacterString>
+  </metadataStandardVersion>
+  <spatialRepresentationInfo>
+    <MD_Georectified>
+      <numberOfDimensions>
+        <gco:Integer>2</gco:Integer>
+      </numberOfDimensions>
+      <axisDimensionProperties>
+        <MD_Dimension>
+          <dimensionName>
+            <MD_DimensionNameTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_DimensionNameTypeCode" codeListValue="column" codeSpace="ISOTC211/19115">column</MD_DimensionNameTypeCode>
+          </dimensionName>
+          <dimensionSize>
+            <gco:Integer>40000</gco:Integer>
+          </dimensionSize>
+          <resolution>
+            <gco:Measure uom="m">0.321556</gco:Measure>
+          </resolution>
+        </MD_Dimension>
+      </axisDimensionProperties>
+      <axisDimensionProperties>
+        <MD_Dimension>
+          <dimensionName>
+            <MD_DimensionNameTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_DimensionNameTypeCode" codeListValue="row" codeSpace="ISOTC211/19115">row</MD_DimensionNameTypeCode>
+          </dimensionName>
+          <dimensionSize>
+            <gco:Integer>70000</gco:Integer>
+          </dimensionSize>
+          <resolution>
+            <gco:Measure uom="m">0.321556</gco:Measure>
+          </resolution>
+        </MD_Dimension>
+      </axisDimensionProperties>
+      <cellGeometry>
+        <MD_CellGeometryCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CellGeometryCode" codeListValue="area" codeSpace="ISOTC211/19115">area</MD_CellGeometryCode>
+      </cellGeometry>
+      <transformationParameterAvailability>
+        <gco:Boolean>true</gco:Boolean>
+      </transformationParameterAvailability>
+      <checkPointAvailability>
+        <gco:Boolean>false</gco:Boolean>
+      </checkPointAvailability>
+      <cornerPoints>
+        <gml:Point gml:id="ID0EZMAC">
+          <gml:pos>443323.396049 817511.508956</gml:pos>
+        </gml:Point>
+      </cornerPoints>
+      <cornerPoints>
+        <gml:Point gml:id="ID0E6MAC">
+          <gml:pos>443323.396049 840020.428956</gml:pos>
+        </gml:Point>
+      </cornerPoints>
+      <cornerPoints>
+        <gml:Point gml:id="ID0EFNAC">
+          <gml:pos>456185.636049 840020.428956</gml:pos>
+        </gml:Point>
+      </cornerPoints>
+      <cornerPoints>
+        <gml:Point gml:id="ID0ELNAC">
+          <gml:pos>456185.636049 817511.508956</gml:pos>
+        </gml:Point>
+      </cornerPoints>
+      <centerPoint>
+        <gml:Point gml:id="ID0ERNAC">
+          <gml:pos>449754.516049 828765.968956</gml:pos>
+        </gml:Point>
+      </centerPoint>
+      <pointInPixel>
+        <MD_PixelOrientationCode>center</MD_PixelOrientationCode>
+      </pointInPixel>
+    </MD_Georectified>
+  </spatialRepresentationInfo>
+  <referenceSystemInfo>
+    <MD_ReferenceSystem>
+      <referenceSystemIdentifier>
+        <RS_Identifier>
+          <code>
+            <gco:CharacterString>6395</gco:CharacterString>
+          </code>
+          <codeSpace>
+            <gco:CharacterString>EPSG</gco:CharacterString>
+          </codeSpace>
+          <version>
+            <gco:CharacterString>8.2.10(10.3.1)</gco:CharacterString>
+          </version>
+        </RS_Identifier>
+      </referenceSystemIdentifier>
+    </MD_ReferenceSystem>
+  </referenceSystemInfo>
+  <identificationInfo>
+    <MD_DataIdentification>
+      <citation>
+        <CI_Citation>
+          <title>
+            <gco:CharacterString>DSM_Kennicott_Glacier_Toe_2018_09_13</gco:CharacterString>
+          </title>
+          <date>
+            <CI_Date>
+              <date>
+                <gco:Date>2018-09-13</gco:Date>
+              </date>
+              <dateType>
+                <CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation" codeSpace="ISOTC211/19115">creation</CI_DateTypeCode>
+              </dateType>
+            </CI_Date>
+          </date>
+          <date>
+            <CI_Date>
+              <date>
+                <gco:Date>2019-04-05</gco:Date>
+              </date>
+              <dateType>
+                <CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" codeSpace="ISOTC211/19115">publication</CI_DateTypeCode>
+              </dateType>
+            </CI_Date>
+          </date>
+          <citedResponsibleParty>
+            <CI_ResponsibleParty>
+              <individualName>
+                <gco:CharacterString>AKR Natural Resources Team</gco:CharacterString>
+              </individualName>
+              <organisationName>
+                <gco:CharacterString>National Park Service</gco:CharacterString>
+              </organisationName>
+              <positionName>
+                <gco:CharacterString>Geologist</gco:CharacterString>
+              </positionName>
+              <contactInfo>
+                <CI_Contact>
+                  <phone>
+                    <CI_Telephone>
+                      <voice>
+                        <gco:CharacterString>(907) 644-3446</gco:CharacterString>
+                      </voice>
+                    </CI_Telephone>
+                  </phone>
+                  <address>
+                    <CI_Address>
+                      <deliveryPoint>
+                        <gco:CharacterString>240 W.Fifth Ave</gco:CharacterString>
+                      </deliveryPoint>
+                      <city>
+                        <gco:CharacterString>Anchorage</gco:CharacterString>
+                      </city>
+                      <administrativeArea>
+                        <gco:CharacterString>AK</gco:CharacterString>
+                      </administrativeArea>
+                      <postalCode>
+                        <gco:CharacterString>99501</gco:CharacterString>
+                      </postalCode>
+                      <country>
+                        <Country codeList="http://www.iso.org/iso/country_codes/iso_3166_code_lists.htm" codeListValue="US" codeSpace="ISO3166-1">US</Country>
+                      </country>
+                      <electronicMailAddress>
+                        <gco:CharacterString>akr_info@nps.gov</gco:CharacterString>
+                      </electronicMailAddress>
+                    </CI_Address>
+                  </address>
+                  <hoursOfService>
+                    <gco:CharacterString>9-5 Alaska Daylight Savings Time</gco:CharacterString>
+                  </hoursOfService>
+                  <contactInstructions>
+                    <gco:CharacterString>https://www.nps.gov/orgs/1349/index.htm
+Contact via:
+https://www.nps.gov/orgs/1349/contactus.htm</gco:CharacterString>
+                  </contactInstructions>
+                </CI_Contact>
+              </contactInfo>
+              <role>
+                <CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="originator" codeSpace="ISOTC211/19115">originator</CI_RoleCode>
+              </role>
+            </CI_ResponsibleParty>
+          </citedResponsibleParty>
+          <presentationForm>
+            <CI_PresentationFormCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_PresentationFormCode" codeListValue="mapDigital" codeSpace="ISOTC211/19115">mapDigital</CI_PresentationFormCode>
+          </presentationForm>
+        </CI_Citation>
+      </citation>
+      <abstract>
+        <gco:CharacterString>2018 air photo structure from motion (SfM) acquisition by the National Park Service Alaska Regional Office (AKRO). Date: 2018/09/13Weather: Sunny day with some high clouds. Strong winds.Altitude: Kennicott Glacier flown at 5700 ft MSL (3100 ft AGL), Kennicott River flown at 3600 ft MSL (2500 ft AGL)Ground sampling distance: 0.161 mTarget photo overlap: onlap 75%, sidelap 60%Camera and photos: Nikon D850,Nikkor 24mm f/1.8G ED lenses. RGB camera and G-B-NIR camera conversion by maxmax.com.GPS: Aerial: Trimble R7 GNSS in-plane logging 10Hz, antenna: Antcom L1/L2/L5/L-Band GPS/GLO/GAL, 3.5", 40dB, TNC, White, G8Ant-743A4T1-A2 TSO. Base: Trimble R10 at McCarthy airstrip benchmark DP2645 logging at 10Hz , 0.35 m fixed-height antenna rod. Triggering equipment: Aeroscientific trigger box and Aviatrix software to generate an event marker.Aviation: Found Bush Hawk plane N709M, 85 kt, strong winds, GPS antenna mounted directly above the left camera port at a height 1.065 m above the floor and centered on the port with cameras offset approximately 0.09 m from the center of the port.Pilot: Robert SundownOperator: Claire Schmidt, GIP intern. For longer term contact: Alaska NPS Regional Geologist, Chad Hults chad_hults@nps.govSpotter: Amanda Lanik Ground Control: Four white bucket lids were attached to the ground approximately 50 m apart along the McCarthy airstrip prior to the SfM acquisition. After the acquisition, the Trimble R7 GNSS with a Zephyr 2 antenna on a 2 m fixed rod were used to take 30 second shots on the center of each of the bucket lids. Four additional 30-second shots were taken nearby along the airstrip for vertical checks.</gco:CharacterString>
+      </abstract>
+      <purpose>
+        <gco:CharacterString>Digital Surface Model of the Kennicott Glacier and Kennicott River, Wrangell – St. Elias National Park and Preserve.
+
+Data is ellipsoid height in meters.  Processing templates in the mosaic also provide the data as ellipsoid feet, orthometric meters, orthometric feet, hillshade, shaded relief, slope (degrees), and aspect.</gco:CharacterString>
+      </purpose>
+      <credit>
+        <gco:CharacterString>National Park Service, Alaska Regional Office, Natural Resources Team</gco:CharacterString>
+      </credit>
+      <status>
+        <MD_ProgressCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ProgressCode" codeListValue="completed" codeSpace="ISOTC211/19115">completed</MD_ProgressCode>
+      </status>
+      <pointOfContact>
+        <CI_ResponsibleParty>
+          <individualName>
+            <gco:CharacterString>AKR Natural Resources Team</gco:CharacterString>
+          </individualName>
+          <organisationName>
+            <gco:CharacterString>National Park Service</gco:CharacterString>
+          </organisationName>
+          <positionName>
+            <gco:CharacterString>Geologist</gco:CharacterString>
+          </positionName>
+          <contactInfo>
+            <CI_Contact>
+              <phone>
+                <CI_Telephone>
+                  <voice>
+                    <gco:CharacterString>(907) 644-3446</gco:CharacterString>
+                  </voice>
+                </CI_Telephone>
+              </phone>
+              <address>
+                <CI_Address>
+                  <deliveryPoint>
+                    <gco:CharacterString>240 W.Fifth Ave</gco:CharacterString>
+                  </deliveryPoint>
+                  <city>
+                    <gco:CharacterString>Anchorage</gco:CharacterString>
+                  </city>
+                  <administrativeArea>
+                    <gco:CharacterString>AK</gco:CharacterString>
+                  </administrativeArea>
+                  <postalCode>
+                    <gco:CharacterString>99501</gco:CharacterString>
+                  </postalCode>
+                  <country>
+                    <Country codeList="http://www.iso.org/iso/country_codes/iso_3166_code_lists.htm" codeListValue="US" codeSpace="ISO3166-1">US</Country>
+                  </country>
+                  <electronicMailAddress>
+                    <gco:CharacterString>akr_info@nps.gov</gco:CharacterString>
+                  </electronicMailAddress>
+                </CI_Address>
+              </address>
+              <hoursOfService>
+                <gco:CharacterString>9-5 Alaska Daylight Savings Time</gco:CharacterString>
+              </hoursOfService>
+              <contactInstructions>
+                <gco:CharacterString>https://www.nps.gov/orgs/1349/index.htm
+Contact via:
+https://www.nps.gov/orgs/1349/contactus.htm</gco:CharacterString>
+              </contactInstructions>
+            </CI_Contact>
+          </contactInfo>
+          <role>
+            <CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="originator" codeSpace="ISOTC211/19115">originator</CI_RoleCode>
+          </role>
+        </CI_ResponsibleParty>
+      </pointOfContact>
+      <pointOfContact>
+        <CI_ResponsibleParty>
+          <individualName>
+            <gco:CharacterString>AKR GIS Team</gco:CharacterString>
+          </individualName>
+          <organisationName>
+            <gco:CharacterString>National Park Service, Alaska Regional Office</gco:CharacterString>
+          </organisationName>
+          <positionName>
+            <gco:CharacterString>GIS Specialist</gco:CharacterString>
+          </positionName>
+          <contactInfo>
+            <CI_Contact>
+              <phone>
+                <CI_Telephone>
+                  <voice>
+                    <gco:CharacterString>contact us via email</gco:CharacterString>
+                  </voice>
+                </CI_Telephone>
+              </phone>
+              <address>
+                <CI_Address>
+                  <deliveryPoint>
+                    <gco:CharacterString>240 W 5th Avenue</gco:CharacterString>
+                  </deliveryPoint>
+                  <city>
+                    <gco:CharacterString>Anchorage</gco:CharacterString>
+                  </city>
+                  <administrativeArea>
+                    <gco:CharacterString>AK</gco:CharacterString>
+                  </administrativeArea>
+                  <postalCode>
+                    <gco:CharacterString>99501</gco:CharacterString>
+                  </postalCode>
+                  <country>
+                    <Country codeList="http://www.iso.org/iso/country_codes/iso_3166_code_lists.htm" codeListValue="US" codeSpace="ISO3166-1">US</Country>
+                  </country>
+                  <electronicMailAddress>
+                    <gco:CharacterString>akro_gis_helpdesk@nps.gov</gco:CharacterString>
+                  </electronicMailAddress>
+                </CI_Address>
+              </address>
+              <hoursOfService>
+                <gco:CharacterString>8:00 am to 5:00 pm AST</gco:CharacterString>
+              </hoursOfService>
+              <contactInstructions>
+                <gco:CharacterString>Please contact us via email.</gco:CharacterString>
+              </contactInstructions>
+            </CI_Contact>
+          </contactInfo>
+          <role>
+            <CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="distributor" codeSpace="ISOTC211/19115">distributor</CI_RoleCode>
+          </role>
+        </CI_ResponsibleParty>
+      </pointOfContact>
+      <resourceMaintenance>
+        <MD_MaintenanceInformation>
+          <maintenanceAndUpdateFrequency>
+            <MD_MaintenanceFrequencyCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="notPlanned" codeSpace="ISOTC211/19115">notPlanned</MD_MaintenanceFrequencyCode>
+          </maintenanceAndUpdateFrequency>
+        </MD_MaintenanceInformation>
+      </resourceMaintenance>
+      <descriptiveKeywords>
+        <MD_Keywords>
+          <keyword>
+            <gco:CharacterString>Kennicott</gco:CharacterString>
+          </keyword>
+          <keyword>
+            <gco:CharacterString>Kennecott</gco:CharacterString>
+          </keyword>
+          <keyword>
+            <gco:CharacterString>River</gco:CharacterString>
+          </keyword>
+          <keyword>
+            <gco:CharacterString>Mine</gco:CharacterString>
+          </keyword>
+          <keyword>
+            <gco:CharacterString>Glacier</gco:CharacterString>
+          </keyword>
+          <keyword>
+            <gco:CharacterString>Wrangell – St. Elias</gco:CharacterString>
+          </keyword>
+          <keyword>
+            <gco:CharacterString>National Park</gco:CharacterString>
+          </keyword>
+          <keyword>
+            <gco:CharacterString>Preserve</gco:CharacterString>
+          </keyword>
+          <keyword>
+            <gco:CharacterString>Alaska</gco:CharacterString>
+          </keyword>
+          <keyword>
+            <gco:CharacterString>Digital Elevation Model</gco:CharacterString>
+          </keyword>
+          <keyword>
+            <gco:CharacterString>DEM</gco:CharacterString>
+          </keyword>
+          <keyword>
+            <gco:CharacterString>Digital Surface Model</gco:CharacterString>
+          </keyword>
+          <keyword>
+            <gco:CharacterString>DSM</gco:CharacterString>
+          </keyword>
+          <keyword>
+            <gco:CharacterString>SfM</gco:CharacterString>
+          </keyword>
+          <keyword>
+            <gco:CharacterString>Structure from Motion</gco:CharacterString>
+          </keyword>
+          <keyword>
+            <gco:CharacterString>Imagery</gco:CharacterString>
+          </keyword>
+          <keyword>
+            <gco:CharacterString>Air photo</gco:CharacterString>
+          </keyword>
+          <keyword>
+            <gco:CharacterString>Aerial photography</gco:CharacterString>
+          </keyword>
+        </MD_Keywords>
+      </descriptiveKeywords>
+      <resourceConstraints>
+        <MD_Constraints>
+          <useLimitation>
+            <gco:CharacterString>These datasets should not be used for boundary surveys or platting, these datasets were not reviewed by a licensed surveyor.The data cannot be further distributed in its original form and all products derived from it identify the NPS as the source of the data.</gco:CharacterString>
+          </useLimitation>
+        </MD_Constraints>
+      </resourceConstraints>
+      <spatialRepresentationType>
+        <MD_SpatialRepresentationTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="grid" codeSpace="ISOTC211/19115">grid</MD_SpatialRepresentationTypeCode>
+      </spatialRepresentationType>
+      <language>
+        <LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng" codeSpace="ISO639-2">eng</LanguageCode>
+      </language>
+      <characterSet>
+        <MD_CharacterSetCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8" codeSpace="ISOTC211/19115">utf8</MD_CharacterSetCode>
+      </characterSet>
+      <environmentDescription>
+        <gco:CharacterString> Version 6.2 (Build 9200) ; Esri ArcGIS 10.5.1.7333</gco:CharacterString>
+      </environmentDescription>
+      <extent>
+        <EX_Extent>
+          <description>
+            <gco:CharacterString>Ground Condition</gco:CharacterString>
+          </description>
+          <geographicElement>
+            <EX_GeographicBoundingBox>
+              <extentTypeCode>
+                <gco:Boolean>true</gco:Boolean>
+              </extentTypeCode>
+              <westBoundLongitude>
+                <gco:Decimal>-143.065725</gco:Decimal>
+              </westBoundLongitude>
+              <eastBoundLongitude>
+                <gco:Decimal>-142.818592</gco:Decimal>
+              </eastBoundLongitude>
+              <southBoundLatitude>
+                <gco:Decimal>61.337032</gco:Decimal>
+              </southBoundLatitude>
+              <northBoundLatitude>
+                <gco:Decimal>61.54068</gco:Decimal>
+              </northBoundLatitude>
+            </EX_GeographicBoundingBox>
+          </geographicElement>
+          <temporalElement>
+            <EX_TemporalExtent>
+              <extent>
+                <gml:TimeInstant gml:id="ID0EFFAC">
+                  <gml:timePosition>2018-09-13T00:00:00</gml:timePosition>
+                </gml:TimeInstant>
+              </extent>
+            </EX_TemporalExtent>
+          </temporalElement>
+        </EX_Extent>
+      </extent>
+    </MD_DataIdentification>
+  </identificationInfo>
+  <contentInfo>
+    <MD_ImageDescription>
+      <attributeDescription>
+        <gco:RecordType>Ellipsoid Elevation</gco:RecordType>
+      </attributeDescription>
+      <contentType>
+        <MD_CoverageContentTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="image" codeSpace="ISOTC211/19115">image</MD_CoverageContentTypeCode>
+      </contentType>
+      <dimension>
+        <MD_Band>
+          <descriptor>
+            <gco:CharacterString>elevation</gco:CharacterString>
+          </descriptor>
+          <maxValue>
+            <gco:Real>1454.356201</gco:Real>
+          </maxValue>
+          <minValue>
+            <gco:Real>277.073364</gco:Real>
+          </minValue>
+          <units>
+            <gml:UnitDefinition gml:id="ID0AAAAAGAHA">
+              <gml:identifier codeSpace="GML_UomSymbol">Unified Code of Units of Measure</gml:identifier>
+              <gml:catalogSymbol codeSpace="http://aurora.regenstrief.org/UCUM">m</gml:catalogSymbol>
+            </gml:UnitDefinition>
+          </units>
+          <bitsPerValue>
+            <gco:Integer>32</gco:Integer>
+          </bitsPerValue>
+        </MD_Band>
+      </dimension>
+      <triangulationIndicator>
+        <gco:Boolean>false</gco:Boolean>
+      </triangulationIndicator>
+      <radiometricCalibrationDataAvailability>
+        <gco:Boolean>false</gco:Boolean>
+      </radiometricCalibrationDataAvailability>
+      <cameraCalibrationInformationAvailability>
+        <gco:Boolean>false</gco:Boolean>
+      </cameraCalibrationInformationAvailability>
+      <filmDistortionInformationAvailability>
+        <gco:Boolean>false</gco:Boolean>
+      </filmDistortionInformationAvailability>
+      <lensDistortionInformationAvailability>
+        <gco:Boolean>false</gco:Boolean>
+      </lensDistortionInformationAvailability>
+    </MD_ImageDescription>
+  </contentInfo>
+  <dataQualityInfo>
+    <DQ_DataQuality>
+      <scope gco:nilReason="missing" />
+      <report>
+        <DQ_AbsoluteExternalPositionalAccuracy>
+          <evaluationMethodDescription>
+            <gco:CharacterString>HORIZONTAL AND VERTICAL ERROR
+The horizontal RMSE is 0.29 m. The NSSDA Horizontal Accuracy at 95% is 0.50 m. The vertical RMSE is 0.048 m. The NSSDA Vertical Accuracy at 95% is 0.094 m. The Photoscan reported horizontal error is 0.07 m in the X direction and 0.06 m in the Y direction. The Photoscan reported vertical error is -0.26 m. Note that the GCPs are closely placed relative to the larger study area so may not be fully representative of the accuracy of the entire area.
+</gco:CharacterString>
+          </evaluationMethodDescription>
+          <result gco:nilReason="missing" />
+        </DQ_AbsoluteExternalPositionalAccuracy>
+      </report>
+      <lineage>
+        <LI_Lineage>
+          <processStep>
+            <LI_ProcessStep>
+              <description>
+                <gco:CharacterString>DEM ADJUSTMENTS
+Vertical offset adjustment: Using the Ellipsoidal DEM and subtracting the ground control points elevation the difference was -0.133 m. The DEM was adjusted using this value using ArcMap to produce the Ellipsoidal_adjusted DEM. 
+Geoid adjustment: Geoid12B Alaska was downloaded from the NGS website. It was reprojected to Alaska Albers and resampled to 100 m. It was clipped to the extent of this project and subtracted from the DEM as a function in the orthometric raster mosaic.
+</gco:CharacterString>
+              </description>
+              <dateTime>
+                <gco:DateTime>2019-03-13T00:00:00</gco:DateTime>
+              </dateTime>
+            </LI_ProcessStep>
+          </processStep>
+          <processStep>
+            <LI_ProcessStep>
+              <description>
+                <gco:CharacterString>PROCESSING
+GPS Processing Base: Submitted OPUS Shared solution for base and used that location to correct the data to. OPUS reported horizontal error in the base solution was 0.037 m. OPUS reported vertical error in the base solution was 0.045 m.
+GPS Processing Aerial: Trimble Business Center. Corrected to base. Of the 10 Hz points collected, 99% of the points passed a 0.05 m filter. Interpolated a polynomial trajectory through the 10 Hz points to calculate the locations of the events (camera locations). 
+GPS Processing GCPs: Average precision reported in Trimble Business Center: Horzontal 0.007 m; Vertical 0.012 m.
+Photo processing: Adobe Lightroom v6. Used the included lens correction for vignette and chromatic aberration. Refer to the AKRO SfM Photo processing workflow V2.
+SfM processing software: Agisoft Photoscan v1.4.3. AKRO SfM Photo processing workflow V2. Used the sparse cloud for orthorectifying the images. Used the dense cloud for producing the DEM.
+</gco:CharacterString>
+              </description>
+              <dateTime>
+                <gco:DateTime>2019-03-13T00:00:00</gco:DateTime>
+              </dateTime>
+            </LI_ProcessStep>
+          </processStep>
+          <processStep>
+            <LI_ProcessStep>
+              <description>
+                <gco:CharacterString>The clipped, resampled geoid and orthometric product were removed and replaced by raster processing templates in the mosaic.  The height above the elipsoid is given by Geoid12B (X:\AKR\Statewide\physical\Geoid12B\geoid12b.tif)
+</gco:CharacterString>
+              </description>
+              <rationale>
+                <gco:CharacterString>Saves space and allows for easier refining when a new Geoid model is available.</gco:CharacterString>
+              </rationale>
+              <dateTime>
+                <gco:DateTime>2019-04-05T00:00:00</gco:DateTime>
+              </dateTime>
+            </LI_ProcessStep>
+          </processStep>
+        </LI_Lineage>
+      </lineage>
+    </DQ_DataQuality>
+  </dataQualityInfo>
+  <metadataMaintenance>
+    <MD_MaintenanceInformation>
+      <maintenanceAndUpdateFrequency>
+        <MD_MaintenanceFrequencyCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="notPlanned" codeSpace="ISOTC211/19115">notPlanned</MD_MaintenanceFrequencyCode>
+      </maintenanceAndUpdateFrequency>
+    </MD_MaintenanceInformation>
+  </metadataMaintenance>
+</MD_Metadata>
