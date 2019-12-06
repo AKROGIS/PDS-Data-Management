@@ -68,11 +68,10 @@ PDS Update Process for IFSAR data
     - Add no data masks to the dtm and dsm if needed (typically only along border).
 11. Update Overviews
     - If you made a copy, fix the paths of the writable copy of the overviews
-      - **Not required** toolbox will create necessary folders (paths to existing
-         overviews need to be valid)
-      - right click, `Remove` -> `Reset Relative Path`
       - right click, `Modify` -> `Repair...` and replace the X drive path to the
         overviews to the writable copy.
+    - You cannot Define and Build overviews in one step,  because despite the options
+        to only updated the stale and new it will recreate all.
     - Define Overviews
       - **Do not** use `Optimize` -> `Define Overviews...` in the context menu
       - Use `Optimize` -> `Build Overviews...` in the context menu with the
@@ -83,6 +82,19 @@ PDS Update Process for IFSAR data
       - Generate Stale Overview Images Only (optional): ON
       - The second two will be grayed out, when the second option is off,
         but I think they still apply.
+    - Use ArcMap to find existing overviews that need to be updated
+      - Use the graphic selection tool to Select the area of the new tiles.
+        This may need to be multiple selections. Be sure to get right up to the edge
+        of the existing tiles (the edge of some overviews may be very close to a base tile)
+      - Start an edit session.
+      - Open the attribute table, and filter to only selected features.
+      - The features should be in OID order. Scroll from the bottom (New overviews last, new
+        base tiles next).  Any overviews selected above that should be highlighted.
+        Do not highlight any base tiles (check the name).
+      - Click the button to reselect the highlighted tiles.  Only the old overviews that overlap
+        the new base tiles should now be selected.
+      - right click on the Category column header, and Calc the field to set Category = 3.
+      - Save edits and close ArcMap
     - Build Overviews for new overviews
       - Use `Optimize` -> `Build Overviews...` in the context menu with the
         following options:
@@ -91,35 +103,13 @@ PDS Update Process for IFSAR data
       - Generate Overviews (optional): ON
       - Generate Missing Overview Images Only (optional): ON
       - Generate Stale Overview Images Only (optional): ON
-    - Use ArcMap to find the overviews at a higher level than the new
-      ones, in the same area as the new tiles.  These overviews exist but will need to
-      be updated.  My experience has been that using the GP tools to update just
-      the stale overviews, tends to update all overviews, resulting in a unacceptably
-      large update for robocopying to the parks.
-      - In ArcMap:
-      - Open the attribute table and select all the new tiles (bottom of the table
-        but above the new overviews)
-      - Open Select by location, and select all the footprints that intersect
-        with the selected features (all in the same feature class)
-      - show only selected in the attribute table,
-      - highlight, and reselect the overviews that have a smaller OID than
-        the new tiles (above in the list)
-      - Close ArcMap and update them with following:
-      - Use `Optimize` -> `Build Overviews...` in the context menu with the
-        following options:
-      - Query Definition (optional): `Category = 3`,
-        etc with the overview needing updating)
-      - Define Missing Overview Tiles (optional): OFF
-      - Generate Overviews (optional): ON
-      - Generate Missing Overview Images Only (optional): OFF
-      - Generate Stale Overview Images Only (optional): OFF
-    - You cannot Define and Build overviews in one step,  because despite the options
-      to only updated the stale and new it will recreate all.
 12. Test
-13. Update Metadata
-14. Update the PDS
-    - Copy to the new gdb and new overview files to the X drive
-    - Fix the overview paths:
-      - right click, `Remove` -> `Reset Relative Path`
-      - right click, `Modify` -> `Repair...` and replace the 
-        path to the writable overviews with the X drive path.
+13. Copy all new and updated overview files to the server.  Note that there may have been
+    some mask files that were deleted on the local overviews.  Find and remove those same files
+    from the server.
+14. Update the overview paths
+    - right click, `Modify` -> `Repair...` and replace the 
+      path to the writable overviews with the X drive path.
+15. Test
+16. Update Metadata
+17. Copy to the new gdb to the X drive, and update Theme Manager

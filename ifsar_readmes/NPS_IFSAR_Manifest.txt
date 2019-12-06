@@ -407,7 +407,7 @@ X12
 
 Black Toshiba Canvio 2TB  SN: 54JBTDQXT18B (In the wrong box)
 
-*Checked contents with X drive:  Good, 2018-05-09, RES*
+*Checked contents with X drive:  Good, 2019-11-26, RES*
 
 ### 2015_AK_TO9_MOD1Drive2
     4,723 Files, 169 Folders
@@ -416,6 +416,12 @@ Black Toshiba Canvio 2TB  SN: 54JBTDQXT18B (In the wrong box)
     4,721 Files, 169 Folders
     226 GB (243,013,939,815 bytes)
     {Did not copy 2 *.lock files; 0 bytes}
+### 2019_MyPassport_WXS1AC89X8Y5\Alaska_MidAccuracy_DEM
+    6,826 Files, 229 Folders
+    617 GB (662,567,456,452 bytes)
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2019_IFSAR\EasternAleutians_Lots_2_3
+    6,826 Files, 229 Folders
+    617 GB (662,567,456,452 bytes)
 ### DISK_LABELS_DeliveryInfo
     {Did not copy - pdfs/images of shipping data/disk}
 ### Other Files/Folders
