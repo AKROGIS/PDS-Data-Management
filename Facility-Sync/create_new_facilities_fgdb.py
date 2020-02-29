@@ -19,9 +19,11 @@ working_folder = r'C:\tmp\pds\facility-sync'
 xdrive_folder = r'X:\AKR\Statewide\cultural'
 connection_file = r'Database Connections\inpakrovmais - facilities as akr_reader_web.sde'
 sde_schema = 'akr_facility2.'
-tables = ['dbo.FMSSExport', 'dbo.FMSSExport_Asset', 'gis.AKR_ATTACH']
-fcs = ['dbo.AKR_BLDG_PT', 'dbo.AKR_BLDG_PY', 'gis.AKR_ATTACH_PT', 'gis.PARKLOTS_PY', 'gis.ROADS_LN', 
-       'gis.TRAILS_ATTRIBUTE_PT', 'gis.TRAILS_FEATURE_PT', 'gis.TRAILS_LN']
+tables = ['dbo.FMSSExport', 'dbo.FMSSExport_Asset', 'gis.AKR_ATTACH', 'gis.AKR_ASSET']
+fcs = ['dbo.AKR_BLDG_PT', 'dbo.AKR_BLDG_PY', 'gis.AKR_ATTACH_PT', 'gis.PARKLOTS_PY', 
+       'gis.ROADS_LN', 'gis.ROADS_FEATURE_PT',
+       'gis.TRAILS_ATTRIBUTE_PT', 'gis.TRAILS_FEATURE_PT', 'gis.TRAILS_LN',
+       'gis.AKR_ASSET_PT', 'gis.AKR_ASSET_LN', 'gis.AKR_ASSET_PY']
 
 
 # derived variables
@@ -32,6 +34,8 @@ saved_fgdb = os.path.join(working_folder, fgdb_name + "_" + datestamp + fgdb_ext
 sde_tables = [os.path.join(connection_file, sde_schema + table) for table in tables]
 sde_fcs = [os.path.join(connection_file, sde_schema + fc) for fc in fcs]
 
+# convenience variables
+# only needed for items that will have added/calculated fields, or derived metadata
 Building_Polygon = os.path.join(new_fgdb, 'AKR_BLDG_PY')
 PARKLOTS_py = os.path.join(new_fgdb, 'PARKLOTS_PY')
 ROADS_ln = os.path.join(new_fgdb, 'ROADS_LN')
@@ -147,6 +151,10 @@ arcpy.CreateRelationshipClass_management("FMSSExport", "ROADS_LN", "Location_Roa
                                          "Roads", "FMSS Location Record",
                                          "NONE", "ONE_TO_MANY", "NONE",
                                          "Location", "FACLOCID")
+arcpy.CreateRelationshipClass_management("FMSSExport", "ROADS_FEATURE_PT", "Location_RoadFeatures_Relation", "SIMPLE",
+                                         "Road Features", "FMSS Location Record",
+                                         "NONE", "ONE_TO_MANY", "NONE",
+                                         "Location", "FACLOCID")
 arcpy.CreateRelationshipClass_management("FMSSExport", "TRAILS_LN", "Location_Trails_Relation", "SIMPLE",
                                          "Trails", "FMSS Location Record",
                                          "NONE", "ONE_TO_MANY", "NONE",
@@ -155,8 +163,36 @@ arcpy.CreateRelationshipClass_management("FMSSExport", "TRAILS_FEATURE_PT", "Loc
                                          "Trail Features", "FMSS Location Record",
                                          "NONE", "ONE_TO_MANY", "NONE",
                                          "Location", "FACLOCID")
+arcpy.CreateRelationshipClass_management("FMSSExport", "AKR_ASSET_PT", "Location_PointAssetFeatures_Relation", "SIMPLE",
+                                         "Facility Assets", "FMSS Location Record",
+                                         "NONE", "ONE_TO_MANY", "NONE",
+                                         "Location", "FACLOCID")
+arcpy.CreateRelationshipClass_management("FMSSExport", "AKR_ASSET_LN", "Location_LineAssetFeatures_Relation", "SIMPLE",
+                                         "Facility Assets", "FMSS Location Record",
+                                         "NONE", "ONE_TO_MANY", "NONE",
+                                         "Location", "FACLOCID")
+arcpy.CreateRelationshipClass_management("FMSSExport", "AKR_ASSET_PY", "Location_PolyAssetFeatures_Relation", "SIMPLE",
+                                         "Facility Assets", "FMSS Location Record",
+                                         "NONE", "ONE_TO_MANY", "NONE",
+                                         "Location", "FACLOCID")
 
 # GIS Features to Assets
+arcpy.CreateRelationshipClass_management("FMSSExport_Asset", "AKR_ASSET_PT", "Asset_PointAssetFeatures_Relation", "SIMPLE",
+                                         "Facility Assets", "FMSS Asset Record",
+                                         "NONE", "ONE_TO_MANY", "NONE",
+                                         "Asset", "FACASSETID")
+arcpy.CreateRelationshipClass_management("FMSSExport_Asset", "AKR_ASSET_LN", "Asset_LineAssetFeatures_Relation", "SIMPLE",
+                                         "Facility Assets", "FMSS Asset Record",
+                                         "NONE", "ONE_TO_MANY", "NONE",
+                                         "Asset", "FACASSETID")
+arcpy.CreateRelationshipClass_management("FMSSExport_Asset", "AKR_ASSET_PY", "Asset_PolyAssetFeatures_Relation", "SIMPLE",
+                                         "Facility Assets", "FMSS Asset Record",
+                                         "NONE", "ONE_TO_MANY", "NONE",
+                                         "Asset", "FACASSETID")
+arcpy.CreateRelationshipClass_management("FMSSExport_Asset", "ROADS_FEATURE_PT", "Asset_RoadFeatures_Relation", "SIMPLE",
+                                         "Road Features", "FMSS Asset Record",
+                                         "NONE", "ONE_TO_MANY", "NONE",
+                                         "Asset", "FACASSETID")
 arcpy.CreateRelationshipClass_management("FMSSExport_Asset", "TRAILS_FEATURE_PT", "Asset_TrailFeatures_Relation", "SIMPLE",
                                          "Trail Features", "FMSS Asset Record",
                                          "NONE", "ONE_TO_MANY", "NONE",
@@ -195,6 +231,11 @@ arcpy.CreateRelationshipClass_management("TRAILS_LN", "TRAILS_ATTRIBUTE_PT", "Tr
 # Trail Feature's SEGMENTID is the GEOMETRYID of the closest segment of the "Parent" trail
 arcpy.CreateRelationshipClass_management("TRAILS_LN", "TRAILS_FEATURE_PT", "Trail_Feature_Relation", "SIMPLE",
                                          "Features", "Trail",
+                                         "NONE", "ONE_TO_MANY", "NONE",
+                                         "GEOMETRYID", "SEGMENTID")
+# Roads Feature's SEGMENTID is the GEOMETRYID of the closest segment of the "Parent" road
+arcpy.CreateRelationshipClass_management("ROADS_LN", "ROADS_FEATURE_PT", "Road_Feature_Relation", "SIMPLE",
+                                         "Features", "Road",
                                          "NONE", "ONE_TO_MANY", "NONE",
                                          "GEOMETRYID", "SEGMENTID")
 # Building Center to Footprint
@@ -245,6 +286,22 @@ arcpy.CreateRelationshipClass_management("TRAILS_FEATURE_PT", "AKR_ATTACH", "Tra
                                          "Photos", "Trail Feature",
                                          "NONE", "ONE_TO_MANY", "NONE",
                                          "FEATUREID", "FEATUREID")
+arcpy.CreateRelationshipClass_management("ROADS_FEATURE_PT", "AKR_ATTACH", "RoadFeature_Attachment_Relation", "SIMPLE",
+                                         "Photos", "Road Feature",
+                                         "NONE", "ONE_TO_MANY", "NONE",
+                                         "FEATUREID", "FEATUREID")
+arcpy.CreateRelationshipClass_management("AKR_ASSET_PT", "AKR_ATTACH", "MiscPointFeatures_Attachment_Relation", "SIMPLE",
+                                         "Photos", "Misc Feature",
+                                         "NONE", "ONE_TO_MANY", "NONE",
+                                         "FEATUREID", "FEATUREID")
+arcpy.CreateRelationshipClass_management("AKR_ASSET_LN", "AKR_ATTACH", "MiscLineFeatures_Attachment_Relation", "SIMPLE",
+                                         "Photos", "Misc Feature",
+                                         "NONE", "ONE_TO_MANY", "NONE",
+                                         "FEATUREID", "FEATUREID")
+arcpy.CreateRelationshipClass_management("AKR_ASSET_PY", "AKR_ATTACH", "MiscPolyFeatures_Attachment_Relation", "SIMPLE",
+                                         "Photos", "Misc Feature",
+                                         "NONE", "ONE_TO_MANY", "NONE",
+                                         "FEATUREID", "FEATUREID")
 # TODO: Non-Geo Photos can also be linked by GEOMETRYID to a GIS Feature
 # GeoPhotos to GIS Features
 arcpy.CreateRelationshipClass_management("AKR_BLDG_PT", "AKR_ATTACH_PT", "BuildingPoint_AttachmentPoint_Relation", "SIMPLE",
@@ -269,5 +326,21 @@ arcpy.CreateRelationshipClass_management("TRAILS_LN", "AKR_ATTACH_PT", "Trail_At
                                          "FEATUREID", "FEATUREID")
 arcpy.CreateRelationshipClass_management("TRAILS_FEATURE_PT", "AKR_ATTACH_PT", "TrailFeature_AttachmentPoint_Relation", "SIMPLE",
                                          "GeoPhotos", "Trail Feature",
+                                         "NONE", "ONE_TO_MANY", "NONE",
+                                         "FEATUREID", "FEATUREID")
+arcpy.CreateRelationshipClass_management("ROADS_FEATURE_PT", "AKR_ATTACH_PT", "RoadFeature_AttachmentPoint_Relation", "SIMPLE",
+                                         "GeoPhotos", "Road Feature",
+                                         "NONE", "ONE_TO_MANY", "NONE",
+                                         "FEATUREID", "FEATUREID")
+arcpy.CreateRelationshipClass_management("AKR_ASSET_PT", "AKR_ATTACH_PT", "MiscPointFeatures_AttachmentPoint_Relation", "SIMPLE",
+                                         "GeoPhotos", "Misc Feature",
+                                         "NONE", "ONE_TO_MANY", "NONE",
+                                         "FEATUREID", "FEATUREID")
+arcpy.CreateRelationshipClass_management("AKR_ASSET_LN", "AKR_ATTACH_PT", "MiscLineFeatures_AttachmentPoint_Relation", "SIMPLE",
+                                         "GeoPhotos", "Misc Feature",
+                                         "NONE", "ONE_TO_MANY", "NONE",
+                                         "FEATUREID", "FEATUREID")
+arcpy.CreateRelationshipClass_management("AKR_ASSET_PY", "AKR_ATTACH_PT", "MiscPolyFeatures_AttachmentPoint_Relation", "SIMPLE",
+                                         "GeoPhotos", "Misc Feature",
                                          "NONE", "ONE_TO_MANY", "NONE",
                                          "FEATUREID", "FEATUREID")
