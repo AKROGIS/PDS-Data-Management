@@ -11,15 +11,27 @@ set xsrc=""
 set smxsrc=\\inpakrovmdist\GISData2
 set lgx1src=\\inpakrovmdist\GISData2\Extras
 set lgx1folder=\Extras
-set lgx2src=\\inpakrovmdist\GISData2\Source_Data
-set lgx2folder=\Source_Data
-set parm=
+set parm1=
 set parm2=
+set parm3=
 set copyhrs=""
 set zb=""
 
 REM Ask user what type of drive to create or update
-set /p xtype="Enter SM, LG1 or LG2 for small, large1, or future large2 drive: "
+set /p xtype="Enter S, L, or C for small, large, or combined X drive: "
+IF %xtype%==s set xtype=S
+IF %xtype%==l set xtype=L
+IF %xtype%==c set xtype=C
+IF NOT %xtype%==S (
+   IF NOT %xtype%==L (
+      IF NOT %xtype%==C (
+         echo.
+         echo Invalid Input: %xtype%. You need to choose one of S, L, or C.
+         exit /b
+      )
+   )
+)
+IF NOT %xtype%==C set parm1=/XJ
 echo.
 
 REM Ask user for source
@@ -27,45 +39,35 @@ set /p xsrc="If not using server, enter full source path, e.g. F:\Extras, or Ent
 
 REM Provide default server location for source if not otherwise provided
 IF %xsrc%=="" ( 
-   IF %xtype%==SM (
-      set xsrc=%smxsrc%
-   ) ELSE IF %xtype%==LG1 (
+   IF %xtype%==L (
       set xsrc=%lgx1src%
-      ) ELSE IF %xtype%==LG2 (
-        set xsrc=%lgx2src%
-        ) ELSE (
-          echo Choose LG1, LG2 or SM
-          exit /b
-          )
+   ) ELSE (
+      set xsrc=%smxsrc%
+   )
 )
 echo.
 
 REM User needs to provide target; we add folder if needed to control case and simplify path entry
-set /p xtgt="Enter path of the %xtype% X drive to be updated, e.g. D: or F: "
+set /p xtgt="Enter the drive to be updated (with the colon), e.g. D: or F: "
 
 REM Construct full target path if needed
-IF %xtype%==LG1 (
+IF %xtype%==L (
    set xtgtfull=%xtgt%%lgx1folder%
-   ) ELSE IF %xtype%==LG2 (
-         set xtgtfull=%xtgt%%lgx2folder%
-      ) ELSE (
-      set xtgtfull=%xtgt%
-      )
+) ELSE (
+   set xtgtfull=%xtgt%
 )
 echo.
 
 REM Check if user wants to restrict hours for copying
 set /p copyhrs="Enter Y to restrict copying to 6pm-6am, or Enter: "
-IF %copyhrs%==Y (
-   set parm=/RH:1800-0600 /PF
-)
+IF %copyhrs%==y set copyhrs=Y
+IF %copyhrs%==Y set parm2=/RH:1800-0600 /PF
 echo.
 
 REM Check if user wants to use fault-tolerant + backup mode (network and file locks)
 set /p zb="Enter Y if you expect network or file-lock issues, or Enter: "
-IF %zb%==Y (
-   set parm2=/ZB
-)
+IF %zb%==y set zb=Y
+IF %zb%==Y set parm3=/ZB
 echo.
 
 REM It's easy to unintentionally trigger a massive deletion, warn user
@@ -78,7 +80,7 @@ REM Last chance to cancel
 pause
 
 REM Robocopy with source and destination; switches explained below
-@robocopy %xsrc% %xtgtfull% /R:5 /W:5 /MIR /NP /NDL /NS /NC /XJ /XD "$RECYCLE.BIN" "System Volume Information" /LOG:update-x-drive-akr.log %parm% %parm2%
+@robocopy %xsrc% %xtgtfull% /R:5 /W:5 /MIR /NP /NDL /NS /NC /XD "$RECYCLE.BIN" "System Volume Information" /LOG:update-x-drive-akr.log %parm1% %parm2% %parm3%
 
 REM Done, prompt user to check for errors
 echo Operation completed, check console and log file (update-x-drive-akr.log) for errors (locate and move from C:\Windows\System32 if not run from another location using the Command Prompt (Admin).
