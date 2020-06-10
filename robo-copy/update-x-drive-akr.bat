@@ -16,9 +16,11 @@ set parm2=
 set parm3=
 set copyhrs=""
 set zb=""
+set xd=
 
 REM Ask user what type of drive to create or update
-set /p xtype="Enter S, L, or C for small, large, or combined X drive: "
+set /p xtype="Enter S, L, or C for small (default), large, or combined X drive: "
+IF [%xtype%]==[] set xtype=S
 IF %xtype%==s set xtype=S
 IF %xtype%==l set xtype=L
 IF %xtype%==c set xtype=C
@@ -32,6 +34,7 @@ IF NOT %xtype%==S (
    )
 )
 IF NOT %xtype%==C set parm1=/XJ
+IF %xtype%==S set xd="Extras"
 echo.
 
 REM Ask user for source
@@ -56,6 +59,12 @@ IF %xtype%==L (
 ) ELSE (
    set xtgtfull=%xtgt%
 )
+IF [%xtgt%]==[] (
+   echo.
+   echo Invalid Input: You need to enter a drive letter followed by a colon.
+   exit /b
+)
+
 echo.
 
 REM Check if user wants to restrict hours for copying
@@ -80,7 +89,7 @@ REM Last chance to cancel
 pause
 
 REM Robocopy with source and destination; switches explained below
-@robocopy %xsrc% %xtgtfull% /R:5 /W:5 /MIR /NP /NDL /NS /NC /XD "$RECYCLE.BIN" "System Volume Information" /LOG:update-x-drive-akr.log %parm1% %parm2% %parm3%
+echo @robocopy %xsrc% %xtgtfull% /R:5 /W:5 /MIR /NP /NDL /NS /NC /XD "$RECYCLE.BIN" "System Volume Information" %xd% /LOG:update-x-drive-akr.log %parm1% %parm2% %parm3%
 
 REM Done, prompt user to check for errors
 echo Operation completed, check console and log file (update-x-drive-akr.log) for errors (locate and move from C:\Windows\System32 if not run from another location using the Command Prompt (Admin).
