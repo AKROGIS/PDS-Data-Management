@@ -89,7 +89,7 @@ REM Last chance to cancel
 pause
 
 REM Robocopy with source and destination; switches explained below
-echo @robocopy %xsrc% %xtgtfull% /R:5 /W:5 /MIR /NP /NDL /NS /NC /XD "$RECYCLE.BIN" "System Volume Information" %xd% /LOG:update-x-drive-akr.log %parm1% %parm2% %parm3%
+@robocopy %xsrc% %xtgtfull% /R:5 /W:5 /MIR /NP /NDL /NS /NC /XD "$RECYCLE.BIN" "System Volume Information" %xd% /LOG:update-x-drive-akr.log %parm1% %parm2% %parm3%
 
 REM Done, prompt user to check for errors
 echo Operation completed, check console and log file (update-x-drive-akr.log) for errors (locate and move from C:\Windows\System32 if not run from another location using the Command Prompt (Admin).
