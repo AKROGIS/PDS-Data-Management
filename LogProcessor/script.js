@@ -212,17 +212,12 @@ function postSummary (data) {
   document.getElementById('error_card').hidden = !hasParseErrors
 
   // Change: 2020-08-18 always show the change log (even if there are no changes)
-  //if (hasChanges) {
-    document.getElementById('summary_changes').hidden = false
+  document.getElementById('changelog_link').href = 'PDS_ChangeLog.html#' + date
+  if (hasChanges) {
     document.getElementById('summary_no_changes').hidden = true
-    document.getElementById('changelog_link').href =
-      'PDS_ChangeLog.html#' + date
-  /*
   } else {
-    document.getElementById('summary_changes').hidden = true
     document.getElementById('summary_no_changes').hidden = false
   }
-  */
   document.getElementById('summary_card').hidden = false
 }
 
