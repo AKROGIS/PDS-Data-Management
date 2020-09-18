@@ -1,6 +1,25 @@
 You can can merge the necessary dlls into a single exe with ILMerge (a free download from Microsoft or github)
 
+You must first build the application and libraries with the correct version of the ArcGIS libraries,
+Then copy "C:\Users\RESarwas\Documents\GitHub\pds-reorg\MapFixer\MapFixer\bin\Release\MapFixer.dll" to 
+C:\Users\RESarwas\Documents\GitHub\pds-reorg\MapFixer\verifier\bin\Release
+
+Then you can create a merged exe for deployment with the following commands
+
+for 10.5
 "C:\Program Files (x86)\Microsoft\ILMerge\ILMerge.exe" /lib:"C:\Program Files (x86)\ArcGIS\DeveloperKit10.5\DotNet" /lib:"C:\Program Files (x86)\ArcGIS\DeveloperKit10.5\bin" /out:verifier.exe "C:\Users\RESarwas\Documents\GitHub\pds-reorg\MapFixer\verifier\bin\Release\verifier.exe" "C:\Users\RESarwas\Documents\GitHub\pds-reorg\MapFixer\MapFixer\bin\Release\MapFixer.dll"
+
+for 10.6
+"C:\Program Files (x86)\Microsoft\ILMerge\ILMerge.exe" /lib:"C:\Program Files (x86)\ArcGIS\DeveloperKit10.6\DotNet" /lib:"C:\Program Files (x86)\ArcGIS\DeveloperKit10.6\bin" /out:verifier.exe "C:\Users\RESarwas\Documents\GitHub\pds-reorg\MapFixer\verifier\bin\Release\verifier.exe" "C:\Users\RESarwas\Documents\GitHub\pds-reorg\MapFixer\MapFixer\bin\Release\MapFixer.dll"
+
+for 10.7
+"C:\Program Files (x86)\Microsoft\ILMerge\ILMerge.exe" /lib:"C:\Program Files (x86)\ArcGIS\DeveloperKit10.7\DotNet" /lib:"C:\Program Files (x86)\ArcGIS\DeveloperKit10.7\bin" /out:verifier.exe "C:\Users\RESarwas\Documents\GitHub\pds-reorg\MapFixer\verifier\bin\Release\verifier.exe" "C:\Users\RESarwas\Documents\GitHub\pds-reorg\MapFixer\MapFixer\bin\Release\MapFixer.dll"
 
 verifier.exe can now be copied to any directory and run standalone.  I have only tested on a machine with ArcObjects .Net SDK installed.
 It will probably only work on a machine with the same version of ArcGIS as the development machine.
+
+Note: when upgrading to 10.6, the reference to ESRI.ArcGIS.Desktop.Addins could not be found.
+It appears to not be in the GAC, or "C:\Program Files (x86)\ArcGIS\DeveloperKit10.6\bin" so I added it from
+C:\Program Files (x86)\ArcGIS\DeveloperKit10.6\bin\ESRI.ArcGIS.Desktop.AddIns.dll
+as similar change may be needed to recompile for 10.7
+
