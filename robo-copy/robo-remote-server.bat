@@ -11,6 +11,6 @@ set "fullstamp=%YYYY%-%MM%-%DD%_%HH%-%Min%-%Sec%"
 
 REM Usage: robo-remote-server.bat REMOTE-UNC(destination) PATH (for log file) UNIT(for log file name) PARAMETERS(robocopy)
 
-robocopy \\inpakrovmdist\GISData2 %1 %~4 /XD "$RECYCLE.BIN" "System Volume Information" /LOG:%2\%fullstamp%-%3-update-x-drive.log > %2\%fullstamp%-%3-update-x-drive-output.log 2>&1
+robocopy \\inpakrovmdist\GISData2 %1 %~4 /XD "$RECYCLE.BIN" "System Volume Information" "Extras" /LOG:%2\%fullstamp%-%3-update-x-drive.log > %2\%fullstamp%-%3-update-x-drive-output.log 2>&1
 
 
