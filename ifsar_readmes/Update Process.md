@@ -16,15 +16,15 @@ PDS Update Process for IFSAR data
    - or put in the I&M cabinet)
 4. Create a list of `.tif` files for analysis
    - This can be just the newly added files, or all the files in `SDMI_IFSAR`
-   - Tools are in `https://github.com/AKROGIS/PDS-Data-Management`
-   - Edit the last line of `pds-reorg/list-images.py`
+   - Tools are in `https://github.com/AKROGIS/PDS-Data-Management/misc-reorg-scripts`
+   - Edit the last line of `list-images.py`
    - Use a new output filename for the csv data
    - The search path can be just the new data (faster) or all the IFSAR data
-   - Run `pds-reorg/list-images.py`
-   - Edit `pds-reorg/organize_ifsar.py`
+   - Run `list-images.py`
+   - Edit `organize_ifsar.py`
    - Edit lines 14 and 15 to set the input and output csv files.  The input
      to this command is the output from the previous command.
-   - Run `pds-reorg/organize_ifsar.py`
+   - Run `organize_ifsar.py`
    - Use Atom (not VS Code) to replace CRLF line endings with LF endings
      (required for SQL import)
    - Either replace or append to the table `ifsar_tif_all` in the
@@ -32,11 +32,11 @@ PDS Update Process for IFSAR data
      just new search of the SDMI_IFSAR tree was done.
    - If the database or table does not exist, it can be created from scratch
      (use `Tasks` -> `Import From Flatfile...` using SSMS in any database)
-     from the output of `pds-reorg/organize_ifsar.py` as long as the full
+     from the output of `organize_ifsar.py` as long as the full
      IFSAR tree was searched.
 5. Analyze the data for issues
-   - Use SQL queries in `pds-reorg/Ifsar file analysis.sql` and
-     `pds-reorg/Ifsar file analysis2.sql` to ...
+   - Use SQL queries in `Ifsar file analysis.sql` and
+     `Ifsar file analysis2.sql` to ...
    - Identify tiles to skip
    - Identify dups, mismatches or other anomolies
    - Identify old style stats files
@@ -49,7 +49,7 @@ PDS Update Process for IFSAR data
    - Details to follow (after next resubmittal)
 8. Create the list of tif files to import
    - One per each mosaic dataset in `X:\Mosaics\Statewide\DEMs\SDMI_IFSAR.gdb`
-   - Use SQL EXPORT queries at the end of `pds-reorg/Ifsar file analysis.sql`
+   - Use SQL EXPORT queries at the end of `Ifsar file analysis.sql`
    - Save exports as `csv` files in `pds-reorg\data`
    - SSMS adds a utf8 BOM at the begining of the file.  The easiest way to deal
      with this is add a column name row at the top that is skipped.
@@ -57,7 +57,7 @@ PDS Update Process for IFSAR data
    - Copy `\Mosaics\Statewide\DEMs\SDMI_IFSAR.gdb` and Overviews to
      an editable location (`C:\tmp`) a portable HD copy of the X drive
      mounted as `X:` is the most fool proof.
-   - Edit and run the script `pds-reorg/build_mosaics.py` for each
+   - Edit and run the script `build_mosaics.py` for each
      mosaic dataset.
 10. Add functions to the input rasters
     - Add Mosaics to ArcMap, and select the new footprints, then use
