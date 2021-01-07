@@ -10,13 +10,13 @@ PDS Update Process for IFSAR data
    - Minimal path consolidation and renaming is acceptable (see 2019_IFSAR)
    - Do not copy manifest list or system files
    - Update `NPS_IFSAR_Folders.txt` and `NPS_IFSAR_Manifest.txt` in `X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\_README`
-   - Label the package for the I&M Archive portable HD with the 
+   - Label the package for the I&M Archive portable HD with the
      next available **X#** number (see the manifest document)
 3. Return the disk to Beth
    - or put in the I&M cabinet)
 4. Create a list of `.tif` files for analysis
    - This can be just the newly added files, or all the files in `SDMI_IFSAR`
-   - Tools are in `https://github.com/regan-sarwas/pds-reorg`
+   - Tools are in `https://github.com/AKROGIS/PDS-Data-Management`
    - Edit the last line of `pds-reorg/list-images.py`
    - Use a new output filename for the csv data
    - The search path can be just the new data (faster) or all the IFSAR data
@@ -62,7 +62,7 @@ PDS Update Process for IFSAR data
 10. Add functions to the input rasters
     - Add Mosaics to ArcMap, and select the new footprints, then use
       `Selection` -> `Batch Edit Raster Functions` from the context menu,
-      or the `Field Calculator` from the table view. 
+      or the `Field Calculator` from the table view.
     - Check/Set MaxPS to 6.25 for all ORI, and 15 for all DTM/DSM
     - Add masks for nodata = 0 and nodata = 1 for the ori images
     - Add no data masks to the dtm and dsm if needed (typically only along border).
@@ -108,7 +108,7 @@ PDS Update Process for IFSAR data
     some mask files that were deleted on the local overviews.  Find and remove those same files
     from the server.
 14. Update the overview paths
-    - right click, `Modify` -> `Repair...` and replace the 
+    - right click, `Modify` -> `Repair...` and replace the
       path to the writable overviews with the X drive path.
 15. Test
 16. Update Metadata

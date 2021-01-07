@@ -9,10 +9,10 @@ Then you would apply the changes described in this document.
 
 Find duplicates and other problems
 ----------------------------------
- * List the tif images in X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR with https://github.com/regan-sarwas/pds-reorg/blob/master/list-images.py
- * Add additional attributes to this list with https://github.com/regan-sarwas/pds-reorg/blob/master/organize_ifsar.py
+ * List the tif images in X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR with https://github.com/AKROGIS/PDS-Data-Management/blob/master/list-images.py
+ * Add additional attributes to this list with https://github.com/AKROGIS/PDS-Data-Management/blob/master/organize_ifsar.py
  * Import this list into SQL Server
- * Analyze with https://github.com/regan-sarwas/pds-reorg/blob/master/Ifsar%20file%20analysis.sql
+ * Analyze with https://github.com/AKROGIS/PDS-Data-Management/blob/master/Ifsar%20file%20analysis.sql
  * Once problems are addressed, export the list of tif files for each mosaic.
 
 Update Summer_2016_Lot1
