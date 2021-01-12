@@ -16,7 +16,7 @@ PDS Update Process for IFSAR data
    - or put in the I&M cabinet)
 4. Create a list of `.tif` files for analysis
    - This can be just the newly added files, or all the files in `SDMI_IFSAR`
-   - Tools are in `https://github.com/AKROGIS/PDS-Data-Management/misc-reorg-scripts`
+   - Tools are in https://github.com/AKROGIS/PDS-Data-Management/misc-reorg-scripts
    - Edit the last line of `list-images.py`
    - Use a new output filename for the csv data
    - The search path can be just the new data (faster) or all the IFSAR data

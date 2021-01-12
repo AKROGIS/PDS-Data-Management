@@ -25,6 +25,8 @@ verify the contents of the PDS with all of the distribution disks from USGS.
 Scripts developed during the PDS (X drive) reorganization in 2017.  Many of
 these scripts were to better understand the contents of the old PDS, and to
 verify that the contents of the reorganized PDS were complete.  These scripts
+are also used in the [IFSAR update process](./ifsar_readmes/Update%20Process.md)
+which is largely complete as of 2021.  Other than that, these scripts
 have very little value as is now that the reorganization is complete, but
 they can be valuable as a starting point for similar tools.
 
