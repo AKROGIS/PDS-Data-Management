@@ -119,6 +119,17 @@ _README
  * YukonDelta_BaseOrder_2018
    - X14 - from_MyPassport_WXM1A78841YV\Alaska_MidAccuracy_DEM
 
+2021_IFSAR
+----------
+ * Kodiak_StLawrence_Lot6_Option1
+   - X19 - AK_ KodiakStL_2019_D19_Drive4\Alaska_MidAccuracy_DEM\Kodiak_StLawrence_Lot6_Option1
+ * Kodiak_StLawrence_Lot6_Option2
+   - X19 - AK_KodiakStL_2019_D19_Drive3\Alaska_MidAccuracy_DEM\Kodiak_StLawrence_Lot6_Option2
+ * Western_Aleutians_Lot7
+   - X19 - AK_IFSAR\Alaska_MidAccuracy_DEM\Western_Aleutians_Lot6
+ * Western_Aleutians_Lot7
+   - X19 - AK_WAleutians_2019_D19_Drive4\Alaska_MidAccuracy_DEM\Western_Aleutians_Lot7
+
 FEDI_Data
 ---------
  * Copper_River

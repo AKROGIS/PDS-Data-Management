@@ -802,3 +802,44 @@ Black WD Easystore 1TB  SN: WXF1A288VALS
     User Manual.url
     WD Discovery for Mac.dmg
     WD Discovery.exe
+
+
+----------------------
+X19
+----------------------
+**IFSAR Delivery 21Jan2021**
+
+Black WD Easystore 4TB  SN: WXF??
+
+*Checked contents with X drive:  Good, 2021-01-21, RES*
+
+### AK_ KodiakStL_2019_D19_Drive4\Alaska_MidAccuracy_DEM\Kodiak_StLawrence_Lot6_Option1
+    197 GB (212,106,355,177 bytes)
+    2,731 Files, 92 Folders
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2021_IFSAR\Kodiak_StLawrence_Lot6_Option1
+    197 GB (212,106,355,177 bytes)
+    2,731 Files, 92 Folders
+### AK_KodiakStL_2019_D19_Drive3\Alaska_MidAccuracy_DEM\Kodiak_StLawrence_Lot6_Option2
+    55.3 GB (59,430,039,280 bytes)
+    1,175 Files, 51 Folders
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2021_IFSAR\Kodiak_StLawrence_Lot6_Option2
+    55.3 GB (59,430,039,280 bytes)
+    1,175 Files, 51 Folders
+### AK_IFSAR\Alaska_MidAccuracy_DEM\Western_Aleutians_Lot6
+    52.2 GB (56,119,660,058 bytes)
+    664 Files, 30 Folders
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2021_IFSAR\Western_Aleutians_Lot6
+    52.2 GB (56,119,660,058 bytes)
+    664 Files, 30 Folders
+### AK_WAleutians_2019_D19_Drive4\Alaska_MidAccuracy_DEM\Western_Aleutians_Lot7
+    456 GB (489,885,040,248 bytes)
+    3,993 Files, 155 Folders
+#### X:\Extras\AKR\Statewide\DEM\SDMI_IFSAR\2021_IFSAR\Western_Aleutians_Lot7
+    456 GB (489,885,040,248 bytes)
+    3,993 Files, 155 Folders
+
+### Other Files/Folders
+*Did not copy - Not IFSAR data*
+
+    $RECYCLE.BIN
+    System Volume Information
