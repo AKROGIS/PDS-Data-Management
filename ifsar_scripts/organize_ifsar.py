@@ -11,8 +11,8 @@ import glob
 
 # must run this from a folder with a data directory
 
-csv_file = 'data/ifsar_tif_2019c.csv'
-out_file = 'data/ifsar_tif_2019c_supp.csv'
+csv_file = 'data/ifsar_tif_2021.csv'
+out_file = 'data/ifsar_tif_2021_supp.csv'
 
 with open(out_file, 'wb') as o:
     csv_writer = csv.writer(o)

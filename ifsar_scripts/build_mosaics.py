@@ -91,9 +91,9 @@ if __name__ == '__main__':
     # main2()
     #gdb = r'X:\Mosaics\Statewide\DEMs\SDMI_IFSAR.gdb'
     gdb = r'C:/tmp/pds/new_ifsar/SDMI_IFSAR.gdb'
-    main(fgdb=gdb, mosaic='DSM', csv_file=r'data\build_ifsar_2019c_dsm.csv')
-    main(fgdb=gdb, mosaic='DTM', csv_file=r'data\build_ifsar_2019c_dtm.csv')
-    main(fgdb=gdb, mosaic='ORI', csv_file=r'data\build_ifsar_2019c_ori.csv')
-    main(fgdb=gdb, mosaic='ORI_SUP1', csv_file=r'data\build_ifsar_2019c_ori1.csv')
-    main(fgdb=gdb, mosaic='ORI_SUP2', csv_file=r'data\build_ifsar_2019c_ori2.csv')
-    main(fgdb=gdb, mosaic='ORI_SUP3', csv_file=r'data\build_ifsar_2019c_ori3.csv')
+    main(fgdb=gdb, mosaic='DSM', csv_file=r'data\build_ifsar_2021_dsm.csv')
+    main(fgdb=gdb, mosaic='DTM', csv_file=r'data\build_ifsar_2021_dtm.csv')
+    main(fgdb=gdb, mosaic='ORI', csv_file=r'data\build_ifsar_2021_ori.csv')
+    main(fgdb=gdb, mosaic='ORI_SUP1', csv_file=r'data\build_ifsar_2021_ori1.csv')
+    main(fgdb=gdb, mosaic='ORI_SUP2', csv_file=r'data\build_ifsar_2021_ori2.csv')
+    main(fgdb=gdb, mosaic='ORI_SUP3', csv_file=r'data\build_ifsar_2021_ori3.csv')
