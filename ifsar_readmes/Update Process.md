@@ -16,7 +16,7 @@ PDS Update Process for IFSAR data
    - or put in the I&M cabinet)
 4. Create a list of `.tif` files for analysis
    - This can be just the newly added files, or all the files in `SDMI_IFSAR`
-   - Tools are in https://github.com/AKROGIS/PDS-Data-Management/blob/master/misc-reorg-scripts
+   - Tools are in https://github.com/AKROGIS/PDS-Data-Management/blob/master/igsar_scripts
    - Edit the last line of `list-images.py`
    - Use a new output filename for the csv data
    - The search path can be just the new data (faster) or all the IFSAR data
@@ -50,7 +50,7 @@ PDS Update Process for IFSAR data
 8. Create the list of tif files to import
    - One per each mosaic dataset in `X:\Mosaics\Statewide\DEMs\SDMI_IFSAR.gdb`
    - Use SQL EXPORT queries at the end of `Ifsar file analysis.sql`
-   - Save exports as `csv` files in `pds-reorg\data`
+   - Save exports as `csv` files in `ifsar_scripts\data`
    - SSMS adds a utf8 BOM at the begining of the file.  The easiest way to deal
      with this is add a column name row at the top that is skipped.
 9. Add new rasters to Mosaic
