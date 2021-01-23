@@ -1,11 +1,33 @@
-import time, os, datetime, sys, logging, logging.handlers, shutil
+# -*- coding: utf-8 -*-
+
+"""
+A generic tool to export an esri SDE database to a file geodatabase.
+
+This tool is designed to be run as a scheduled task.
+Since it is generic, it applies no special filters or transformations on the
+data sets it exports. 
+
+This tool was written for Python 2.7, but should work with 3.3+
+Non-standard modules:
+  Relies on the esri `arcpy` module installed with ArcGIS.
+"""
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import datetime
+import logging
+import logging.handlers
+import os
+import shutil
+import sys
+import time
+
 import arcpy
 
-########################## user defined functions ##############################
 
 def getDatabaseItemCount(workspace):
+    """Returns a list of feature classes in the workspace."""
     log = logging.getLogger("script_log")
-    """returns the item count in provided database"""
     arcpy.env.workspace = workspace
     feature_classes = []
     log.info("Compiling a list of items in {0} and getting count.".format(workspace))
@@ -15,7 +37,9 @@ def getDatabaseItemCount(workspace):
     log.info("There are a total of {0} items in the database".format(len(feature_classes)))
     return feature_classes, len(feature_classes)
 
+
 def replicateDatabase(dbConnection, targetGDB):
+    """Replicates the SDE database at `dbConnection` to the FGDB at the path `targetGDB`."""
     log = logging.getLogger("script_log")
     startTime = time.time()
 
@@ -61,7 +85,7 @@ def replicateDatabase(dbConnection, targetGDB):
             targetPath = os.path.join(targetGDB, targetName)
             if not arcpy.Exists(targetPath):
                 try:
-                    log.info("Atempting to Copy %s to %s" %(targetName, targetPath))
+                    log.info("Attempting to Copy %s to %s" %(targetName, targetPath))
                     arcpy.Copy_management(sourcePath, targetPath)
                     log.info("Finished copying %s to %s" %(targetName, targetPath))
                 except Exception as e:
@@ -77,9 +101,9 @@ def replicateDatabase(dbConnection, targetGDB):
         log.warning("{0} does not exist or is not supported! \
         Please check the database path and try again.".format(dbConnection))
 
-#####################################################################################
 
 def formatTime(x):
+    """Formats `x` seconds as an ISO time string `hh:mm:ss`."""
     minutes, seconds_rem = divmod(x, 60)
     if minutes >= 60:
         hours, minutes_rem = divmod(minutes, 60)
@@ -87,6 +111,7 @@ def formatTime(x):
     else:
         minutes, seconds_rem = divmod(x, 60)
         return "00:%02d:%02d" % (minutes, seconds_rem)
+
 
 if __name__ == "__main__":
     startTime = time.time()
