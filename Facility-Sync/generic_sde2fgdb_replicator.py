@@ -63,7 +63,7 @@ def replicateDatabase(dbConnection, targetGDB):
             except Exception as e:
                 log.error(e)
 
-        GDB_Path, GDB_Name = os.path.split(targetGDB)
+        (GDB_Path, GDB_Name) = os.path.split(targetGDB)
         log.info("Now Creating New %s" % (GDB_Name))
         arcpy.CreateFileGDB_management(GDB_Path, GDB_Name)
 
@@ -71,21 +71,21 @@ def replicateDatabase(dbConnection, targetGDB):
 
         try:
             datasetList = [arcpy.Describe(a).name for a in arcpy.ListDatasets()]
-        except Exception, e:
+        except Exception as ex:
             datasetList = []
-            log.error(e)
+            log.error(ex)
         try:
             featureClasses = [
                 arcpy.Describe(a).name for a in arcpy.ListFeatureClasses()
             ]
-        except Exception, e:
+        except Exception as ex:
             featureClasses = []
-            log.error(e)
+            log.error(ex)
         try:
             tables = [arcpy.Describe(a).name for a in arcpy.ListTables()]
-        except Exception, e:
+        except Exception as ex:
             tables = []
-            log.error(e)
+            log.error(ex)
 
         # Compiles a list of the previous three lists to iterate over
         allDbData = datasetList + featureClasses + tables
@@ -177,8 +177,8 @@ if __name__ == "__main__":
         replicateDatabase(databaseConnection, targetGDB)
 
         ################################################################################
-    except Exception, e:
-        log.exception(e)
+    except Exception as ex:
+        log.exception(ex)
 
     totalTime = formatTime((time.time() - startTime))
     log.info("--------------------------------------------------")
