@@ -90,9 +90,9 @@ for c in range(in_columns):
                 new_name = ("{0}" + cformat_out + rformat_out).format(new_base_name, xname, yname)
                 yoff = ysize*j
                 cmd = cmd_base.format(xoff, yoff, xsize, ysize, old_name, new_name, predictor, extra)
-                print cmd
+                print(cmd)
                 if predictor == 2:
-                    print "gdaladdo --config COMPRESS_OVERVIEW JPEG --config PHOTOMETRIC_OVERVIEW YCBCR --config INTERLEAVE_OVERVIEW PIXEL -r average {0}.tif".format(new_name)
+                    print("gdaladdo --config COMPRESS_OVERVIEW JPEG --config PHOTOMETRIC_OVERVIEW YCBCR --config INTERLEAVE_OVERVIEW PIXEL -r average {0}.tif".format(new_name))
                 if predictor == 3:
-                    print "gdaladdo --config COMPRESS_OVERVIEW JPEG --config INTERLEAVE_OVERVIEW PIXEL -r average {0}.tif".format(new_name)
-                print "gdalinfo -stats -hist {0}.tif".format(new_name)
+                    print("gdaladdo --config COMPRESS_OVERVIEW JPEG --config INTERLEAVE_OVERVIEW PIXEL -r average {0}.tif".format(new_name))
+                print("gdalinfo -stats -hist {0}.tif".format(new_name))
