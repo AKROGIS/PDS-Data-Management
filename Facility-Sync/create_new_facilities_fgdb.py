@@ -32,7 +32,12 @@ connection_file = (
     r"Database Connections\inpakrovmais - facilities as akr_reader_web.sde"
 )
 sde_schema = "akr_facility2."
-tables = ["dbo.FMSSExport", "dbo.FMSSExport_Asset", "gis.AKR_ATTACH", "gis.AKR_ASSET"]
+tables = [
+    "dbo.FMSSExport",
+    "dbo.FMSSExport_Asset",
+    "gis.AKR_ATTACH",
+    "gis.AKR_ASSET",
+]
 fcs = [
     "dbo.AKR_BLDG_PT",
     "dbo.AKR_BLDG_PY",
