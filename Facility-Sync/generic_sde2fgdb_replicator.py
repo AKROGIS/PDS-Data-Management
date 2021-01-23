@@ -31,10 +31,14 @@ def getDatabaseItemCount(workspace):
     arcpy.env.workspace = workspace
     feature_classes = []
     log.info("Compiling a list of items in {0} and getting count.".format(workspace))
-    for dirpath, dirnames, filenames in arcpy.da.Walk(workspace,datatype="Any",type="Any"):
+    for dirpath, dirnames, filenames in arcpy.da.Walk(
+        workspace, datatype="Any", type="Any"
+    ):
         for filename in filenames:
             feature_classes.append(os.path.join(dirpath, filename))
-    log.info("There are a total of {0} items in the database".format(len(feature_classes)))
+    log.info(
+        "There are a total of {0} items in the database".format(len(feature_classes))
+    )
     return feature_classes, len(feature_classes)
 
 
@@ -44,19 +48,23 @@ def replicateDatabase(dbConnection, targetGDB):
     startTime = time.time()
 
     if arcpy.Exists(dbConnection):
-        featSDE,cntSDE = getDatabaseItemCount(dbConnection)
-        log.info("Geodatabase being copied: %s -- Feature Count: %s" %(dbConnection, cntSDE))
+        featSDE, cntSDE = getDatabaseItemCount(dbConnection)
+        log.info(
+            "Geodatabase being copied: %s -- Feature Count: %s" % (dbConnection, cntSDE)
+        )
         if arcpy.Exists(targetGDB):
-            featGDB,cntGDB = getDatabaseItemCount(targetGDB)
-            log.info("Old Target Geodatabase: %s -- Feature Count: %s" %(targetGDB, cntGDB))
+            featGDB, cntGDB = getDatabaseItemCount(targetGDB)
+            log.info(
+                "Old Target Geodatabase: %s -- Feature Count: %s" % (targetGDB, cntGDB)
+            )
             try:
                 shutil.rmtree(targetGDB)
-                log.info("Deleted Old %s" %(os.path.split(targetGDB)[-1]))
+                log.info("Deleted Old %s" % (os.path.split(targetGDB)[-1]))
             except Exception as e:
                 log.error(e)
 
         GDB_Path, GDB_Name = os.path.split(targetGDB)
-        log.info("Now Creating New %s" %(GDB_Name))
+        log.info("Now Creating New %s" % (GDB_Name))
         arcpy.CreateFileGDB_management(GDB_Path, GDB_Name)
 
         arcpy.env.workspace = dbConnection
@@ -67,7 +75,9 @@ def replicateDatabase(dbConnection, targetGDB):
             datasetList = []
             log.error(e)
         try:
-            featureClasses = [arcpy.Describe(a).name for a in arcpy.ListFeatureClasses()]
+            featureClasses = [
+                arcpy.Describe(a).name for a in arcpy.ListFeatureClasses()
+            ]
         except Exception, e:
             featureClasses = []
             log.error(e)
@@ -77,29 +87,35 @@ def replicateDatabase(dbConnection, targetGDB):
             tables = []
             log.error(e)
 
-        #Compiles a list of the previous three lists to iterate over
+        # Compiles a list of the previous three lists to iterate over
         allDbData = datasetList + featureClasses + tables
 
         for sourcePath in allDbData:
-            targetName = sourcePath.split('.')[-1]
+            targetName = sourcePath.split(".")[-1]
             targetPath = os.path.join(targetGDB, targetName)
             if not arcpy.Exists(targetPath):
                 try:
-                    log.info("Attempting to Copy %s to %s" %(targetName, targetPath))
+                    log.info("Attempting to Copy %s to %s" % (targetName, targetPath))
                     arcpy.Copy_management(sourcePath, targetPath)
-                    log.info("Finished copying %s to %s" %(targetName, targetPath))
+                    log.info("Finished copying %s to %s" % (targetName, targetPath))
                 except Exception as e:
-                    log.error("Unable to copy %s to %s" %(targetName, targetPath))
+                    log.error("Unable to copy %s to %s" % (targetName, targetPath))
                     log.error(e)
             else:
-                log.warning("%s already exists....skipping....." %(targetName))
+                log.warning("%s already exists....skipping....." % (targetName))
 
-        featGDB,cntGDB = getDatabaseItemCount(targetGDB)
-        log.info("Completed replication of %s -- Feature Count: %s" %(dbConnection, cntGDB))
+        featGDB, cntGDB = getDatabaseItemCount(targetGDB)
+        log.info(
+            "Completed replication of %s -- Feature Count: %s" % (dbConnection, cntGDB)
+        )
 
     else:
-        log.warning("{0} does not exist or is not supported! \
-        Please check the database path and try again.".format(dbConnection))
+        log.warning(
+            "{0} does not exist or is not supported! \
+        Please check the database path and try again.".format(
+                dbConnection
+            )
+        )
 
 
 def formatTime(x):
@@ -118,16 +134,20 @@ if __name__ == "__main__":
     now = datetime.datetime.now()
 
     ############################### user variables #################################
-    '''change these variables to the location of the database being copied, the target
-    database location and where you want the log to be stored'''
+    """change these variables to the location of the database being copied, the target
+    database location and where you want the log to be stored"""
 
-    logPath = ""  # No path will put it in the current directory (likely the script directory)
-    databaseConnection = r"Database Connections\inpakrovmais - facilities as DomainUser.sde"
-    targetGDB = r"c:\tmp\fmss\akr_facility_new.gdb"   # must be a full path
+    logPath = (
+        ""  # No path will put it in the current directory (likely the script directory)
+    )
+    databaseConnection = (
+        r"Database Connections\inpakrovmais - facilities as DomainUser.sde"
+    )
+    targetGDB = r"c:\tmp\fmss\akr_facility_new.gdb"  # must be a full path
 
     ############################### logging items ###################################
     # Make a global logging object.
-    logName = os.path.join(logPath,(now.strftime("%Y-%m-%d_%H-%M.log")))
+    logName = os.path.join(logPath, (now.strftime("%Y-%m-%d_%H-%M.log")))
 
     log = logging.getLogger("script_log")
     log.setLevel(logging.INFO)
@@ -135,7 +155,10 @@ if __name__ == "__main__":
     h1 = logging.FileHandler(logName)
     h2 = logging.StreamHandler()
 
-    f = logging.Formatter("[%(levelname)s] [%(asctime)s] [%(lineno)d] - %(message)s",'%m/%d/%Y %I:%M:%S %p')
+    f = logging.Formatter(
+        "[%(levelname)s] [%(asctime)s] [%(lineno)d] - %(message)s",
+        "%m/%d/%Y %I:%M:%S %p",
+    )
 
     h1.setFormatter(f)
     h2.setFormatter(f)
@@ -146,7 +169,7 @@ if __name__ == "__main__":
     log.addHandler(h1)
     log.addHandler(h2)
 
-    log.info('Script: {0}'.format(os.path.basename(sys.argv[0])))
+    log.info("Script: {0}".format(os.path.basename(sys.argv[0])))
 
     try:
         ########################## function calls ######################################
@@ -158,6 +181,6 @@ if __name__ == "__main__":
         log.exception(e)
 
     totalTime = formatTime((time.time() - startTime))
-    log.info('--------------------------------------------------')
+    log.info("--------------------------------------------------")
     log.info("Script Completed After: {0}".format(totalTime))
-    log.info('--------------------------------------------------')
+    log.info("--------------------------------------------------")
