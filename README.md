@@ -8,6 +8,7 @@ There is very little documentation provided, but most of the scripts are short
 and easily understood.
 
 ## Contents
+
 A description of the contents of the folders in the repo follows.
 
 ### `Facility-Sync`
@@ -17,12 +18,12 @@ data in SDE.  It also includes a generic SDE to FGDB export tool.
 
 ### `ifsar_readmes`
 
-Contains documentation on the IFSAR update process as well as details to
+Contains documentation on the IfSAR update process as well as details to
 verify the contents of the PDS with all of the distribution disks from USGS.
 
-### `ifsar_readmes`
+### `ifsar_scripts`
 
-Scripts for processing ifsar submittals.  See the IfSAR 
+Scripts for processing IfSAR submittals.  See the IfSAR
 [Update Process](ifsar_readmes\Update%20Process.md) for details.
 This folder is no longer active as the last of the IfSAR data was
 received in January 2021.
@@ -44,7 +45,7 @@ robocopy tries to delete the old and transmit the new data to the the server.
 
 ### `robo-copy`
 
-DOS batch files, that run as a nightly task, to use robo copy to sync the Park
+DOS batch files, that run as a nightly task, to use robocopy to sync the Park
 servers with changes to the PDS.  Also includes a batch file to use robocopy
 to sync an external drive with changes to the PDS.
 
@@ -61,7 +62,6 @@ Batch files to manage remapping a user's profile from the old X drive (PDS)
 to the new X drive.  Also includes a script to create an X drive mapping for
 a system account (like `arcgis` for the ArcGIS Server) on another server.
 
-
 ## Build
 
 There is nothing to build to use these tools.
@@ -76,12 +76,12 @@ to a local file system.
 ### Python
 
 Before executing a python script, open it in a text editor and check any
-path or file names in the script that should be edited to reflect the 
+path or file names in the script that should be edited to reflect the
 file system where the script and data are deployed.  The script can then
 be run in a CMD/Powershell window, with the
 [IDLE](https://en.wikipedia.org/wiki/IDLE) application,
 with the
-[Python extension to VS Code](https://code.visualstudio.com/docs/languages/python), 
+[Python extension to VS Code](https://code.visualstudio.com/docs/languages/python),
 or any other Python execution environment.
 
 ### SQL Scripts
