@@ -13,8 +13,7 @@ A description of the contents of the folders in the repo follows.
 ### `Facility-Sync`
 
 Instructions and a script for creating a new facilities FGDB from the master
-data in SDE.  It also includes a couple of attempts at a generic SDE to FGDB
-sync tool.
+data in SDE.  It also includes a generic SDE to FGDB export tool.
 
 ### `ifsar_readmes`
 
