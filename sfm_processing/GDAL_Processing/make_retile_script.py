@@ -1,15 +1,27 @@
+# -*- coding: utf-8 -*-
+"""
+This script will output GDAL commands to re-tile images.
+
+Re-tiling subdivides a source image into several smaller images.
+into smaller chunks. The output can be saved into a batch file for execution
+in the directory containing the source images.  commands assumes there is a
+sub folder called "new" for the output files.
+The commands will create loseless compressed GeoTIFFs with pyramids and stats.
+
+I believe source tiles around 10,000 x 10,000 pixels is a good
+compromise. Larger images take longer to load, and are more sensitive to
+hicups during network transfers.
+
+This tool was written for Python 2.7, but should work with 3.3+
+Non-standard modules:
+  Relies on the esri `arcpy` module installed with ArcGIS.
+"""
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import sys
 
-# This script will create a GDAL commands to retile (sub-divide) images
-# into smaller chunks. The output can be saved into a batch file for execution
-# in the directory containing the source images.  commands assumes there is a
-# sub folder called "new" for the output files.
-# The commands will create loseless compressed GeoTIFFs with pyramids and stats.
-
-# I believe source tiles around 10,000 x 10,000 pixels is a good
-# compromise. Larger images take longer to load, and are more sensitive to
-# hicups during network transfers.
-
+# CONFIGURATION CONSTANTS
 # Output Size  (10000 is good for 32bit 1band DEMs, and 5000 is good for 16bit-3band orthos)
 # This keeps the output files in the 100 to 200 MB range
 xsize = 5000
@@ -44,6 +56,7 @@ extra = ""     # for adding no-data or band removal  -a_nodata none  -b 1 -b 2 -
 cmd_base = "gdal_translate -of GTIFF {7} -srcwin {0:5} {1:5} {2:5} {3:5} -CO COMPRESS=DEFLATE -co PREDICTOR={6} -CO TILED=YES {4}.tif {5}.tif"
 
 # End of configuration options.
+
 
 if in_columns < 1 or in_rows < 1:
     print("Error: Both in_columns and in_rows must be greater than zero.")
