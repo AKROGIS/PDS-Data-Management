@@ -209,8 +209,9 @@ arcpy.ImportMetadata_conversion(Source_Metadata, "FROM_ARCGIS", FMSS_Assets)
 
 # Add History
 # ===========
-# TODO:  ArcGIS provides no way to do this.
-# I think I need a direct database connection, then copy the *_H tables, then convert them to a feature class.
+# TODO: ArcGIS provides no way to add the history tables.
+# I think I need a direct database connection, then copy the *_H tables,
+# then convert them to a feature class.
 
 # Add Relationships
 # =================
