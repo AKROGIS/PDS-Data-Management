@@ -58,41 +58,46 @@ cmd_base = "gdal_translate -of GTIFF {7} -srcwin {0:5} {1:5} {2:5} {3:5} -CO COM
 # End of configuration options.
 
 
-if in_columns < 1 or in_rows < 1:
-    print("Error: Both in_columns and in_rows must be greater than zero.")
-    sys.exit()
-if n_cols < 1 or n_rows < 1:
-    print("Error: Both n_cols and n_rows must be greater than zero.")
-    sys.exit()
-if n_cols < 2 and n_rows < 2:
-    print("Error: One of n_cols or n_rows must be greater than one.")
-    sys.exit()
-old_name = base_name
-cformat_in = "-{1:02}" if pad_column_with_leading_zeros else "-{1}"
-rformat_in = "-{2:02}" if pad_row_with_leading_zeros else "-{2}"
-cformat_out = "-{1}" if in_columns * n_cols <= 10 else "-{1:02}"
-rformat_out = "-{2}" if in_rows * n_rows <= 10 else "-{2:02}"
-if in_columns > 1 or in_rows > 1:
-    add_numbers = True
-for c in range(in_columns):
-    for r in range(in_rows):
-        if add_numbers:
-            old_name = ("{0}" + cformat_in + rformat_in).format(base_name,c, r)
-        new_base_name = "new\\" + base_name
-        start_cell_x = n_cols * c
-        start_cell_y = n_rows * r
-        for i in range(n_cols):
-            xoff = xsize*i
-            xname = start_cell_x + i
-            for j in range(n_rows):
-                yname = start_cell_y + j
+def print_commands():
+    if in_columns < 1 or in_rows < 1:
+        print("Error: Both in_columns and in_rows must be greater than zero.")
+        sys.exit()
+    if n_cols < 1 or n_rows < 1:
+        print("Error: Both n_cols and n_rows must be greater than zero.")
+        sys.exit()
+    if n_cols < 2 and n_rows < 2:
+        print("Error: One of n_cols or n_rows must be greater than one.")
+        sys.exit()
+    old_name = base_name
+    cformat_in = "-{1:02}" if pad_column_with_leading_zeros else "-{1}"
+    rformat_in = "-{2:02}" if pad_row_with_leading_zeros else "-{2}"
+    cformat_out = "-{1}" if in_columns * n_cols <= 10 else "-{1:02}"
+    rformat_out = "-{2}" if in_rows * n_rows <= 10 else "-{2:02}"
+    if in_columns > 1 or in_rows > 1:
+        add_numbers = True
+    for c in range(in_columns):
+        for r in range(in_rows):
+            if add_numbers:
+                old_name = ("{0}" + cformat_in + rformat_in).format(base_name,c, r)
+            new_base_name = "new\\" + base_name
+            start_cell_x = n_cols * c
+            start_cell_y = n_rows * r
+            for i in range(n_cols):
+                xoff = xsize*i
+                xname = start_cell_x + i
+                for j in range(n_rows):
+                    yname = start_cell_y + j
 
-                new_name = ("{0}" + cformat_out + rformat_out).format(new_base_name, xname, yname)
-                yoff = ysize*j
-                cmd = cmd_base.format(xoff, yoff, xsize, ysize, old_name, new_name, predictor, extra)
-                print(cmd)
-                if predictor == 2:
-                    print("gdaladdo --config COMPRESS_OVERVIEW JPEG --config PHOTOMETRIC_OVERVIEW YCBCR --config INTERLEAVE_OVERVIEW PIXEL -r average {0}.tif".format(new_name))
-                if predictor == 3:
-                    print("gdaladdo --config COMPRESS_OVERVIEW JPEG --config INTERLEAVE_OVERVIEW PIXEL -r average {0}.tif".format(new_name))
-                print("gdalinfo -stats -hist {0}.tif".format(new_name))
+                    new_name = ("{0}" + cformat_out + rformat_out).format(new_base_name, xname, yname)
+                    yoff = ysize*j
+                    cmd = cmd_base.format(xoff, yoff, xsize, ysize, old_name, new_name, predictor, extra)
+                    print(cmd)
+                    if predictor == 2:
+                        print("gdaladdo --config COMPRESS_OVERVIEW JPEG --config PHOTOMETRIC_OVERVIEW YCBCR --config INTERLEAVE_OVERVIEW PIXEL -r average {0}.tif".format(new_name))
+                    if predictor == 3:
+                        print("gdaladdo --config COMPRESS_OVERVIEW JPEG --config INTERLEAVE_OVERVIEW PIXEL -r average {0}.tif".format(new_name))
+                    print("gdalinfo -stats -hist {0}.tif".format(new_name))
+
+
+if __name__ == "__main__":
+    print_commands()
