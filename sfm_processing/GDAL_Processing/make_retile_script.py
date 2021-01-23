@@ -35,7 +35,7 @@ ysize = 5000
 # If there is one source image with the format {basename}.{ext}
 #   set both in_columns and in-rows to 1.
 #   set add_numbers = False
-# If the column or row numbers in the source image are padded with leading zeros, i.e 00, 01, .. 99 
+# If the column or row numbers in the source image are padded with leading zeros, i.e 00, 01, .. 99
 #   set pad_column_with_leading_zeros and pad_row_with_leading_zeros to True or False appropriately
 base_name = "2018_BELA_ATV_South_RGB"
 in_columns = 17
@@ -52,7 +52,7 @@ n_rows = 4
 
 # GDAL command settings
 predictor = 2  # 2 for Ortho, 3 for DEM
-extra = ""     # for adding no-data or band removal  -a_nodata none  -b 1 -b 2 -b 3  
+extra = ""  # for adding no-data or band removal  -a_nodata none  -b 1 -b 2 -b 3
 cmd_base = "gdal_translate -of GTIFF {7} -srcwin {0:5} {1:5} {2:5} {3:5} -CO COMPRESS=DEFLATE -co PREDICTOR={6} -CO TILED=YES {4}.tif {5}.tif"
 
 # End of configuration options.
@@ -78,24 +78,30 @@ def print_commands():
     for c in range(in_columns):
         for r in range(in_rows):
             if add_numbers:
-                old_name = ("{0}" + cformat_in + rformat_in).format(base_name,c, r)
+                old_name = ("{0}" + cformat_in + rformat_in).format(base_name, c, r)
             new_base_name = "new\\" + base_name
             start_cell_x = n_cols * c
             start_cell_y = n_rows * r
             for i in range(n_cols):
-                xoff = xsize*i
+                xoff = xsize * i
                 xname = start_cell_x + i
                 for j in range(n_rows):
                     yname = start_cell_y + j
 
-                    new_name = ("{0}" + cformat_out + rformat_out).format(new_base_name, xname, yname)
-                    yoff = ysize*j
-                    cmd = cmd_base.format(xoff, yoff, xsize, ysize, old_name, new_name, predictor, extra)
+                    new_name = ("{0}" + cformat_out + rformat_out).format(
+                        new_base_name, xname, yname
+                    )
+                    yoff = ysize * j
+                    cmd = cmd_base.format(
+                        xoff, yoff, xsize, ysize, old_name, new_name, predictor, extra
+                    )
                     print(cmd)
                     if predictor == 2:
-                        print("gdaladdo --config COMPRESS_OVERVIEW JPEG --config PHOTOMETRIC_OVERVIEW YCBCR --config INTERLEAVE_OVERVIEW PIXEL -r average {0}.tif".format(new_name))
+                        addo_cmd = "gdaladdo --config COMPRESS_OVERVIEW JPEG --config PHOTOMETRIC_OVERVIEW YCBCR --config INTERLEAVE_OVERVIEW PIXEL -r average {0}.tif"
+                        print(addo_cmd.format(new_name))
                     if predictor == 3:
-                        print("gdaladdo --config COMPRESS_OVERVIEW JPEG --config INTERLEAVE_OVERVIEW PIXEL -r average {0}.tif".format(new_name))
+                        addo_cmd = "gdaladdo --config COMPRESS_OVERVIEW JPEG --config INTERLEAVE_OVERVIEW PIXEL -r average {0}.tif"
+                        print(addo_cmd.format(new_name))
                     print("gdalinfo -stats -hist {0}.tif".format(new_name))
 
 
