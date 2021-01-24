@@ -31,6 +31,7 @@ import csv
 import logging
 import logging.config
 import os
+import sys
 
 from config import Config
 import config_file
@@ -62,37 +63,59 @@ def read_csv_map(csv_path, since):
     caller.
     """
 
-    logger.info("Opening moves database")
+    # CSV file assumptions that may change if moves database is reformatted.
+    delimiter = "|"
+    timestamp_index = 0
+    source_index = 1
+    destination_index = 5
+    # to convert datetime.datetime to string with strftime()
+    timestamp_format = "%Y-%m-%d %H:%M:%S"
+
+    # Return value
     records = []
-    with open(csv_path, "rb") as in_file:
-        # ignore the first record (header)
-        in_file.readline()
-        logger.info("Iterating moves database")
-        for row in csv.reader(in_file, delimiter=str("|").encode("utf-8")):
-            unicode_row = [unicode(item, "utf-8") if item else None for item in row]
-            move_timestamp = unicode_row[0]
-            old_workspace_path = unicode_row[1]
-            old_workspace_type = unicode_row[2]
-            old_dataset_name = unicode_row[3]
-            old_dataset_type = unicode_row[4]
-            new_workspace_path = unicode_row[5]
-            new_workspace_type = unicode_row[6]
-            new_dataset_name = unicode_row[7]
-            new_dataset_type = unicode_row[8]
-            records.append(
-                (
-                    move_timestamp,
-                    old_workspace_path,
-                    old_workspace_type,
-                    old_dataset_name,
-                    old_dataset_type,
-                    new_workspace_path,
-                    new_workspace_type,
-                    new_dataset_name,
-                    new_dataset_type,
-                )
-            )
-    logger.info("Returning moves data.")
+
+    logger.info("Opening moves database at %s", csv_path)
+    # Open file for Python 2 and Python 3 compatible CSV reading
+    if sys.version_info[0] < 3:
+        logger.debug("Opening in binary mode for Python 2")
+        csv_file = open(csv_path, "rb")
+    else:
+        logger.debug("Opening as UTF-8 encoded unicode for Python 3")
+        csv_file = open(csv_path, "r", encoding="utf8", newline="")
+
+    since_timestamp = since.strftime(timestamp_format)
+    logger.info("Filtering on moves with timestamp > '%s'", since_timestamp)
+
+    count = 0
+    with csv_file as in_file:
+        if sys.version_info[0] < 3:
+            delimiter = delimiter.encode("utf-8")
+        csv_reader = csv.reader(in_file, delimiter=delimiter)
+        header = next(csv_reader)
+        logger.debug(
+            "Header fields[%d,%d,%d] = %s, %s, %s",
+            timestamp_index,
+            source_index,
+            destination_index,
+            header[timestamp_index],
+            header[source_index],
+            header[destination_index],
+        )
+        for row in csv_reader:
+            timestamp = row[timestamp_index]
+            source = row[source_index]
+            destination = row[destination_index]
+            if sys.version_info[0] < 3:
+                timestamp = timestamp.decode("utf-8")
+                source = source.decode("utf-8")
+                destination = destination.decode("utf-8")
+
+            count += 1
+            if since_timestamp < timestamp:
+                logger.debug("Found move (%s, %s, %s)", timestamp, source, destination)
+                records.append((source, destination))
+
+    logger.info("Found %d moves (out of %d total).", len(records), count)
     return records
 
 
