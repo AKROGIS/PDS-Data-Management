@@ -8,7 +8,7 @@ When possible, it will replicate filesystem changes on the remote park servers
 to minimize the work that robocopy needs to do.  For example, if a folder name
 is changed, robocopy will only detect that the folder with the old name is gone
 and delete it, and then create new folder by copying it over the network.
-Since we are recording many file system changes in a "moves database", 
+Since we are recording many file system changes in a "moves database",
 we can avoid needlessly copying gigabytes of data over the network by simply
 directing the remote server to rename the folder as appropriate.
 
@@ -16,15 +16,17 @@ This script is intended to be run as a scheduled task.  It should be
 set up to finish before the robocopy process starts.
 
 This tool was written for Python 2.7 and 3.6.
+
+THIS SCRIPT IS NOT FINISHED AND DOES NOT WORK CORRECTLY
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import argparse
 import csv
 import logging
 import logging.config
 import os
-import time
 
 from config import Config
 import config_logger
@@ -42,11 +44,11 @@ def read_csv_map(csvpath):
 
     logger.info("Opening moves database")
     records = []
-    with open(csvpath, "rb") as fh:
+    with open(csvpath, "rb") as in_file:
         # ignore the first record (header)
-        fh.readline()
+        in_file.readline()
         logger.info("Iterating moves database")
-        for row in csv.reader(fh, delimiter=str("|").encode("utf-8")):
+        for row in csv.reader(in_file, delimiter=str("|").encode("utf-8")):
             unicode_row = [unicode(item, "utf-8") if item else None for item in row]
             move_timestamp = unicode_row[0]
             old_workspace_path = unicode_row[1]
@@ -87,16 +89,16 @@ def mover(moves_data, config):
             old_workspace_path,
             old_workspace_type,
             old_dataset_name,
-            old_dataset_type,
+            _,
             new_workspace_path,
             new_workspace_type,
-            new_dataset_name,
-            new_dataset_type,
+            _,
+            _,
         ) = row
         old_workspace_path_c = os.path.join(config.remote_server, old_workspace_path)
         new_workspace_path_c = os.path.join(config.remote_server, new_workspace_path)
 
-        # may want to break out compound if statement for better logging/feedback to users?
+        # TODO: break out compound if statement for better logging/feedback to users
         if (
             (
                 move_timestamp is None
@@ -124,11 +126,13 @@ def mover(moves_data, config):
                     new_workspace_path_parent_c = os.path.abspath(
                         os.path.join(new_workspace_path_c, os.pardir)
                     )
-                    # if parent folder does not exist create necessary folder structure through parent folder
+                    # if parent folder does not exist create necessary folder
+                    # structure through parent folder
                     if not os.path.exists(new_workspace_path_parent_c):
                         os.makedirs(new_workspace_path_parent_c)
                         logger.info("Created %s", new_workspace_path_parent_c)
-                    # move: rename folder - note, need to copy to parent, but report folder to folder as result
+                    # move: rename folder - note, need to copy to parent,
+                    # but report folder to folder as result
                     os.rename(old_workspace_path_c, new_workspace_path_c)
                     logger.info(
                         "Success: moved %s to %s",
@@ -145,60 +149,67 @@ def main():
     logger.info("Starting...")
 
     logger.debug("Get default configuration parameters from a configuration file.")
-    try:
-        import config_file
-    except ImportError as err:
-        logger.warning("Unable to load the config file: %s", err)
 
+    # FIXME: Crash if config_file.py is missing or corrupt.
+    try:
+        # pylint: disable=import-outside-toplevel
+        # config_file.py may be missing or incorrectly edited by a user.
+        # that should only be a warning, not an error.
+        import config_file
+    except ImportError:
+        logger.warning("Unable to load the config file: `config_file.py``")
+
+        # Create a class to act as the missing module
         class ConfigFile:
+            """A stand in for the missing config_file module."""
+            # pylint: disable=too-few-public-methods,invalid-name
             def __init__(self):
-                self.moves_db = None
-                self.ref_timestamp = None
-                self.remote_server = None
-                self.log_file = None
+                self.MOVES_DB = None
+                self.REF_TIMESTAMP = None
+                self.REMOTE_SERVER = None
+                self.NAME = None
                 self.check_only = None
 
         config_file = ConfigFile()
 
     logger.debug("Get configuration overrides from the command line.")
-    import argparse
 
     parser = argparse.ArgumentParser("Moves (renames) folders on a remote server. ")
     parser.add_argument(
         "-d",
         "--database",
-        default=config_file.moves_db,
+        default=config_file.MOVES_DB,
         help=(
             "The location of the moves database. "
             "See config file or default file for format. "
             "The default is {0}"
-        ).format(config_file.moves_db),
+        ).format(config_file.MOVES_DB),
     )
     parser.add_argument(
         "-s",
         "--server",
-        default=config_file.remote_server,
+        default=config_file.REMOTE_SERVER,
         help=(
             "Path to server location where moves are to occur. " "The default is {0}"
-        ).format(config_file.remote_server),
+        ).format(config_file.REMOTE_SERVER),
     )
     parser.add_argument(
         "-t",
         "--timestamp",
-        default=config_file.ref_timestamp,
+        default=config_file.REF_TIMESTAMP,
         help=(
             "The reference (last run) timestamp. "
             "No timestamp will consider all valid moves from database. "
             "The default is {0}"
-        ).format(config_file.ref_timestamp),
+        ).format(config_file.REF_TIMESTAMP),
     )
     parser.add_argument(
         "-n",
         "--name",
-        default=config_file.name,
+        default=config_file.NAME,
         help=(
             "The short name for the time stamp and log files. " "The default is {0}"
-        ).format(config_file.name),
+        ).format(config_file.NAME),
     )
     parser.add_argument(
         "--check_only",

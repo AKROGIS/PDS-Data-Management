@@ -22,7 +22,8 @@ config = {
         },
     },
     "handlers": {
-        # command line arguments (--verbose and --debug will change the level of first handler to INFO and DEBUG)
+        # command line arguments (--verbose and --debug will change the level of
+        # first handler to INFO and DEBUG)
         "console": {
             "class": "logging.StreamHandler",
             "level": "WARNING",
@@ -37,8 +38,10 @@ config = {
             "filename": "remote-mover.log",
         },
         "email": {
-            "class": "BufferingSMTPHandler.BufferingSMTPHandler",  # Bundle 100 messages into a single email
-            # 'class':    'logging.handlers.SMTPHandler',  # Separate email for each message
+            # Bundle 100 messages into a single email
+            "class": "BufferingSMTPHandler.BufferingSMTPHandler",
+            # Separate email for each message
+            # 'class':    'logging.handlers.SMTPHandler',
             "level": "ERROR",
             "formatter": "detailed",
             "mailhost": "mailer.itc.nps.gov",

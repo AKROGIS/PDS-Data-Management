@@ -43,15 +43,15 @@ def get_this_run_time():
 def get_last_run_time(prefix=None, timestamp_override=None):
     """Get the datetime of the last run from the override or the persistance file."""
 
-    if type(timestamp_override) is datetime.datetime:
+    if isinstance(timestamp_override, datetime.datetime):
         return timestamp_override
 
-    elif isinstance(timestamp_override, (str, unicode)):
+    if isinstance(timestamp_override, (str, unicode)):
         last_run_time = parse_timestamp(timestamp_override)
         logger.debug("Using the command line timestamp override %s", last_run_time)
         return last_run_time
 
-    elif timestamp_override is None:
+    if timestamp_override is None:
         return get_last_run_time_from_file(prefix)
 
     logger.debug(
@@ -69,8 +69,8 @@ def get_last_run_time_from_file(prefix=None):
         name = "{0}.timestamp".format(prefix)
     logger.debug("get_last_run_time for %s", name)
     try:
-        with open(name, "r") as f:
-            for line in f:
+        with open(name, "r") as in_file:
+            for line in in_file:
                 return datetime.datetime(*[int(i) for i in line.split(",")])
     except (IOError, ValueError, TypeError) as ex:
         logger.error("Unable to open the timestamp file: %s", name)
@@ -87,8 +87,8 @@ def save_last_run_time(since, prefix=None):
         name = "{0}.timestamp".format(prefix)
     logger.debug("save_last_run_time (%s) in %s", since, name)
     try:
-        with open(name, "w") as f:
-            t = "{0},{1},{2},{3},{4},{5},{6}".format(
+        with open(name, "w") as out_file:
+            time = "{0},{1},{2},{3},{4},{5},{6}".format(
                 since.year,
                 since.month,
                 since.day,
@@ -97,11 +97,10 @@ def save_last_run_time(since, prefix=None):
                 since.second,
                 since.microsecond,
             )
-            f.write(t.encode("utf8"))
+            out_file.write(time.encode("utf8"))
     except (IOError, ValueError, TypeError) as ex:
         logger.error("Unable to update the timestamp file: %s", name)
         logger.exception(ex)
-        return None
 
 
 def parse_timestamp(timestamp):
@@ -112,6 +111,8 @@ def parse_timestamp(timestamp):
 
     logger.debug("Attempting to parse the command line timestamp %s", timestamp)
     try:
+        # pylint: disable=import-outside-toplevel
+        # I ony want to import this non-standard module if it is needed.
         import dateutil.parser
     except ImportError:
         logger.error(

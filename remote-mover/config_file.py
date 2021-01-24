@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 A collection of configuration properties.
+
+WARNING: This file, while intended to be edited by the user, is part of the
+source code of this application.  If edited incorrectly the application may
+crash or misbehave in unexpected ways.
+
+ALWAYS TEST AFTER MAKING CHANGES TO THIS FILE.
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
@@ -12,13 +18,13 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 #   new_workspace_path|new_workspace_type|new_dataset_name|new_dataset_type|
 #   replace_workspace_path|replace_workspace_type|replace_dataset_name|
 #   replace_dataset_type|new_theme_manager_path|Notes
-moves_db = r"X:\GIS\ThemeMgr\DataMoves.csv"
+MOVES_DB = r"X:\GIS\ThemeMgr\DataMoves.csv"
 
 # Reference (last run) timestamp
-ref_timestamp = None
+REF_TIMESTAMP = None
 
 # Remote server X drive path: UNC path or symbolic link to location where moves are to occur.
-remote_server = None
+REMOTE_SERVER = None
 
 # Time stamp and log file name.
-name = None
+NAME = None

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-An alternative implementation of SMTPHandler that aggregates messages. 
- 
+An alternative implementation of SMTPHandler that aggregates messages.
+
 From https://gist.github.com/anonymous/1379446
 
 Copyright (C) 2001-2002 Vinay Sajip. All Rights Reserved.
@@ -28,7 +28,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import logging
 import logging.handlers
+import smtplib
 
+# pylint: disable=too-many-arguments,bare-except
 
 class BufferingSMTPHandler(logging.handlers.BufferingHandler):
     """A logging handler that buffers (aggregates) SMTP messages."""
@@ -45,10 +47,7 @@ class BufferingSMTPHandler(logging.handlers.BufferingHandler):
     def flush(self):
         """Flush the aggregated messages to the SMTP server."""
         if len(self.buffer) > 0:
-            # noinspection PyBroadException
             try:
-                import smtplib
-
                 port = self.mailport
                 if not port:
                     port = smtplib.SMTP_PORT
@@ -59,8 +58,7 @@ class BufferingSMTPHandler(logging.handlers.BufferingHandler):
                     self.subject,
                 )
                 for record in self.buffer:
-                    s = self.format(record)
-                    msg = msg + s + "\r\n"
+                    msg += self.format(record) + "\r\n"
                 smtp.sendmail(self.fromaddr, self.toaddrs, msg)
                 smtp.quit()
             except:

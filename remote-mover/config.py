@@ -12,6 +12,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import logging
 
+import config_file
+
 logger = logging.getLogger(__name__)
 
 
@@ -21,6 +23,7 @@ class Config(object):
     to the various objects and functions to avoid reliance on global variables.
     """
 
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         moves_db=r"X:\GIS\ThemeMgr\DataMoves.csv",
@@ -30,16 +33,14 @@ class Config(object):
         check_only=None,
     ):
         logger.debug("Initializing Config...")
-        import config_file
-
-        self.__moves_db = moves_db if moves_db is not None else config_file.moves_db
+        self.__moves_db = moves_db if moves_db is not None else config_file.MOVES_DB
         self.__ref_timestamp = (
-            ref_timestamp if ref_timestamp is not None else config_file.ref_timestamp
+            ref_timestamp if ref_timestamp is not None else config_file.REF_TIMESTAMP
         )
         self.__remote_server = (
-            remote_server if remote_server is not None else config_file.remote_server
+            remote_server if remote_server is not None else config_file.REMOTE_SERVER
         )
-        self.__name = name if name is not None else config_file.name
+        self.__name = name if name is not None else config_file.NAME
         self.__check_only = check_only
         logger.debug("Initialized Config: %s", self)
 
