@@ -33,6 +33,7 @@ import logging.handlers
 
 class BufferingSMTPHandler(logging.handlers.BufferingHandler):
     """A logging handler that buffers (aggregates) SMTP messages."""
+
     def __init__(self, mailhost, fromaddr, toaddrs, subject, capacity=100):
         logging.handlers.BufferingHandler.__init__(self, capacity)
         self.mailhost = mailhost
@@ -48,13 +49,16 @@ class BufferingSMTPHandler(logging.handlers.BufferingHandler):
             # noinspection PyBroadException
             try:
                 import smtplib
+
                 port = self.mailport
                 if not port:
                     port = smtplib.SMTP_PORT
                 smtp = smtplib.SMTP(self.mailhost, port)
-                msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % (self.fromaddr,
-                                                                     string.join(self.toaddrs, ","),
-                                                                     self.subject)
+                msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % (
+                    self.fromaddr,
+                    string.join(self.toaddrs, ","),
+                    self.subject,
+                )
                 for record in self.buffer:
                     s = self.format(record)
                     msg = msg + s + "\r\n"

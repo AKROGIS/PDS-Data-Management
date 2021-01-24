@@ -29,7 +29,7 @@ def timestamped_operation(operation, args, prefix=None, timestamp_override=None)
         return
     logger.debug("Using last run time of: %s", last_run_time)
 
-    args['since'] = last_run_time
+    args["since"] = last_run_time
     if operation(args):
         save_last_run_time(this_run_time, prefix)
 
@@ -54,7 +54,9 @@ def get_last_run_time(prefix=None, timestamp_override=None):
     elif timestamp_override is None:
         return get_last_run_time_from_file(prefix)
 
-    logger.debug("Timestamp override is an unexpected type %s", type(timestamp_override))
+    logger.debug(
+        "Timestamp override is an unexpected type %s", type(timestamp_override)
+    )
     return None
 
 
@@ -62,14 +64,14 @@ def get_last_run_time_from_file(prefix=None):
     """Get the datetime of the last run from the persistance file."""
 
     if prefix is None:
-        name = 'timestamp'
+        name = "timestamp"
     else:
-        name = '{0}.timestamp'.format(prefix)
+        name = "{0}.timestamp".format(prefix)
     logger.debug("get_last_run_time for %s", name)
     try:
-        with open(name, 'r') as f:
+        with open(name, "r") as f:
             for line in f:
-                return datetime.datetime(*[int(i) for i in line.split(',')])
+                return datetime.datetime(*[int(i) for i in line.split(",")])
     except (IOError, ValueError, TypeError) as ex:
         logger.error("Unable to open the timestamp file: %s", name)
         logger.exception(ex)
@@ -80,16 +82,22 @@ def save_last_run_time(since, prefix=None):
     """Save the datetime `since` in the persistance file."""
 
     if prefix is None:
-        name = 'timestamp'
+        name = "timestamp"
     else:
-        name = '{0}.timestamp'.format(prefix)
+        name = "{0}.timestamp".format(prefix)
     logger.debug("save_last_run_time (%s) in %s", since, name)
     try:
-        with open(name, 'w') as f:
-            t = '{0},{1},{2},{3},{4},{5},{6}'.format(
-                since.year, since.month, since.day, since.hour,
-                since.minute, since.second, since.microsecond)
-            f.write(t.encode('utf8'))
+        with open(name, "w") as f:
+            t = "{0},{1},{2},{3},{4},{5},{6}".format(
+                since.year,
+                since.month,
+                since.day,
+                since.hour,
+                since.minute,
+                since.second,
+                since.microsecond,
+            )
+            f.write(t.encode("utf8"))
     except (IOError, ValueError, TypeError) as ex:
         logger.error("Unable to update the timestamp file: %s", name)
         logger.exception(ex)
@@ -98,7 +106,7 @@ def save_last_run_time(since, prefix=None):
 
 def parse_timestamp(timestamp):
     """Create a datetime from a command line timestamp string.
-    
+
     Requires the optional module dateutil.  pip install python-dateutil
     """
 
@@ -106,8 +114,10 @@ def parse_timestamp(timestamp):
     try:
         import dateutil.parser
     except ImportError:
-        logger.error('dateutil.parser module is required for the SINCE option.'
-                     'install with pip install python-dateutil')
+        logger.error(
+            "dateutil.parser module is required for the SINCE option."
+            "install with pip install python-dateutil"
+        )
         return None
     try:
         return dateutil.parser.parse(timestamp)

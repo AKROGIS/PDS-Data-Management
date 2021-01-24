@@ -12,7 +12,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 #   new_workspace_path|new_workspace_type|new_dataset_name|new_dataset_type|
 #   replace_workspace_path|replace_workspace_type|replace_dataset_name|
 #   replace_dataset_type|new_theme_manager_path|Notes
-moves_db = r'X:\GIS\ThemeMgr\DataMoves.csv'
+moves_db = r"X:\GIS\ThemeMgr\DataMoves.csv"
 
 # Reference (last run) timestamp
 ref_timestamp = None
