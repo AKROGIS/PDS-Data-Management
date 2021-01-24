@@ -1,11 +1,33 @@
+# -*- coding: utf-8 -*-
+"""
+Efficiently move data on remote servers to mimic the PDS.
+
+This script will look for changes to the X drive's Permanent Data Set (PDS) by
+querying a "moves database" for additions since the last time it was run.
+When possible, it will replicate filesystem changes on the remote park servers
+to minimize the work that robocopy needs to do.  For example, if a folder name
+is changed, robocopy will only detect that the folder with the old name is gone
+and delete it, and then create new folder by copying it over the network.
+Since we are recording many file system changes in a "moves database", 
+we can avoid needlessly copying gigabytes of data over the network by simply
+directing the remote server to rename the folder as appropriate.
+
+This script is intended to be run as a scheduled task.  It should be
+set up to finish before the robocopy process starts.
+
+This tool was written for Python 2.7 and 3.6.
+"""
+
 from __future__ import absolute_import, division, print_function, unicode_literals
-from config import Config
+
+import csv
 import logging
 import logging.config
-import config_logger
-import time
 import os
-import csv
+import time
+
+from config import Config
+import config_logger
 import date_limited
 
 logging.config.dictConfig(config_logger.config)

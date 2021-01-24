@@ -1,4 +1,24 @@
+# -*- coding: utf-8 -*-
+"""
+This script will output GDAL commands to re-tile images.
+
+Re-tiling subdivides a source image into several smaller images.
+into smaller chunks. The output can be saved into a batch file for execution
+in the directory containing the source images.  commands assumes there is a
+sub folder called "new" for the output files.
+The commands will create loseless compressed GeoTIFFs with pyramids and stats.
+
+I believe source tiles around 10,000 x 10,000 pixels is a good
+compromise. Larger images take longer to load, and are more sensitive to
+hicups during network transfers.
+
+This tool was written for Python 2.7, but should work with 3.3+
+Non-standard modules:
+  Relies on the esri `arcpy` module installed with ArcGIS.
+"""
+
 from __future__ import absolute_import, division, print_function, unicode_literals
+
 import datetime
 import logging
 

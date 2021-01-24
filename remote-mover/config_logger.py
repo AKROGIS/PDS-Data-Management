@@ -1,5 +1,13 @@
-# This is a logger configuration dictionary.
-# It is defined in https://docs.python.org/2/library/logging.config.html
+# -*- coding: utf-8 -*-
+"""
+Configuration parameters for the default logging system.
+
+This is a logger configuration dictionary.
+It is defined in https://docs.python.org/2/library/logging.config.html
+"""
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 
 config = {
     'version': 1,

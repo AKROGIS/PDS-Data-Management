@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+"""
+A project specific configuration class
+
+This class has hard coded configuration properties that have built in
+defaults that con be overridden by importing `config_file.py`
+"""
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import logging
 
 logger = logging.getLogger(__name__)

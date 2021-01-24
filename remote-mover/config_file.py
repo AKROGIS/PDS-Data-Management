@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
 """
 A collection of configuration properties.
 """
+
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 """
 Pipe (|)-delimited moves data file
