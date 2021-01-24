@@ -49,6 +49,7 @@ def read_csv_map(csvpath):
 
     logger.info("Opening moves database")
     records = []
+    # FIXME: Crashes with no logging if file doesn't exist or cant be opened
     with open(csvpath, "rb") as in_file:
         # ignore the first record (header)
         in_file.readline()
@@ -149,13 +150,13 @@ def mover(moves_data, config):
 
 
 def main():
-    """Parse the command line option and set the configuration"""
+    """Parse the command line options and set the configuration"""
 
     logger.info("Starting...")
 
     logger.debug("Get configuration overrides from the command line.")
 
-    parser = argparse.ArgumentParser("Moves (renames) folders on a remote server. ")
+    parser = argparse.ArgumentParser("Moves (renames) folders on a remote server.")
     parser.add_argument(
         "-d",
         "--database",
@@ -163,7 +164,7 @@ def main():
         help=(
             "The location of the moves database. "
             "See config file or default file for format. "
-            "The default is {0}"
+            "The default is {0}."
         ).format(config_file.MOVES_DB),
     )
     parser.add_argument(
@@ -171,7 +172,7 @@ def main():
         "--server",
         default=config_file.REMOTE_SERVER,
         help=(
-            "Path to server location where moves are to occur. " "The default is {0}"
+            "Path to server location where moves are to occur. The default is {0}."
         ).format(config_file.REMOTE_SERVER),
     )
     parser.add_argument(
@@ -181,7 +182,7 @@ def main():
         help=(
             "The reference (last run) timestamp. "
             "No timestamp will consider all valid moves from database. "
-            "The default is {0}"
+            "The default is {0}."
         ).format(config_file.REF_TIMESTAMP),
     )
     parser.add_argument(
@@ -189,19 +190,19 @@ def main():
         "--name",
         default=config_file.NAME,
         help=(
-            "The short name for the time stamp and log files. " "The default is {0}"
+            "The short name for the time stamp and log files. The default is {0}."
         ).format(config_file.NAME),
     )
     parser.add_argument(
         "--check_only",
         action="store_true",
-        help="Check/test mode - log only, will not move folders. ",
+        help="Check/test mode. Will print but do the moves.",
     )
     parser.add_argument(
-        "-v", "--verbose", action="store_true", help="Show informational messages. "
+        "-v", "--verbose", action="store_true", help="Show informational messages."
     )
     parser.add_argument(
-        "--debug", action="store_true", help="Show extensive debugging messages. "
+        "--debug", action="store_true", help="Show extensive debugging messages."
     )
 
     args = parser.parse_args()
@@ -209,14 +210,14 @@ def main():
     if args.verbose:
         logger.parent.handlers[0].setLevel(logging.INFO)
         logger.parent.handlers[1].setLevel(logging.INFO)
-        logger.info("Started logging at INFO level")
+        logger.info("Started logging at INFO level.")
     if args.debug:
         logger.parent.handlers[0].setLevel(logging.DEBUG)
         logger.parent.handlers[1].setLevel(logging.DEBUG)
-        logger.debug("Started logging at DEBUG level")
+        logger.debug("Started logging at DEBUG level.")
 
     # Log the command line arguments
-    logger.debug("Command line argument %s", args)
+    logger.debug("Command line argument %s.", args)
 
     config = Config(
         moves_db=args.database,

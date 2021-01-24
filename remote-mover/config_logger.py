@@ -34,8 +34,7 @@ config = {
             "class": "logging.FileHandler",
             "level": "INFO",
             "formatter": "detailed",
-            # note to self, want to move this to args if possible
-            "filename": "remote-mover.log",
+            "filename": "remote_mover.log",
         },
         "email": {
             # Bundle 100 messages into a single email
@@ -45,8 +44,8 @@ config = {
             "level": "ERROR",
             "formatter": "detailed",
             "mailhost": "mailer.itc.nps.gov",
-            "fromaddr": "regan_sarwas@nps.gov",
-            "toaddrs": ["regan_sarwas@nps.gov"],
+            "fromaddr": "akro_gis_helpdesk@nps.gov",
+            "toaddrs": ["akro_gis_helpdesk@nps.gov"],
             "subject": "Error running remote move operation",
         },
     },
