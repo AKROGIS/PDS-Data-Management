@@ -44,12 +44,27 @@ logger = logging.getLogger("main")
 logger.info("Logging Started")
 
 
-def read_csv_map(csvpath):
-    """Read the moves database at csvpath."""
+def read_csv_map(csv_path, since):
+    """
+    Read the moves database at csv_path.
+
+    Moves database in file at csv_path contains timestamped move information.
+    See https://github.com/AKROGIS/MapFixer for the format of the moves
+    database.
+
+    since is a datetime object. Only moves with a timestamp greater than since
+    are returned.
+
+    Return a list of moves as string tuples (source, destination) that have
+    a timestamp greater than since.  The list may be empty.
+
+    Any exceptions (IOErrors, invalid moves database, etc) are returned to the
+    caller.
+    """
 
     logger.info("Opening moves database")
     records = []
-    with open(csvpath, "rb") as in_file:
+    with open(csv_path, "rb") as in_file:
         # ignore the first record (header)
         in_file.readline()
         logger.info("Iterating moves database")
@@ -290,7 +305,7 @@ def main():
         # I want to catch all exceptions for the logger.
         try:
             # TODO: read moves with date_limited.timestamped_operation()
-            moves_data = read_csv_map(config.moves_db)
+            moves_data = read_csv_map(config.moves_db, args.since)
         except Exception as ex:
             logger.error("Unable to read moves database (%s)", config.moves_db)
             logger.exception(ex)
