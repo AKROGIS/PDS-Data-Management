@@ -81,14 +81,53 @@ def read_csv_map(csvpath):
     return records
 
 
-def mover(moves_data, config):
-    """Move data on remote servers."""
+def move_on_mounts(moves, mount_path, dry_run=True):
+    """
+    Make folder moves on all servers under mount_path.
 
-    logger.info("Begin searching moves database.")
-    if config.check_only:
+    moves is a list of string tuples (source, destination) relative
+    to mount_path/server{i}.
+
+    mount_path is a file system path, either absolute or relative to the CWD.
+
+    If dry_run is True, moves are logged, but not executed.  Moves are only
+    executed if dry_run is False.
+
+    All moves should be tried (assume moves has already been filtered).
+    If a move fails, log the problem and continue.
+    A move should fail if the source does not exist, or the destination exists.
+
+    Nothing is returned.
+    """
+    for server in os.listdir(mount_path):
+        server_path = os.path.join(mount_path, server)
+        move_on_server(moves, server_path, dry_run=dry_run)
+
+
+def move_on_server(moves, server_path, dry_run=True):
+    """
+    Make folder moves on a single remote server.
+
+    moves is a list of string tuples (source, destination) relative
+    to server_path.
+
+    server_path is a junction point, UNC, or equivalent, either absolute or
+    relative to the CWD.
+
+    If dry_run is True, moves are logged, but not executed.  Moves are only
+    executed if dry_run is False.
+
+    All moves should be tried (assume moves has already been filtered).
+    If a move fails, log the problem and continue.
+    A move should fail if the source does not exist, or the destination exists.
+
+    Nothing is returned.
+    """
+
+    if dry_run:
         logger.info("Running in check_only mode.")
 
-    for row in moves_data:
+    for row in moves:
         (
             move_timestamp,
             old_workspace_path,
@@ -100,15 +139,17 @@ def mover(moves_data, config):
             _,
             _,
         ) = row
-        old_workspace_path_c = os.path.join(config.remote_server, old_workspace_path)
-        new_workspace_path_c = os.path.join(config.remote_server, new_workspace_path)
+        old_workspace_path_c = os.path.join(server_path, old_workspace_path)
+        new_workspace_path_c = os.path.join(server_path, new_workspace_path)
 
         # TODO: break out compound if statement for better logging/feedback to users
+        # FIXME: move timestamp filter to read_csv_map()
+        ref_timestamp = None
         if (
             (
                 move_timestamp is None
-                or config.ref_timestamp is None
-                or move_timestamp >= config.ref_timestamp
+                or ref_timestamp is None
+                or move_timestamp >= ref_timestamp
             )
             and old_workspace_path != new_workspace_path
             and new_workspace_path is not None
@@ -119,7 +160,7 @@ def mover(moves_data, config):
             and old_workspace_type is None
             and old_dataset_name is None
         ):
-            if config.check_only:
+            if dry_run:
                 logger.info(
                     "Match found for %s to %s",
                     old_workspace_path_c,
@@ -256,8 +297,10 @@ def main():
             moves_data = None
         if moves_data is not None:
             try:
-                # FIXME: call with a single server or a mount point
-                mover(moves_data, config)
+                if args.remote_server is None:
+                    move_on_mounts(moves_data, config.mount_point)
+                else:
+                    move_on_server(moves_data, args.remote_server)
             except Exception as ex:
                 logger.error("Unable to rename/move folders.")
                 logger.exception(ex)
