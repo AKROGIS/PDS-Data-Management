@@ -26,7 +26,6 @@ http://www.red-dove.com/python_logging.html
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import string
 import logging
 import logging.handlers
 
@@ -56,7 +55,7 @@ class BufferingSMTPHandler(logging.handlers.BufferingHandler):
                 smtp = smtplib.SMTP(self.mailhost, port)
                 msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % (
                     self.fromaddr,
-                    string.join(self.toaddrs, ","),
+                    self.toaddrs.join(","),
                     self.subject,
                 )
                 for record in self.buffer:
