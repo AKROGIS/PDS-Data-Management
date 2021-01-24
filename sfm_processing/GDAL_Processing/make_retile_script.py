@@ -19,6 +19,7 @@ Non-standard modules:
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import os
 import sys
 
 
@@ -91,7 +92,7 @@ def print_commands():
                 old_name = ("{0}" + c_format_in + r_format_in).format(
                     Config.base_name, col, row
                 )
-            new_base_name = "new\\" + Config.base_name
+            new_base_name = os.path.join("new", Config.base_name)
             start_cell_x = Config.n_cols * col
             start_cell_y = Config.n_rows * row
             for i in range(Config.n_cols):
