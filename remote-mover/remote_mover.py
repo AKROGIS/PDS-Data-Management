@@ -227,9 +227,11 @@ def main():
     )
 
     # Finally we are ready to start!
-    if config.moves_db is None or config.remote_server is None:
-        logger.error("Must specify moves database and remote server paths.")
-    else:
+    if config.moves_db is None:
+        logger.error("Must specify moves database.")
+    if config.remote_server is None:
+        logger.error("Must specify a remote server path.")
+    if config.moves_db is not None and config.remote_server is not None:
         moves_data = read_csv_map(config.moves_db)
         mover(moves_data, config)
 
