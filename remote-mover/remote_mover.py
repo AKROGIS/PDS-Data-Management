@@ -63,6 +63,8 @@ def read_csv_map(csv_path, since):
     caller.
     """
 
+    logger.debug("read_csv_map(%s, %s)", csv_path, since)
+
     # CSV file assumptions that may change if moves database is reformatted.
     delimiter = "|"
     timestamp_index = 0
@@ -162,69 +164,40 @@ def move_on_server(moves, server_path, dry_run=True):
     Nothing is returned.
     """
 
+    logger.debug("move_on_server(%s, %s, %s)", moves, server_path, dry_run)
+
+    if not moves:
+        logger.debug("No moves, returning early.")
+        return
+
     if dry_run:
-        logger.info("Running in check_only mode.")
+        logger.info("Doing a dry run; no folders will be moved.")
 
-    for row in moves:
-        (
-            move_timestamp,
-            old_workspace_path,
-            old_workspace_type,
-            old_dataset_name,
-            _,
-            new_workspace_path,
-            new_workspace_type,
-            _,
-            _,
-        ) = row
-        old_workspace_path_c = os.path.join(server_path, old_workspace_path)
-        new_workspace_path_c = os.path.join(server_path, new_workspace_path)
-
-        # TODO: break out compound if statement for better logging/feedback to users
-        # FIXME: move timestamp filter to read_csv_map()
-        ref_timestamp = None
-        if (
-            (
-                move_timestamp is None
-                or ref_timestamp is None
-                or move_timestamp >= ref_timestamp
-            )
-            and old_workspace_path != new_workspace_path
-            and new_workspace_path is not None
-            and old_workspace_path is not None
-            and os.path.exists(old_workspace_path_c)
-            and not os.path.exists(new_workspace_path_c)
-            and new_workspace_type is None
-            and old_workspace_type is None
-            and old_dataset_name is None
-        ):
-            if dry_run:
-                logger.info(
-                    "Match found for %s to %s",
-                    old_workspace_path_c,
-                    new_workspace_path_c,
-                )
-            else:
-                try:
-                    # find parent (lost child?)
-                    new_workspace_path_parent_c = os.path.abspath(
-                        os.path.join(new_workspace_path_c, os.pardir)
-                    )
-                    # if parent folder does not exist create necessary folder
-                    # structure through parent folder
-                    if not os.path.exists(new_workspace_path_parent_c):
-                        os.makedirs(new_workspace_path_parent_c)
-                        logger.info("Created %s", new_workspace_path_parent_c)
-                    # move: rename folder - note, need to copy to parent,
-                    # but report folder to folder as result
-                    os.rename(old_workspace_path_c, new_workspace_path_c)
-                    logger.info(
-                        "Success: moved %s to %s",
-                        old_workspace_path_c,
-                        new_workspace_path_c,
-                    )
-                except IOError as ex:
-                    logger.exception(ex)
+    for (source, destination) in moves:
+        source_path = os.path.join(server_path, source)
+        destination_path = os.path.join(server_path, destination)
+        # do checks for logging, and to skip attempt when we know it will fail.
+        logger.info("Move: %s => %s", source_path, destination_path)
+        if not os.path.exists(source_path):
+            logger.info("Skipping move, source does not exists.")
+            continue
+        # It is possible that the source_path is created between now and the
+        # move below, but that is so unlikely as to not be worth considering.
+        # if it happens, we can re-run, or robocopy will fix it the hard way.
+        if os.path.exists(destination_path):
+            logger.info("Skipping move, destination exists.")
+            continue
+        if not dry_run:
+            try:
+                # Python 3.3+: If dst exists, the operation will fail with an
+                # OSError subclass.
+                # Python 2.7:  On Windows, if dst already exists, OSError will be
+                # raised.  On Unix behaviour may deviate is dst is a file.
+                os.rename(source_path, destination_path)
+                logger.info("Move succeeded.")
+            except OSError as ex:
+                logger.error("Move failed.")
+                logger.exception(ex)
 
 
 def main():
@@ -328,6 +301,9 @@ def main():
         # I want to catch all exceptions for the logger.
         try:
             # TODO: read moves with date_limited.timestamped_operation()
+            import datetime  # for testing
+
+            args.since = datetime.datetime.now()
             moves_data = read_csv_map(config.moves_db, args.since)
         except Exception as ex:
             logger.error("Unable to read moves database (%s)", config.moves_db)
