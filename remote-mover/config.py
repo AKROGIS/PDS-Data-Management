@@ -4,6 +4,8 @@ A project specific configuration class
 
 This class has hard coded configuration properties that have built in
 defaults that con be overridden by importing `config_file.py`
+
+This class was written for Python 2.7 and 3.6.
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
@@ -41,44 +43,36 @@ class Config(object):
         self.__check_only = check_only
         logger.debug("Initialized Config: %s", self)
 
-    """
-    Moves db path (required, see format elsewhere, | delimited)
-    """
 
     @property
     def moves_db(self):
+        """Moves db path (required, see format elsewhere, | delimited)."""
+
         return self.__moves_db
 
-    """
-    A reference timestamp for the last run (date and time, UTC)
-    """
 
     @property
     def ref_timestamp(self):
+        """A reference timestamp for the last run (date and time, UTC)."""
         return self.__ref_timestamp
 
-    """
-    Path to remote server; UNC or symbolic link
-    """
+
 
     @property
     def remote_server(self):
+        """Path to remote server; UNC or symbolic link."""
         return self.__remote_server
 
-    """
-    Short name, e.g. KEFJ
-    """
 
     @property
     def name(self):
+        """Short name, e.g. KEFJ."""
         return self.__name
 
-    """
-    Check-only/test mode
-    """
 
     @property
     def check_only(self):
+        """Check-only/test mode."""
         return self.__check_only
 
     def __str__(self):
