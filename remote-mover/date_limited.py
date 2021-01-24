@@ -1,20 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-This script will output GDAL commands to re-tile images.
+Functions for persisting timestamps to control behavior of a script.
 
-Re-tiling subdivides a source image into several smaller images.
-into smaller chunks. The output can be saved into a batch file for execution
-in the directory containing the source images.  commands assumes there is a
-sub folder called "new" for the output files.
-The commands will create loseless compressed GeoTIFFs with pyramids and stats.
+These can be used to record the last successful run of a script, so
+that we can look for changes since then.
 
-I believe source tiles around 10,000 x 10,000 pixels is a good
-compromise. Larger images take longer to load, and are more sensitive to
-hicups during network transfers.
-
-This tool was written for Python 2.7, but should work with 3.3+
-Non-standard modules:
-  Relies on the esri `arcpy` module installed with ArcGIS.
+These functions were written for Python 2.7 and 3.6.
+Non standard modules:
+  dateutil (in function parse_timestamp) pip install python-dateutil
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
@@ -26,7 +19,8 @@ logger = logging.getLogger(__name__)
 
 
 def timestamped_operation(operation, args, prefix=None, timestamp_override=None):
-    # Get current time to save as last run time we are successful; Do everything in UTC
+    """Get current time to save as last run time we are successful; Do everything in UTC"""
+
     this_run_time = get_this_run_time()
     last_run_time = get_last_run_time(prefix, timestamp_override)
 
@@ -41,10 +35,14 @@ def timestamped_operation(operation, args, prefix=None, timestamp_override=None)
 
 
 def get_this_run_time():
+    """Return the current time in UTC."""
+
     return datetime.datetime.utcnow()
 
 
 def get_last_run_time(prefix=None, timestamp_override=None):
+    """Get the datetime of the last run from the override or the persistance file."""
+
     if type(timestamp_override) is datetime.datetime:
         return timestamp_override
 
@@ -61,6 +59,8 @@ def get_last_run_time(prefix=None, timestamp_override=None):
 
 
 def get_last_run_time_from_file(prefix=None):
+    """Get the datetime of the last run from the persistance file."""
+
     if prefix is None:
         name = 'timestamp'
     else:
@@ -76,6 +76,8 @@ def get_last_run_time_from_file(prefix=None):
 
 
 def save_last_run_time(since, prefix=None):
+    """Save the datetime `since` in the persistance file."""
+
     if prefix is None:
         name = 'timestamp'
     else:
@@ -93,6 +95,11 @@ def save_last_run_time(since, prefix=None):
 
 
 def parse_timestamp(timestamp):
+    """Create a datetime from a command line timestamp string.
+    
+    Requires the optional module dateutil.  pip install python-dateutil
+    """
+
     logger.debug("Attempting to parse the command line timestamp %s", timestamp)
     try:
         # noinspection PyUnresolvedReferences

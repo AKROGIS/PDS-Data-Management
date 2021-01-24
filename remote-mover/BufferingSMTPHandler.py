@@ -32,6 +32,7 @@ import logging.handlers
 
 
 class BufferingSMTPHandler(logging.handlers.BufferingHandler):
+    """A logging handler that buffers (aggregates) SMTP messages."""
     def __init__(self, mailhost, fromaddr, toaddrs, subject, capacity=100):
         logging.handlers.BufferingHandler.__init__(self, capacity)
         self.mailhost = mailhost
@@ -42,6 +43,7 @@ class BufferingSMTPHandler(logging.handlers.BufferingHandler):
         self.setFormatter(logging.Formatter("%(asctime)s %(levelname)-5s %(message)s"))
 
     def flush(self):
+        """Flush the aggregated messages to the SMTP server."""
         if len(self.buffer) > 0:
             # noinspection PyBroadException
             try:

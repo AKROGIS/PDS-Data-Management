@@ -36,6 +36,8 @@ logger = logging.getLogger('main')
 logger.info("Logging Started")
 
 def read_csv_map(csvpath):
+    """Read the moves database at csvpath."""
+    
     logger.info('Opening moves database')
     records = []
     with open(csvpath, 'rb') as fh:
@@ -58,6 +60,8 @@ def read_csv_map(csvpath):
     return records
 
 def mover(moves_data, config):
+    """Move data on remote servers."""
+
     logger.info('Begin searching moves database.')
     if config.check_only:
         logger.info('Running in check_only mode.')
@@ -94,6 +98,8 @@ def mover(moves_data, config):
                     logger.error('ERROR: %s %s',err.message, err.args)
 
 def main():
+    """Parse the command line option and set the configuration"""
+
     logger.info('Starting...')
 
     logger.debug("Get default configuration parameters from a configuration file.")
