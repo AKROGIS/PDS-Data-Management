@@ -14,6 +14,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # Path to the moves database.
 # https://github.com/AKROGIS/MapFixer for the definition of the moves database.
 MOVES_DB = r"X:\GIS\ThemeMgr\DataMoves.csv"
+# Testing:
+# MOVES_DB = "test/moves.csv"
 
 # Remote server X drive path: UNC path or symbolic link to location where moves are to occur.
 MOUNT_POINT = r"E:\XDrive\RemoteServers"
+# Testing:
+# MOUNT_POINT = "test/servers"
