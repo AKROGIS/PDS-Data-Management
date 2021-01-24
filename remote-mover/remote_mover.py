@@ -33,6 +33,7 @@ import logging.config
 import os
 
 from config import Config
+import config_file
 import config_logger
 import date_limited
 
@@ -151,30 +152,6 @@ def main():
     """Parse the command line option and set the configuration"""
 
     logger.info("Starting...")
-
-    logger.debug("Get default configuration parameters from a configuration file.")
-
-    # FIXME: Crash if config_file.py is missing or corrupt.
-    try:
-        # pylint: disable=import-outside-toplevel
-        # config_file.py may be missing or incorrectly edited by a user.
-        # that should only be a warning, not an error.
-        import config_file
-    except ImportError:
-        logger.warning("Unable to load the config file: `config_file.py``")
-
-        # Create a class to act as the missing module
-        class ConfigFile:
-            """A stand in for the missing config_file module."""
-            # pylint: disable=too-few-public-methods,invalid-name
-            def __init__(self):
-                self.MOVES_DB = None
-                self.REF_TIMESTAMP = None
-                self.REMOTE_SERVER = None
-                self.NAME = None
-                self.check_only = None
-
-        config_file = ConfigFile()
 
     logger.debug("Get configuration overrides from the command line.")
 

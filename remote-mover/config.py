@@ -26,7 +26,7 @@ class Config(object):
     # pylint: disable=too-many-arguments
     def __init__(
         self,
-        moves_db=r"X:\GIS\ThemeMgr\DataMoves.csv",
+        moves_db=None,
         ref_timestamp=None,
         remote_server=None,
         name=None,
