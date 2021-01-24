@@ -1,0 +1,5 @@
+timestamp|old_workspace_path|old_workspace_type|old_dataset_name|old_dataset_type|new_workspace_path|new_workspace_type|new_dataset_name|new_dataset_type|replace_workspace_path|replace_workspace_type|replace_dataset_name|replace_dataset_type|replacement_layerfile_path|remarks
+2010-01-01 12:00:00|folder1|a|b|c|folder6|d|e|f|g|h|i|j|k|Skip - before timestamp; before test: no folder5; after test no folder 5
+2030-01-01 12:00:00|folder2||||folder3|||||||||Invalid: destination directory exists
+2030-01-01 13:00:00|folder4||||folder5|||||||||Valid: source directory exists and destination does not
+2030-01-02 12:00:00|folder7|a|b|c|folder8|d|e|f|g|h|i|j|k|Invalid: source directory does not exist
