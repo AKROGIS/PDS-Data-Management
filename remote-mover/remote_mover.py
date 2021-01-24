@@ -33,7 +33,6 @@ import logging.config
 import os
 import sys
 
-from config import Config
 import config_file
 import config_logger
 import date_limited
@@ -281,20 +280,13 @@ def main():
     # Log the command line arguments
     logger.debug("Command line argument %s.", args)
 
-    config = Config(
-        moves_db=args.database,
-        mount_point=args.mount_point,
-        ref_timestamp=args.since,
-        check_only=args.dry_run,
-    )
-
     # Finally we are ready to start!
-    if config.moves_db is None:
+    if args.database is None:
         logger.error("Must specify moves database.")
-    if config.mount_point is None and args.remote_server is None:
+    if args.mount_point is None and args.remote_server is None:
         logger.error("Must specify a mount point or remote server.")
-    if config.moves_db is not None and (
-        config.mount_point is not None or args.remote_server is not None
+    if args.database is not None and (
+        args.mount_point is not None or args.remote_server is not None
     ):
 
         # pylint: disable=broad-except
@@ -304,15 +296,15 @@ def main():
             import datetime  # for testing
 
             args.since = datetime.datetime.now()
-            moves_data = read_csv_map(config.moves_db, args.since)
+            moves_data = read_csv_map(args.database, args.since)
         except Exception as ex:
-            logger.error("Unable to read moves database (%s)", config.moves_db)
+            logger.error("Unable to read moves database (%s)", args.database)
             logger.exception(ex)
             moves_data = None
         if moves_data is not None:
             try:
                 if args.remote_server is None:
-                    move_on_mounts(moves_data, config.mount_point)
+                    move_on_mounts(moves_data, args.mount_point)
                 else:
                     move_on_server(moves_data, args.remote_server)
             except Exception as ex:
