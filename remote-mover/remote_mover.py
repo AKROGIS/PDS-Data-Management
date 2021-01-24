@@ -49,7 +49,6 @@ def read_csv_map(csvpath):
 
     logger.info("Opening moves database")
     records = []
-    # FIXME: Crashes with no logging if file doesn't exist or cant be opened
     with open(csvpath, "rb") as in_file:
         # ignore the first record (header)
         in_file.readline()
@@ -223,8 +222,22 @@ def main():
     if config.remote_server is None:
         logger.error("Must specify a remote server path.")
     if config.moves_db is not None and config.remote_server is not None:
-        moves_data = read_csv_map(config.moves_db)
-        mover(moves_data, config)
+
+        # pylint: disable=broad-except
+        # I want to catch all exceptions for the logger.
+        try:
+            # TODO: read moves with date_limited.timestamped_operation()
+            moves_data = read_csv_map(config.moves_db)
+        except Exception as ex:
+            logger.error("Unable to read moves database (%s)", config.moves_db)
+            logger.exception(ex)
+            moves_data = None
+        if moves_data is not None:
+            try:
+                mover(moves_data, config)
+            except Exception as ex:
+                logger.error("Unable to rename/move folders.")
+                logger.exception(ex)
 
     logger.info("Done!")
     logging.shutdown()

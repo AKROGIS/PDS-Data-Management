@@ -23,7 +23,6 @@ class Config(object):
     to the various objects and functions to avoid reliance on global variables.
     """
 
-    # pylint: disable=too-many-arguments
     def __init__(
         self,
         moves_db=None,
