@@ -30,6 +30,7 @@ from config import Config
 import config_logger
 import date_limited
 
+# Set up the global logging object.
 logging.config.dictConfig(config_logger.config)
 # logging.raiseExceptions = False # Ignore errors in the logging system
 logger = logging.getLogger('main')
@@ -73,7 +74,7 @@ def mover(moves_data, config):
 
         # may want to break out compound if statement for better logging/feedback to users?
         if (move_timestamp is None or config.ref_timestamp is None or move_timestamp >= config.ref_timestamp) and \
-        old_workspace_path <> new_workspace_path and \
+        old_workspace_path != new_workspace_path and \
         new_workspace_path is not None and \
         old_workspace_path is not None and \
         os.path.exists(old_workspace_path_c) and \
@@ -94,8 +95,8 @@ def mover(moves_data, config):
                     # move: rename folder - note, need to copy to parent, but report folder to folder as result
                     os.rename(old_workspace_path_c,new_workspace_path_c)
                     logger.info('Success: moved %s to %s',old_workspace_path_c,new_workspace_path_c)
-                except BaseException as err:
-                    logger.error('ERROR: %s %s',err.message, err.args)
+                except BaseException as ex:
+                    logger.exception(ex)
 
 def main():
     """Parse the command line option and set the configuration"""

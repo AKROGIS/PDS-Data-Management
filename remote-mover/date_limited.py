@@ -71,7 +71,8 @@ def get_last_run_time_from_file(prefix=None):
             for line in f:
                 return datetime.datetime(*[int(i) for i in line.split(',')])
     except (IOError, ValueError, TypeError) as ex:
-        logger.error("Unable to open the timestamp file: %s (%s)", name, ex.message)
+        logger.error("Unable to open the timestamp file: %s", name)
+        logger.exception(ex)
         return None
 
 
@@ -90,7 +91,8 @@ def save_last_run_time(since, prefix=None):
                 since.minute, since.second, since.microsecond)
             f.write(t.encode('utf8'))
     except (IOError, ValueError, TypeError) as ex:
-        logger.error("Unable to update the timestamp file: %s (%s)", name, ex.message)
+        logger.error("Unable to update the timestamp file: %s", name)
+        logger.exception(ex)
         return None
 
 
@@ -102,7 +104,6 @@ def parse_timestamp(timestamp):
 
     logger.debug("Attempting to parse the command line timestamp %s", timestamp)
     try:
-        # noinspection PyUnresolvedReferences
         import dateutil.parser
     except ImportError:
         logger.error('dateutil.parser module is required for the SINCE option.'
@@ -111,5 +112,6 @@ def parse_timestamp(timestamp):
     try:
         return dateutil.parser.parse(timestamp)
     except (ValueError, OverflowError) as ex:
-        logger.error('Unable to parse "%s" as a valid timestamp, %s', timestamp, ex.message)
+        logger.error('Unable to parse "%s" as a valid timestamp', timestamp)
+        logger.exception(ex)
         return None

@@ -18,7 +18,7 @@ class Config(object):
     A collection of readonly properties that are initialized at application startup, and passed
     to the various objects and functions to avoid reliance on global variables.
     """
-    def __init__(self, moves_db='X:\GIS\ThemeMgr\DataMoves.csv', ref_timestamp=None, remote_server=None, name=None, check_only=None):
+    def __init__(self, moves_db=r'X:\GIS\ThemeMgr\DataMoves.csv', ref_timestamp=None, remote_server=None, name=None, check_only=None):
         logger.debug("Initializing Config...")
         import config_file
         self.__moves_db = moves_db if moves_db is not None else config_file.moves_db
