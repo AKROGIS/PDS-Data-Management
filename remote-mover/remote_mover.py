@@ -296,17 +296,17 @@ def main():
             import datetime  # for testing
 
             args.since = datetime.datetime.now()
-            moves_data = read_csv_map(args.database, args.since)
+            moves_list = read_csv_map(args.database, args.since)
         except Exception as ex:
             logger.error("Unable to read moves database (%s)", args.database)
             logger.exception(ex)
-            moves_data = None
-        if moves_data is not None:
+            moves_list = None
+        if moves_list is not None:
             try:
                 if args.remote_server is None:
-                    move_on_mounts(moves_data, args.mount_point)
+                    move_on_mounts(moves_list, args.mount_point)
                 else:
-                    move_on_server(moves_data, args.remote_server)
+                    move_on_server(moves_list, args.remote_server)
             except Exception as ex:
                 logger.error("Unable to rename/move folders.")
                 logger.exception(ex)
