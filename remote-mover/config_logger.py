@@ -39,7 +39,7 @@ config = {
         },
         "email": {
             # Bundle 100 messages into a single email
-            "class": "BufferingSMTPHandler.BufferingSMTPHandler",
+            "class": "buffering_smtp_handler.BufferingSMTPHandler",
             # Separate email for each message
             # 'class':    'logging.handlers.SMTPHandler',
             "level": "ERROR",
