@@ -12,9 +12,7 @@ I believe source tiles around 10,000 x 10,000 pixels is a good
 compromise. Larger images take longer to load, and are more sensitive to
 hicups during network transfers.
 
-This tool was written for Python 2.7, but should work with 3.3+
-Non-standard modules:
-  Relies on the esri `arcpy` module installed with ArcGIS.
+This tool was written for Python 2.7. It also work with Python 3.3+
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
@@ -42,11 +40,11 @@ class Config:
     #   set both in_columns and in-rows to 1.
     #   set add_numbers = False
     # If the column or row numbers in the source image are padded with leading
-    #   zeros, i.e 00, 01, .. 99 set pad_column_with_leading_zeros and
+    #   zeros, i.e 00, 01, .. 99 set pad_column_with_leading_zeros and/or
     #   pad_row_with_leading_zeros to True or False appropriately
     base_name = "2018_BELA_ATV_South_RGB"
-    in_columns = 17
-    in_rows = 16
+    in_columns = 2
+    in_rows = 1
     add_numbers = True
     pad_column_with_leading_zeros = False
     pad_row_with_leading_zeros = False
@@ -54,8 +52,8 @@ class Config:
     # Number of new tiles per source image
     # Adjust n_cols and n_rows, so that (n-1 * size) < source_size < (n * size)
     # source_size is the number of pixels in the source image (from ArcCatalog or gdalinfo)
-    n_cols = 4
-    n_rows = 4
+    n_cols = 1
+    n_rows = 2
 
     # GDAL command settings
     predictor = 2  # 2 for Ortho, 3 for DEM
