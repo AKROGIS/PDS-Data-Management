@@ -162,31 +162,51 @@ def main():
         default=config_file.MOVES_DB,
         help=(
             "The location of the moves database. "
-            "See config file or default file for format. "
+            "See https://github.com/AKROGIS/MapFixer for format. "
             "The default is {0}."
         ).format(config_file.MOVES_DB),
     )
     parser.add_argument(
-        "-s",
-        "--server",
-        default=config_file.REMOTE_SERVER,
+        "-m",
+        "--mount_point",
+        default=config_file.MOUNT_POINT,
         help=(
-            "Path to server location where moves are to occur. The default is {0}."
-        ).format(config_file.REMOTE_SERVER),
+            "Path to a folder of server junction points. The default is {0}. "
+            "The moves will occur on each server in MOUNT_POINT. "
+            "Ignored if --remote_server is provided. "
+            "One of --mount_point or --remote_server must be provided."
+        ).format(config_file.MOUNT_POINT),
     )
     parser.add_argument(
-        "-t",
-        "--timestamp",
+        "-r",
+        "--remote_server",
         help=(
-            "An override for the 'last time run' timestamp. "
+            "Path to the remote server where the moves are to occur. "
+            "This can be a UNC or local junction point, so long as the "
+            "contents below the path match the X-Drive paths in the "
+            "moves database. There is no default. "
+            "If provided --mount_point will be ignored. "
+            "One of --mount_point or --remote_server must be provided."
+        ),
+    )
+    parser.add_argument(
+        "-s",
+        "--since",
+        help=(
+            "A date/time override for the timestamp file. "
+            "All of the moves in the database since SINCE will be made. "
             "If not provided, then the 'timestamp' file is used. "
             "No processing will occur if no valid timestamp can be determined."
         ),
     )
     parser.add_argument(
-        "--check_only",
+        "--dry_run",
         action="store_true",
-        help="Check/test mode. Will print but do the moves.",
+        help=(
+            "Check/test mode. Will do everything except move files. "
+            "See the log file, or set verbose mode, to see the moves that "
+            "would have been made."
+        ),
     )
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="Show informational messages."
@@ -211,17 +231,19 @@ def main():
 
     config = Config(
         moves_db=args.database,
-        remote_server=args.server,
-        ref_timestamp=args.timestamp,
-        check_only=args.check_only,
+        mount_point=args.mount_point,
+        ref_timestamp=args.since,
+        check_only=args.dry_run,
     )
 
     # Finally we are ready to start!
     if config.moves_db is None:
         logger.error("Must specify moves database.")
-    if config.remote_server is None:
-        logger.error("Must specify a remote server path.")
-    if config.moves_db is not None and config.remote_server is not None:
+    if config.mount_point is None and args.remote_server is None:
+        logger.error("Must specify a mount point or remote server.")
+    if config.moves_db is not None and (
+        config.mount_point is not None or args.remote_server is not None
+    ):
 
         # pylint: disable=broad-except
         # I want to catch all exceptions for the logger.
@@ -234,6 +256,7 @@ def main():
             moves_data = None
         if moves_data is not None:
             try:
+                # FIXME: call with a single server or a mount point
                 mover(moves_data, config)
             except Exception as ex:
                 logger.error("Unable to rename/move folders.")
