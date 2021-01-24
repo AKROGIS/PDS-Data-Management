@@ -20,8 +20,5 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 #   replace_dataset_type|new_theme_manager_path|Notes
 MOVES_DB = r"X:\GIS\ThemeMgr\DataMoves.csv"
 
-# Reference (last run) timestamp
-REF_TIMESTAMP = None
-
 # Remote server X drive path: UNC path or symbolic link to location where moves are to occur.
 REMOTE_SERVER = None

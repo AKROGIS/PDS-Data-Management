@@ -33,9 +33,7 @@ class Config(object):
     ):
         logger.debug("Initializing Config...")
         self.__moves_db = moves_db if moves_db is not None else config_file.MOVES_DB
-        self.__ref_timestamp = (
-            ref_timestamp if ref_timestamp is not None else config_file.REF_TIMESTAMP
-        )
+        self.__ref_timestamp = ref_timestamp
         self.__remote_server = (
             remote_server if remote_server is not None else config_file.REMOTE_SERVER
         )

@@ -14,12 +14,13 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import datetime
 import logging
+import sys
 
 logger = logging.getLogger(__name__)
 
 
 def timestamped_operation(operation, args, prefix=None, timestamp_override=None):
-    """Get current time to save as last run time we are successful; Do everything in UTC"""
+    """Executes operation with the args parameter augmented with since = last_run time."""
 
     this_run_time = get_this_run_time()
     last_run_time = get_last_run_time(prefix, timestamp_override)
@@ -46,7 +47,11 @@ def get_last_run_time(prefix=None, timestamp_override=None):
     if isinstance(timestamp_override, datetime.datetime):
         return timestamp_override
 
-    if isinstance(timestamp_override, (str, unicode)):
+    if sys.version_info[0] < 3:
+        is_string = isinstance(timestamp_override, basestring)
+    else:
+        is_string = isinstance(timestamp_override, str)
+    if is_string:
         last_run_time = parse_timestamp(timestamp_override)
         logger.debug("Using the command line timestamp override %s", last_run_time)
         return last_run_time
@@ -116,7 +121,7 @@ def parse_timestamp(timestamp):
         import dateutil.parser
     except ImportError:
         logger.error(
-            "dateutil.parser module is required for the SINCE option."
+            "dateutil.parser module is required for the TIMESTAMP option."
             "install with pip install python-dateutil"
         )
         return None

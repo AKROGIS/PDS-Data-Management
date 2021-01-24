@@ -178,12 +178,11 @@ def main():
     parser.add_argument(
         "-t",
         "--timestamp",
-        default=config_file.REF_TIMESTAMP,
         help=(
-            "The reference (last run) timestamp. "
-            "No timestamp will consider all valid moves from database. "
-            "The default is {0}."
-        ).format(config_file.REF_TIMESTAMP),
+            "An override for the 'last time run' timestamp. "
+            "If not provided, then the 'timestamp' file is used. "
+            "No processing will occur if no valid timestamp can be determined."
+        ),
     )
     parser.add_argument(
         "--check_only",
