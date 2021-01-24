@@ -18,7 +18,11 @@ set up to finish before the robocopy process starts.
 This tool was written for Python 2.7 and 3.6.
 
 THIS SCRIPT IS NOT FINISHED AND DOES NOT WORK CORRECTLY
-"""
+  - TODO: date_limited is not used
+  - TODO: date_limited file reading/writing is not 2.7/3.6 compatible.
+  - TODO: doesn't get a path to the remote server
+  - TODO: CSV file reading is not both 2.7/3x compatible
+ """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
@@ -139,7 +143,7 @@ def mover(moves_data, config):
                         old_workspace_path_c,
                         new_workspace_path_c,
                     )
-                except BaseException as ex:
+                except IOError as ex:
                     logger.exception(ex)
 
 
