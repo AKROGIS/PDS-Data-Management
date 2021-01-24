@@ -32,6 +32,7 @@ import smtplib
 
 # pylint: disable=too-many-arguments,bare-except
 
+
 class BufferingSMTPHandler(logging.handlers.BufferingHandler):
     """A logging handler that buffers (aggregates) SMTP messages."""
 

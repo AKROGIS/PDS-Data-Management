@@ -25,6 +25,3 @@ REF_TIMESTAMP = None
 
 # Remote server X drive path: UNC path or symbolic link to location where moves are to occur.
 REMOTE_SERVER = None
-
-# Time stamp and log file name.
-NAME = None

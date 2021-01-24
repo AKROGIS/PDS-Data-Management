@@ -186,14 +186,6 @@ def main():
         ).format(config_file.REF_TIMESTAMP),
     )
     parser.add_argument(
-        "-n",
-        "--name",
-        default=config_file.NAME,
-        help=(
-            "The short name for the time stamp and log files. The default is {0}."
-        ).format(config_file.NAME),
-    )
-    parser.add_argument(
         "--check_only",
         action="store_true",
         help="Check/test mode. Will print but do the moves.",
@@ -223,7 +215,6 @@ def main():
         moves_db=args.database,
         remote_server=args.server,
         ref_timestamp=args.timestamp,
-        name=args.name,
         check_only=args.check_only,
     )
 

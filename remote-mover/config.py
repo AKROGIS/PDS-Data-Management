@@ -29,7 +29,6 @@ class Config(object):
         moves_db=None,
         ref_timestamp=None,
         remote_server=None,
-        name=None,
         check_only=None,
     ):
         logger.debug("Initializing Config...")
@@ -40,10 +39,8 @@ class Config(object):
         self.__remote_server = (
             remote_server if remote_server is not None else config_file.REMOTE_SERVER
         )
-        self.__name = name if name is not None else config_file.NAME
         self.__check_only = check_only
         logger.debug("Initialized Config: %s", self)
-
 
     @property
     def moves_db(self):
@@ -51,25 +48,15 @@ class Config(object):
 
         return self.__moves_db
 
-
     @property
     def ref_timestamp(self):
         """A reference timestamp for the last run (date and time, UTC)."""
         return self.__ref_timestamp
 
-
-
     @property
     def remote_server(self):
         """Path to remote server; UNC or symbolic link."""
         return self.__remote_server
-
-
-    @property
-    def name(self):
-        """Short name, e.g. KEFJ."""
-        return self.__name
-
 
     @property
     def check_only(self):
@@ -77,12 +64,13 @@ class Config(object):
         return self.__check_only
 
     def __str__(self):
-        text = "<moves_db: {0}, ref_timestamp: {1}, remote_server: {2}, name: {3}, check_only: {4}>"
+        text = (
+            "<moves_db: {0}, ref_timestamp: {1}, remote_server: {2}, check_only: {3}>"
+        )
         text = text.format(
             self.moves_db,
             self.ref_timestamp,
             self.remote_server,
-            self.name,
             self.check_only,
         )
         return text
