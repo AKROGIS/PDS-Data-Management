@@ -297,45 +297,36 @@ def main():
     if args.database is not None and (
         args.mount_point is not None or args.remote_server is not None
     ):
-        # pylint: disable=broad-except
-        # I want to catch all exceptions for the logger.
-
         # wrapper for read_csv_map() to meet specification of timestamped_operation()
         def timed_csv_read(since):
-            # pylint: disable=global-statement
-            # see discussion below for why MOVES is global
-            global MOVES
+            # I want to catch all exceptions for the logger, and to return T/F.
+            # pylint: disable=broad-except
+            moves = None
             try:
-                MOVES = read_csv_map(args.database, since)
-                return True
+                moves = read_csv_map(args.database, since)
             except Exception as ex:
                 logger.error("Unable to read moves database (%s)", args.database)
                 logger.exception(ex)
-                MOVES = None
+                moves = None
+            if moves is None:
                 return False
+            try:
+                if args.remote_server is None:
+                    move_on_mounts(moves, args.mount_point, args.dry_run)
+                else:
+                    move_on_server(moves, args.remote_server, args.dry_run)
+            except Exception as ex:
+                logger.error("Unable to rename/move folders.")
+                logger.exception(ex)
+                return False
+            return True
 
         date_limited.timestamped_operation(
             timed_csv_read, timestamp_override=args.since
         )
-        if MOVES is not None:
-            try:
-                if args.remote_server is None:
-                    move_on_mounts(MOVES, args.mount_point, args.dry_run)
-                else:
-                    move_on_server(MOVES, args.remote_server, args.dry_run)
-            except Exception as ex:
-                logger.error("Unable to rename/move folders.")
-                logger.exception(ex)
 
     logger.info("Done!")
     logging.shutdown()
-
-
-# The function that sets the list of moves is wrapped in a function context as
-# a timestamped_operation, and the return value will be lost unless it can write
-# to a global variable (Python functions and lambda do not captured the
-# enclosing context).
-MOVES = None
 
 
 if __name__ == "__main__":
