@@ -288,19 +288,26 @@ def main():
     if args.database is not None and (
         args.mount_point is not None or args.remote_server is not None
     ):
-
         # pylint: disable=broad-except
         # I want to catch all exceptions for the logger.
-        try:
-            # TODO: read moves with date_limited.timestamped_operation()
-            import datetime  # for testing
 
-            args.since = datetime.datetime.now()
-            moves_list = read_csv_map(args.database, args.since)
-        except Exception as ex:
-            logger.error("Unable to read moves database (%s)", args.database)
-            logger.exception(ex)
-            moves_list = None
+        moves_list = None
+        # wrapper for read_csv_map() to meet specification of timestamped_operation()
+        def timed_csv_read(since):
+            try:
+                global moves_list
+                moves_list = read_csv_map(args.database, since)
+                return True
+            except Exception as ex:
+                logger.error("Unable to read moves database (%s)", args.database)
+                logger.exception(ex)
+                moves_list = None
+                return False
+
+        date_limited.timestamped_operation(
+            timed_csv_read, timestamp_override=args.since
+        )
+
         if moves_list is not None:
             try:
                 if args.remote_server is None:
