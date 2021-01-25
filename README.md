@@ -68,8 +68,34 @@ There is nothing to build to use these tools.
 
 ## Deploy
 
-These tools do not need to be deployed.  Just clone this repository
-to a local file system.
+Most of these tools do not need to be deployed.  Just clone this repository
+to a local file system.  The exceptions are:
+
+* `remote_mover` - copy this folder to the GIS application server, and create a
+  scheduled task to run `remote_mover.py` with python 2.7 or python 3.x. Review
+  and edit if necessary `config_file.py` to set paths to the moves database and
+  folder of server junction points (See the `robo-copy` below). Review and edit
+  if necessary `config_logger.py` to set the logging parameters.  The scheduled
+  task should execute at least 5 minutes before the robocopy task begins. This
+  task must be run with the same account that runs the `robo-copy` tasks below.
+* `robo-copy` -  - copy this folder contents to a folder on the GIS application
+  server. The scripts assume the folder will be `E:\XDrive\UpdateTools`. Run
+  [x-mappings/make-remote-server-links.bat](x-mappings/make-remote-server-links.bat)
+  to create the server junction points at `E:\XDrive\RemoteServers`.  The
+  scripts also expect a folder for logs at `E:\Xdrive\Logs`. If you want or need
+  to change either of these paths, then edit the scripts as necessary. Create
+  a scheduled task to run `robo-scheduler.bat` in the evening and `robo-kill.bat`
+  in the morning.  The two `xml` files can be imported to the scheduled task
+  console for this purpose. These tasks must be run with a NPS system account
+  that has permissions to write to the Park GIS server (but not the regional
+  GIS server). See the password keeper on the GIS team drive for authentication
+  details, or contact IT.
+* `x-mappings` - Therein lies an importable scheduled task (and `bat` file) that
+  will create an X-drive mapping for the system account that runs ArcGIS server.
+  This task needs to be deployed on each server with ArcGIS server and set to
+  run before ArcGIS server starts.  This allows the ArcGIS to use the raster
+  mosaic datasets that have X-drive paths embedded in them for the source and
+  overview rasters.
 
 ## Use
 
