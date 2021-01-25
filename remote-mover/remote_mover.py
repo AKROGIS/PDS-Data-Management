@@ -45,6 +45,7 @@ logger = logging.getLogger("main")
 logger.info("Logging Started")
 
 
+# pylint: disable=too-many-locals
 def read_csv_map(csv_path, since):
     """
     Read the moves database at csv_path.
@@ -192,7 +193,7 @@ def move_on_server(moves, server_path, dry_run=True):
                 # Python 3.3+: If dst exists, the operation will fail with an
                 # OSError subclass.
                 # Python 2.7:  On Windows, if dst already exists, OSError will be
-                # raised.  On Unix behaviour may deviate is dst is a file.
+                # raised.  On Unix behavior may deviate is dst is a file.
                 os.rename(source_path, destination_path)
                 logger.info("Move succeeded.")
             except OSError as ex:
@@ -292,35 +293,42 @@ def main():
         # pylint: disable=broad-except
         # I want to catch all exceptions for the logger.
 
-        moves_list = None
         # wrapper for read_csv_map() to meet specification of timestamped_operation()
         def timed_csv_read(since):
+            # pylint: disable=global-statement
+            # see discussion below for why MOVES is global
+            global MOVES
             try:
-                global moves_list
-                moves_list = read_csv_map(args.database, since)
+                MOVES = read_csv_map(args.database, since)
                 return True
             except Exception as ex:
                 logger.error("Unable to read moves database (%s)", args.database)
                 logger.exception(ex)
-                moves_list = None
+                MOVES = None
                 return False
 
         date_limited.timestamped_operation(
             timed_csv_read, timestamp_override=args.since
         )
-
-        if moves_list is not None:
+        if MOVES is not None:
             try:
                 if args.remote_server is None:
-                    move_on_mounts(moves_list, args.mount_point)
+                    move_on_mounts(MOVES, args.mount_point, args.dry_run)
                 else:
-                    move_on_server(moves_list, args.remote_server)
+                    move_on_server(MOVES, args.remote_server, args.dry_run)
             except Exception as ex:
                 logger.error("Unable to rename/move folders.")
                 logger.exception(ex)
 
     logger.info("Done!")
     logging.shutdown()
+
+
+# The function that sets the list of moves is wrapped in a function context as
+# a timestamped_operation, and the return value will be lost unless it can write
+# to a global variable (Python functions and lambda do not captured the
+# enclosing context).
+MOVES = None
 
 
 if __name__ == "__main__":

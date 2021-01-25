@@ -50,7 +50,9 @@ def timestamped_operation(operation, utc=False, prefix=None, timestamp_override=
     This method has no return value.
     """
 
-    logger.debug("timestamped_operation(op, %s, %s, %s)", utc, prefix, timestamp_override)
+    logger.debug(
+        "timestamped_operation(op, %s, %s, %s)", utc, prefix, timestamp_override
+    )
 
     last_run_time = get_last_run_time(prefix, timestamp_override)
 
