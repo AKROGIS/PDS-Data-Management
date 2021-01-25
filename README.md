@@ -78,6 +78,10 @@ to a local file system.  The exceptions are:
   if necessary `config_logger.py` to set the logging parameters.  The scheduled
   task should execute at least 5 minutes before the robocopy task begins. This
   task must be run with the same account that runs the `robo-copy` tasks below.
+  This account must have write permission to the deployed folder to update the
+  timestamp and log files. After installing (and when there are no new moves in
+  the database) the script should be run once manually with the -s option and a
+  date in the future.  This will create a timestamp file for the next run.
 * `robo-copy` -  - copy this folder contents to a folder on the GIS application
   server. The scripts assume the folder will be `E:\XDrive\UpdateTools`. Run
   [x-mappings/make-remote-server-links.bat](x-mappings/make-remote-server-links.bat)
