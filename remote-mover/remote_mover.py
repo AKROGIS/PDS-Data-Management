@@ -29,6 +29,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import argparse
 import csv
+import datetime
 import logging
 import logging.config
 import os
@@ -76,6 +77,12 @@ def read_csv_map(csv_path, since):
 
     # Return value
     records = []
+
+    # short circuit if the moves database has not been edited since the last run.
+    database_modtime = datetime.datetime.fromtimestamp(os.path.getmtime(csv_path))
+    if database_modtime < since:
+        logger.info("Moves database has not been modified since last run.")
+        return None
 
     logger.info("Opening moves database at %s", csv_path)
     # Open file for Python 2 and Python 3 compatible CSV reading
