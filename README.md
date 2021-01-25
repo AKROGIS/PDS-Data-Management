@@ -108,7 +108,10 @@ be run in a CMD/Powershell window, with the
 [IDLE](https://en.wikipedia.org/wiki/IDLE) application,
 with the
 [Python extension to VS Code](https://code.visualstudio.com/docs/languages/python),
-or any other Python execution environment.
+or any other Python execution environment.  All scripts work with Python 2.7 and
+most will also work with Python 3.  The "obsolete" scripts in `ifsar_scripts`
+and `misc-reorg-scripts` have not been tested with Python 3, but the others have
+been.
 
 ### SQL Scripts
 
