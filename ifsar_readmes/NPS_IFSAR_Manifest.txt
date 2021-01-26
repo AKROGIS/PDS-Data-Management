@@ -807,9 +807,9 @@ Black WD Easystore 1TB  SN: WXF1A288VALS
 ----------------------
 X19
 ----------------------
-**IFSAR Delivery 21Jan2021**
+**ifsar_backup20210125**
 
-Black WD Easystore 4TB  SN: WXF??
+Black WD Easystore 1TB  SN: WXT1CB196568
 
 *Checked contents with X drive:  Good, 2021-01-21, RES*
 
