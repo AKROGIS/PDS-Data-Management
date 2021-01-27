@@ -7,7 +7,7 @@ This tool is designed to be run as a scheduled task.
 Since it is generic, it applies no special filters or transformations on the
 data sets it exports.
 
-This tool was written for Python 2.7, but should work with 3.3+
+This tool was tested with ArcGIS 10.6.1 and Pro 2.5.1
 Non-standard modules:
   Relies on the esri `arcpy` module installed with ArcGIS.
 """
