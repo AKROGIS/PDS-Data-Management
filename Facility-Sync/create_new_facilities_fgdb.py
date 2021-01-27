@@ -29,7 +29,7 @@ FGDB_EXT = ".gdb"
 WORKING_FOLDER = r"C:\tmp\pds\facility-sync"
 XDRIVE_FOLDER = r"X:\AKR\Statewide\cultural"
 CONNECTION_FILE = (
-    r"Database Connections\inpakrovmais - facilities as akr_reader_web.sde"
+    r"X:\GIS\SDE Connection Files\inpakrovmais.akr_facilities.akr_reader_web.sde"
 )
 SDE_SCHEMA = "akr_facility2."
 tables = [
