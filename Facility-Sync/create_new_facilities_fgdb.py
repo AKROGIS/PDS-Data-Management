@@ -10,7 +10,7 @@ It will likely break if the database schema changes, and very little attempt
 was made to ameliorate this, but it is simple enough and short enough that
 making the necessary changes should not be too hard.
 
-This tool was written for Python 2.7, but should work with 3.3+
+This tool was tested with ArcGIS 10.6.1 and Pro 2.5.1
 Non-standard modules:
   Relies on the esri `arcpy` module installed with ArcGIS.
 """
@@ -204,6 +204,7 @@ def copy_metadata(source, destination):
         FROM_FGDC -> FGDC_CSDGM
         FROM_ISO_19139 -> ISO19139_UNKNOWN
     """
+    print("Copy metadata from {0} to {1}".format(source, destination))
     if sys.version_info[0] < 3:
         arcpy.ImportMetadata_conversion(source, "FROM_ARCGIS", destination)
     else:
@@ -237,6 +238,7 @@ copy_metadata(Source_Metadata, FMSS_Assets)
 
 # Add Relationships
 # =================
+print("Creating Relationships")
 arcpy.env.workspace = new_fgdb
 # Asset to Location
 # fmt: off
