@@ -19,6 +19,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import datetime
 import os
+import sys
 
 import arcpy
 
@@ -190,22 +191,43 @@ arcpy.AddIndex_management(AKR_ATTACH, "GEOMETRYID", "GEOMETRYID_IDX", "#", "#")
 
 # Add Metadata
 # ============
+
+def copy_metadata(source, destination):
+    """
+    Copy Metadata from the source feature class to the destination feature class
+
+    Copying metadata is different in Pro (Python 3), than it is in 10.x (Python 2)
+    source and destination are paths to feature classes (strings).
+
+    Assumes ArcGIS Metadata format. Choices are:
+        FROM_ARCGIS -> ARCGIS_METADATA
+        FROM_FGDC -> FGDC_CSDGM
+        FROM_ISO_19139 -> ISO19139_UNKNOWN
+    """
+    if sys.version_info[0] < 3:
+        arcpy.ImportMetadata_conversion(source, "FROM_ARCGIS", destination)
+    else:
+        dest = arcpy.metadata.Metadata(destination)
+        dest.importMetadata(source, "ARCGIS_METADATA")
+        dest.save()
+
+
 Source_Metadata = os.path.join(
     CONNECTION_FILE, SDE_SCHEMA + "GIS.AKR_BLDG_PY_Template_for_Metadata"
 )
-arcpy.ImportMetadata_conversion(Source_Metadata, "FROM_ARCGIS", Building_Polygon)
+copy_metadata(Source_Metadata, Building_Polygon)
 Source_Metadata = os.path.join(
     CONNECTION_FILE, SDE_SCHEMA + "GIS.AKR_BLDG_PT_Template_for_Metadata"
 )
-arcpy.ImportMetadata_conversion(Source_Metadata, "FROM_ARCGIS", Building_Centroid)
+copy_metadata(Source_Metadata, Building_Centroid)
 Source_Metadata = os.path.join(
     CONNECTION_FILE, SDE_SCHEMA + "GIS.FMSSExport_Template_for_Metadata"
 )
-arcpy.ImportMetadata_conversion(Source_Metadata, "FROM_ARCGIS", FMSS_Locations)
+copy_metadata(Source_Metadata, FMSS_Locations)
 Source_Metadata = os.path.join(
     CONNECTION_FILE, SDE_SCHEMA + "GIS.FMSSExport_Asset_Template_for_Metadata"
 )
-arcpy.ImportMetadata_conversion(Source_Metadata, "FROM_ARCGIS", FMSS_Assets)
+copy_metadata(Source_Metadata, FMSS_Assets)
 
 # Add History
 # ===========
