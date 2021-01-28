@@ -23,6 +23,15 @@ import sys
 
 import arcpy
 
+# Bizare esri bug discoverd during testing.
+# When I switched the CONNECTION_FILE from a connection file in my profile to
+# one on the network (which will work with all users and all versions), ArcGIS
+# 10.6.1 failed to copy the metadata for BLDG_PT, BLDG_PY, FMSSExport and FMSS
+# Assets.  Pro worked fine with the network connection file, and 10.x had no
+# other issues.  Using that network configuration file in ArcCatalog 10.x works
+# fine.  I can see nothing wrong with it (I think it is a copy of what I have
+# in my profile).  IF you need to use ArcGIS 10.x and the metadata is missing,
+# copy the connection file to your profile, and swap the connection file.
 
 # Configuration Constants:
 FGDB_NAME = "akr_facility"
@@ -30,6 +39,7 @@ FGDB_EXT = ".gdb"
 WORKING_FOLDER = r"C:\tmp\pds\facility-sync"
 XDRIVE_FOLDER = r"X:\AKR\Statewide\cultural"
 CONNECTION_FILE = (
+    # r"Database Connections\inpakrovmais - facilities as akr_reader_web.sde"
     r"X:\GIS\SDE Connection Files\inpakrovmais.akr_facilities.akr_reader_web.sde"
 )
 SDE_SCHEMA = "akr_facility2."
