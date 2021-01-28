@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 walk file system finding geodatabases
 if there is a raster mosaic dataset in the gdb, then list it and all
@@ -6,11 +7,14 @@ the images it references
 use arcpy
  ListDatasets, ListFeatureClasses, ListFiles, ListRasters, ListTables, and ListWorkspaces
 """
+
 from __future__ import absolute_import, division, print_function, unicode_literals
-import arcpy
+
+from io import open
 import os
 import tempfile
-# import shutil
+
+import arcpy
 
 
 def check_gdb(gdb, outputter=None):

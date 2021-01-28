@@ -1,11 +1,13 @@
+# -*- coding: utf-8 -*-
 """
 Compares Theme Manager against file system and reports on
 1) Themes (layer files) in TM database that are not in the TM filesystem
 2) Themes (layer files) in TM filesystem that are not in the TM database
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
-from io import open  # for python2/3 compatibility
+
 import csv
+from io import open
 import os
 
 tm_filesystem = r"X:\GIS\ThemeMgr"

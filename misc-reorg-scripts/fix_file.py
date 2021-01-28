@@ -1,11 +1,19 @@
+# -*- coding: utf-8 -*-
 """
-Uses the folder mapping file that Stephanie created to fix broken links in mxd and lyr files
+Uses the folder mapping file that Stephanie created to fix broken links in
+mxd and lyr files
+
+Only works with ArcGIS 10.x NOT Pro
+(uses arcpy.mapping (from 10.x), while ArcGIS Pro requires arcpy.mp)
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
-import os
+
 import csv
+from io import open
 import logging
+import os
+
 import arcpy
 
 logger = logging.getLogger(__name__)
@@ -177,7 +185,7 @@ def main(fix='check'):
 
 if __name__ == '__main__':
     logger.addHandler(logging.StreamHandler())
-    logger.addHandler(logging.FileHandler(r"data\fix-file.log"))    
+    logger.addHandler(logging.FileHandler(r"data\fix-file.log"))
     logger.setLevel(logging.WARN)
     # fix is one of 'check', 'find-fix', 'fix'
     #   check just prints broken layers (fastest)

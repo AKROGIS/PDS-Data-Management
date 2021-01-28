@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Print out the folder tree to a specified depth
 """

@@ -1,13 +1,17 @@
+# -*- coding: utf-8 -*-
 """
 Checks the Theme Manager database and reports on
 1) All the workspaces (folder, fgdb, mdb, etc) that are in the database
 2) Any workspaces that are in the database, but not in the filesystem
 3) Any features in the database, that are not found in the workspace
 """
+
 from __future__ import absolute_import, division, print_function, unicode_literals
-from io import open  # for python2/3 compatibility
+
 import csv
+from io import open
 import os
+
 import arcpy
 
 infile = r"data\tm.csv"

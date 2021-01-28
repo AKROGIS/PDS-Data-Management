@@ -1,8 +1,12 @@
+# -*- coding: utf-8 -*-
 """
 Lists all the tif images(with sizes) below a starting folder
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
+
+import csv
+from io import open
 import os
 
 

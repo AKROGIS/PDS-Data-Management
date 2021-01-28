@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Checks the folder mapping file that Stephanie created.
 This file lists old_Xdrive_path, new_small_Xdrive_path, new_external_Xdrive_path, other...
@@ -7,9 +8,9 @@ Multiple checks are possible.
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
-from io import open  # for python2/3 compatibility
 
 import csv
+from io import open
 
 
 def check_unique_sources(data):

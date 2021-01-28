@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 walk file system
 *.mxd - list data frames, and all layers recursively (flag any missing data sources)
@@ -10,7 +11,9 @@ walk file system
 use arcpy
  ListDatasets, ListFeatureClasses, ListFiles, ListRasters, ListTables, and ListWorkspaces
 """
+
 from __future__ import absolute_import, division, print_function, unicode_literals
+
 import arcpy
 
 

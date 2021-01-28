@@ -1,9 +1,17 @@
+# -*- coding: utf-8 -*-
+"""
+Replaces old raster paths with new paths in a raster mosaic dataset.
+"""
+
 from __future__ import absolute_import, division, print_function, unicode_literals
-import arcpy
-import os
+
 import csv
+from io import open
 import logging
+import os
 import tempfile
+
+import arcpy
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -50,7 +58,7 @@ def check_gdb(gdb, outputter, replace_map, runas):
                     logger.error('%s with paths %s repair error: %s', mosaic, paths, ex)
             if runas =='find-fix':
                 # adding non-null path pairs into log file to show found fixes for current mosaic; could return to csv
-                logger.info('Found non-null path pairs (old new;): %s', paths)   
+                logger.info('Found non-null path pairs (old new;): %s', paths)
     return results
 
 def mosaic_repair(mdname, paths, query='#'):
@@ -107,11 +115,11 @@ def main(mosaic_datasets_root,csv_file,runas):
     # bye.
     logger.info('Ended %s %s', time.strftime("%H:%M:%S"), time.strftime("%d/%m/%Y"))
     logger.info('########################################################')
-    
+
 
 if __name__ == '__main__':
     logger.addHandler(logging.StreamHandler())
-    logger.addHandler(logging.FileHandler(r"data\repair-mosaic-datasets.log"))    
+    logger.addHandler(logging.FileHandler(r"data\repair-mosaic-datasets.log"))
     logger.setLevel(logging.INFO)
     # runas is one of 'check', 'find-fix', 'fix'
     #   check just prints mosaic datasets with broken paths (fastest)

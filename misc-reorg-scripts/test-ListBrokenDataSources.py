@@ -1,5 +1,15 @@
-# from __future__ import absolute_import, division, print_function, unicode_literals
+# -*- coding: utf-8 -*-
+"""
+Replace old data source paths with new paths in a layer file or a folder of layer files.
+
+Only works with ArcGIS 10.x NOT Pro
+(uses arcpy.mapping (from 10.x), while ArcGIS Pro requires arcpy.mp)
+"""
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import os
+
 import arcpy
 
 
@@ -42,4 +52,3 @@ print('Check great-grandparent folder, Always fails, unless basemap folder check
 # This will print erroneous results for WRST Satellite Image Map Annotation 250K.lyr
 # unless the search is done at the child folder first, but not two children down
 find_and_fix_all_in_folder(root1)
-

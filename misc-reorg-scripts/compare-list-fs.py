@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Compare the file move list with the file system
 
@@ -16,10 +17,11 @@ This testing has many aspects
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
-from io import open  # for python2/3 compatibility
+
 import csv
-import os
 import filecmp
+from io import open
+import os
 
 """
 # configuration constants

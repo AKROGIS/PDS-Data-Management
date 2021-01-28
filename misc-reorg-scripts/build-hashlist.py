@@ -1,12 +1,14 @@
+# -*- coding: utf-8 -*-
 """
 Walk the file system and build a CSV file with a hash for each file
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
-from io import open  # for python2/3 compatibility
+
 import csv
-import os
 import hashlib
+from io import open
+import os
 
 
 def sha1_file(path):

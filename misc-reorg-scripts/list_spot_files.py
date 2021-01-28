@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+"""
+Compares a list of spot photos with the file system
+"""
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+from io import open
 import os
 
 with open(r'data\build_spot_orthometric.csv', 'w') as fh:

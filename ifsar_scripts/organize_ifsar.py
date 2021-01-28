@@ -1,13 +1,16 @@
+# -*- coding: utf-8 -*-
 """
 Add helpful attributes to the list of IFSAR tif images
 Need to save results with just LF (not CRLF) before importing to SQL Server
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
-import re
+
 import csv
-import os
 import glob
+from io import open
+import os
+import re
 
 # must run this from a folder with a data directory
 
@@ -61,7 +64,7 @@ with open(out_file, 'wb') as o:
             exts_found = [sup.replace(f, '').lower() for sup in glob.glob(f+'.*')]
             # exts_possible = ['.tif', '.tfw','.xml','.html','.txt','.tif.xml',
             #                  '.tif.ovr','.tif.aux.xml', '.rrd', '.aux', '.tif.crc']
-            tfw, xml, html, txt, tif_xml, ovr, aux, rrd, aux_old, crc = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
+            tfw, xml, html, txt, tif_xml, ovr, aux, rrd, aux_old, crc = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
             if '.tfw' in exts_found:
                 tfw = 1
             if '.xml' in exts_found:

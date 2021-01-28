@@ -1,9 +1,16 @@
+# -*- coding: utf-8 -*-
+"""
+Add a list of rasters to a raster mosaic data set
+"""
+
 from __future__ import absolute_import, division, print_function, unicode_literals
-import arcpy
-import time
-import os
+
 import csv
 import logging
+import os
+import time
+
+import arcpy
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -85,7 +92,7 @@ def main2():
 
 if __name__ == '__main__':
     logger.addHandler(logging.StreamHandler())
-    logger.addHandler(logging.FileHandler(r"data\build-mosaics.log"))    
+    logger.addHandler(logging.FileHandler(r"data\build-mosaics.log"))
     logger.setLevel(logging.DEBUG)
 
     # main2()

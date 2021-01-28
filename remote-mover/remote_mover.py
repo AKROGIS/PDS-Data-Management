@@ -25,7 +25,7 @@ time that the record is added (and changes do not occur while this is script is
 run).
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import division, print_function, unicode_literals
 
 import argparse
 import csv
