@@ -58,7 +58,7 @@ def find_replacement(old_path, replace_map):
     return None
 
 
-def check_and_fix_file(path, replace_map, fix='check'):
+def check_and_fix_file(path, replace_map, fix="check"):
     """
     Fix broken datasources in an mxd or layer file
 
@@ -76,7 +76,7 @@ def check_and_fix_file(path, replace_map, fix='check'):
     new dataset name if the datset name has changed (if not provided, the name remains unchanged)
     new workspace type; required.  Can I get the workspace type from the layer if not provided (not changing)?
        maybe with describe(workspace).workspaceProgID -> remap to strings required for import
-     """
+    """
     if not os.path.isfile(path):
         logger.warning("%s is not found, or not a file", path)
         return
@@ -87,13 +87,13 @@ def check_and_fix_file(path, replace_map, fix='check'):
         try:
             doc = arcpy.mapping.MapDocument(path)
         except Exception as ex:
-            logger.error('arcpy was unable to open %s', path)
+            logger.error("arcpy was unable to open %s", path)
             return
     elif ext == ".lyr":
         try:
             doc = arcpy.mapping.Layer(path)
         except Exception as ex:
-            logger.error('arcpy was unable to open %s', path)
+            logger.error("arcpy was unable to open %s", path)
             return
     else:
         logger.warning("%s is not an .mxd or .lyr file", path)
@@ -103,7 +103,7 @@ def check_and_fix_file(path, replace_map, fix='check'):
     try:
         broken_layers = arcpy.mapping.ListBrokenDataSources(doc)
     except Exception as ex:
-        logger.error('arcpy was unable to list the broken data sources in %s', path)
+        logger.error("arcpy was unable to list the broken data sources in %s", path)
         return
 
     if not broken_layers:
@@ -111,47 +111,53 @@ def check_and_fix_file(path, replace_map, fix='check'):
         return
 
     for layer in broken_layers:
-        logger.warning('%s/%s', path, layer.name)
-        if not layer.supports('WORKSPACEPATH'):
-            logger.error('Layer %s in %s is broken, but does not have a workspace.  Skipping', layer.name, path)
+        logger.warning("%s/%s", path, layer.name)
+        if not layer.supports("WORKSPACEPATH"):
+            logger.error(
+                "Layer %s in %s is broken, but does not have a workspace.  Skipping",
+                layer.name,
+                path,
+            )
             continue
 
-        if fix == 'check':
+        if fix == "check":
             continue
 
         workspace = layer.workspacePath
         new_workspace = find_replacement(workspace, replace_map)
         if new_workspace is None:
-            logger.error('  %s Not Found', workspace)
+            logger.error("  %s Not Found", workspace)
             continue
 
-        if fix == 'find-fix':
-            logger.warn('Replace %s with %s in %s', workspace, new_workspace , path)
+        if fix == "find-fix":
+            logger.warn("Replace %s with %s in %s", workspace, new_workspace, path)
             continue
 
         try:
             layer.findAndReplaceWorkspacePath(workspace, new_workspace, False)
             save_required = True
         except Exception as ex:
-            logger.error('Unable to repair layer  %s in %s, problem: %s', layer.name, path, ex)
+            logger.error(
+                "Unable to repair layer  %s in %s, problem: %s", layer.name, path, ex
+            )
 
     if save_required:
         try:
             doc.save()
             logger.info("%s has been repaired and saved", path)
         except Exception as ex:
-            logger.error('arcpy was unable to save the repaired document %s', path)
+            logger.error("arcpy was unable to save the repaired document %s", path)
 
 
-def find_and_fix_all(start, extension, replace_map, fix='check'):
+def find_and_fix_all(start, extension, replace_map, fix="check"):
     """
     Find and fix all files with `extension' below start in the file system
 
     Broken datasources in a file are repaired by using the old -> new mappings in replace_map
     """
     extension_lowercase = extension.lower()
-    if not extension_lowercase.startswith('.'):
-        extension_lowercase = '.' + extension_lowercase
+    if not extension_lowercase.startswith("."):
+        extension_lowercase = "." + extension_lowercase
     for root, _, files in os.walk(start):
         for name in files:
             ext = os.path.splitext(name)[1].lower()
@@ -163,27 +169,29 @@ def find_and_fix_all(start, extension, replace_map, fix='check'):
 
 def read_csv_map(csvpath):
     mappings = {}
-    with open(csvpath, 'rb') as fh:
+    with open(csvpath, "rb") as fh:
         # ignore the first record (header)
         fh.readline()
         for row in csv.reader(fh):
-            unicode_row = [unicode(item, 'utf-8') if item else None for item in row]
+            unicode_row = [unicode(item, "utf-8") if item else None for item in row]
             old_path = unicode_row[0]
             new_path = unicode_row[2] if unicode_row[1] is None else unicode_row[1]
             mappings[old_path] = new_path
     return mappings
 
 
-def main(fix='check'):
-    if fix not in ['check', 'find-fix', 'fix']:
-        fix = 'check'
+def main(fix="check"):
+    if fix not in ["check", "find-fix", "fix"]:
+        fix = "check"
     replace_map = None
-    if fix in ['find-fix', 'fix']:
-        replace_map = read_csv_map(r'data\PDS Moves - inpakrovmdist%5Cgisdata.csv') # r'data\lyr_moves.csv'
-    find_and_fix_all(r'X:\GIS\ThemeMgr\ANIA Themes', '.lyr', replace_map, fix=fix)
+    if fix in ["find-fix", "fix"]:
+        replace_map = read_csv_map(
+            r"data\PDS Moves - inpakrovmdist%5Cgisdata.csv"
+        )  # r'data\lyr_moves.csv'
+    find_and_fix_all(r"X:\GIS\ThemeMgr\ANIA Themes", ".lyr", replace_map, fix=fix)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger.addHandler(logging.StreamHandler())
     logger.addHandler(logging.FileHandler(r"data\fix-file.log"))
     logger.setLevel(logging.WARN)
@@ -192,4 +200,4 @@ if __name__ == '__main__':
     #   find-fix does a 'check', and find/prints the fix
     #   fix does a 'find-fix' and then repairs and overwrites the layer files (slowest)
     #   the default is 'check'
-    main(fix='find-fix')
+    main(fix="find-fix")

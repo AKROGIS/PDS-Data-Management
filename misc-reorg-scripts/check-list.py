@@ -27,7 +27,7 @@ def check_unique_sources(data):
     # for each item, I only need to check the next item in the list (do not check the last item)
     invalid = []
     for index, value in enumerate(sources[:-1]):
-        if sources[index+1].startswith(value):
+        if sources[index + 1].startswith(value):
             invalid.append(value)
     # output to console
     problems = invalid
@@ -38,13 +38,21 @@ def check_unique_sources(data):
 
 
 def check_unusual(data):
-    substitutions = [('ALBERS', 'AKR'), ('STATEWID', 'STATEWIDE'), ('SUBSIST', 'SUBSISTENCE')]
+    substitutions = [
+        ("ALBERS", "AKR"),
+        ("STATEWID", "STATEWIDE"),
+        ("SUBSIST", "SUBSISTENCE"),
+    ]
     for row in data:
         old = row[0].upper()
         new = row[1].upper()
         ext = row[2].upper()
         if new and ext:
-            print("ERROR: multiple destinations old:{0}, new:{1}, ext:{2}".format(old, new, ext))
+            print(
+                "ERROR: multiple destinations old:{0}, new:{1}, ext:{2}".format(
+                    old, new, ext
+                )
+            )
         else:
             match = False
             if new:
@@ -68,8 +76,8 @@ def check_unusual(data):
 
 
 def main():
-    filepath = r'data/reorg.csv'
-    with open(filepath, 'r') as fh:
+    filepath = r"data/reorg.csv"
+    with open(filepath, "r") as fh:
         # ignore the first record (header)
         fh.readline()
         data = csv.reader(fh)
@@ -77,5 +85,5 @@ def main():
         check_unusual(data)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

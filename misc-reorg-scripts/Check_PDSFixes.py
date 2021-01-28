@@ -13,7 +13,7 @@ old_x = r"\\INPAKROVMDIST\gisdata"
 new_x = r"\\INPAKROVMDIST\gisdata2"
 csv_data = r"data\PDS Fixes - X.csv"
 unique_themes = set([])
-with open(csv_data, 'r') as f:
+with open(csv_data, "r") as f:
     f.readline()
     line = 1
     for row in csv.reader(f):
@@ -45,9 +45,19 @@ with open(csv_data, 'r') as f:
             if not os.path.isfile(new_path):
                 print("line:{}, new datasource {} is not a file".format(line, new_path))
         else:
-            if old_workspace.lower().endswith('.mdb') and new_workspace.lower().endswith('.mdb'):
+            if old_workspace.lower().endswith(
+                ".mdb"
+            ) and new_workspace.lower().endswith(".mdb"):
                 continue
             if not os.path.isdir(old_path):
-                print("line:{}, old workspace {} is not a directory".format(line, old_path))
+                print(
+                    "line:{}, old workspace {} is not a directory".format(
+                        line, old_path
+                    )
+                )
             if not os.path.isdir(new_path):
-                print("line:{}, new workspace {} is not a directory".format(line, new_path))
+                print(
+                    "line:{}, new workspace {} is not a directory".format(
+                        line, new_path
+                    )
+                )

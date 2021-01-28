@@ -9,19 +9,20 @@ from io import open
 
 import fix_file
 
+
 def read(path):
-    with open(path, 'rb') as fh:
+    with open(path, "rb") as fh:
         return fh.read()
 
 
 def save(data, path):
-    with open(path, 'wb') as fh:
+    with open(path, "wb") as fh:
         fh.write(data)
 
 
 def read_paths(path):
     old_paths = []
-    with open(path, 'r') as fh:
+    with open(path, "r") as fh:
         for line in fh:
             old_paths.append(line.strip())
     return old_paths
@@ -41,13 +42,19 @@ def build_file_mapping(in_path, all_paths):
 
 
 def main():
-    tml = read(r"c:\tmp\xxx\AKR Theme List.tml") # r"X:\GIS\ThemeMgr\AKR Theme List.tml")
-    path_maps = build_file_mapping('data/tmpaths.txt', 'data/moves_extra.csv')  # data/PDS Moves - inpakrovmdist%5Cgisdata.csv')
+    tml = read(
+        r"c:\tmp\xxx\AKR Theme List.tml"
+    )  # r"X:\GIS\ThemeMgr\AKR Theme List.tml")
+    path_maps = build_file_mapping(
+        "data/tmpaths.txt", "data/moves_extra.csv"
+    )  # data/PDS Moves - inpakrovmdist%5Cgisdata.csv')
     for old, new in path_maps:
         print(old, new)
         tml = tml.replace(old, new)
-    save(tml, r"c:\tmp\xxx\AKR Theme List1.tml") # r"X:\GIS\ThemeMgr\AKR Theme List.tml"))
+    save(
+        tml, r"c:\tmp\xxx\AKR Theme List1.tml"
+    )  # r"X:\GIS\ThemeMgr\AKR Theme List.tml"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

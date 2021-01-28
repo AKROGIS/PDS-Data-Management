@@ -14,7 +14,7 @@ import os
 def sha1_file(path):
     _blocksize_ = 65536
     hasher = hashlib.sha1()
-    with open(path, 'rb') as afile:
+    with open(path, "rb") as afile:
         buf = afile.read(_blocksize_)
         while len(buf) > 0:
             hasher.update(buf)
@@ -32,7 +32,7 @@ def sha1_folder(directory):
             for name in files:
                 # print 'Hashing', name
                 path = os.path.join(root, name)
-                with open(path, 'rb') as afile:
+                with open(path, "rb") as afile:
                     buf = afile.read(_blocksize_)
                     while len(buf) > 0:
                         hasher.update(buf)
@@ -47,10 +47,10 @@ def get_file_hashes(start):
     hash_list = []
     try:
         for root, folders, files in os.walk(start):
-            gdbs = [d for d in folders if d.upper().endswith('.GDB')]
+            gdbs = [d for d in folders if d.upper().endswith(".GDB")]
             for gdb in gdbs:
                 path = os.path.join(root, gdb)
-                print('hashing ' + path)
+                print("hashing " + path)
                 try:
                     sha1 = sha1_folder(path)
                 except Exception as ex:
@@ -61,7 +61,7 @@ def get_file_hashes(start):
                 folders.remove(gdb)
             for name in files:
                 path = os.path.join(root, name)
-                print('hashing ' + path)
+                print("hashing " + path)
                 try:
                     sha1 = sha1_file(path)
                 except Exception as ex:
@@ -76,14 +76,14 @@ def get_file_hashes(start):
 
 def write_folder_to_file(folder, csv_file):
     hashlist = get_file_hashes(folder)
-    mode = 'wb'  # 'w' for python 3; 'wb' for python 2
+    mode = "wb"  # 'w' for python 3; 'wb' for python 2
     with open(csv_file, mode) as fh:
         writer = csv.writer(fh)
-        writer.writerow(['path', 'name', 'hash'])
+        writer.writerow(["path", "name", "hash"])
         for row in hashlist:
             writer.writerow(row)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # print(sha1_file(r'data\reorg.csv'))
-    write_folder_to_file(r'data\test', r'data\ais_hash.csv')
+    write_folder_to_file(r"data\test", r"data\ais_hash.csv")

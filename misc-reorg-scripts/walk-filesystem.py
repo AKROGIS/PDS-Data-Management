@@ -20,8 +20,23 @@ import arcpy
 def inspect_featureclasses(level, dataset=None):
     # print '**** Feature Classes ****'
     found = set([])
-    for kind in ["Annotation", "Arc", "Dimension", "Edge", "Label", "Line", "Multipatch", "Node", "Point",
-                 "Polygon", "Polyline", "Region", "Route", "Tic", "All"]:
+    for kind in [
+        "Annotation",
+        "Arc",
+        "Dimension",
+        "Edge",
+        "Label",
+        "Line",
+        "Multipatch",
+        "Node",
+        "Point",
+        "Polygon",
+        "Polyline",
+        "Region",
+        "Route",
+        "Tic",
+        "All",
+    ]:
         if dataset is None:
             items = arcpy.ListFeatureClasses("*", kind)
         else:
@@ -30,7 +45,7 @@ def inspect_featureclasses(level, dataset=None):
             for item in items:
                 if item not in found:
                     found.add(item)
-                    print(' '*level*4 + 'FeatureClass ' + kind + ' ' + item)
+                    print(" " * level * 4 + "FeatureClass " + kind + " " + item)
 
 
 def inspect_workspace(w, level):
@@ -54,7 +69,7 @@ def inspect_workspace(w, level):
             for item in items:
                 if item not in found:
                     found.add(item)
-                    print(' '*level*4 + 'Raster ' + kind + ' ' + item)
+                    print(" " * level * 4 + "Raster " + kind + " " + item)
 
     # print '**** Tables ****'
     for kind in ["dBASE", "INFO", "All"]:
@@ -63,18 +78,31 @@ def inspect_workspace(w, level):
             for item in items:
                 if item not in found:
                     found.add(item)
-                    print(' ' * level * 4 + 'Table ' + kind + ' ' + item)
+                    print(" " * level * 4 + "Table " + kind + " " + item)
 
     # print '**** Datasets ****'
-    for kind in ["GeometricNetwork", "Mosaic", "Network", "ParcelFabric", "Raster",
-                 "RasterCatalog", "Schematic", "Terrain", "Tin", "Topology", "Feature", "Coverage", "All"]:
+    for kind in [
+        "GeometricNetwork",
+        "Mosaic",
+        "Network",
+        "ParcelFabric",
+        "Raster",
+        "RasterCatalog",
+        "Schematic",
+        "Terrain",
+        "Tin",
+        "Topology",
+        "Feature",
+        "Coverage",
+        "All",
+    ]:
         items = arcpy.ListDatasets("*", kind)
         if items:
             for item in items:
                 if item not in found:
                     found.add(item)
-                    print(' ' * level * 4 + 'Dataset ' + kind + ' ' + item)
-                    if kind == 'Feature':
+                    print(" " * level * 4 + "Dataset " + kind + " " + item)
+                    if kind == "Feature":
                         inspect_featureclasses(level + 1, item)
 
     # print '**** Workspaces ****'
@@ -84,11 +112,13 @@ def inspect_workspace(w, level):
             for item in items:
                 if item not in found:
                     found.add(item)
-                    print(' ' * level * 4 + 'Workspace ' + kind + ' ' + item)
+                    print(" " * level * 4 + "Workspace " + kind + " " + item)
                     inspect_workspace(item, level + 1)
 
 
 # for d in [r"x:\Albers\base\climate", r"x:\Albers\base\climate\snow"]:
-for d in [r"X:\Albers\base\cultural\statewid\TrailsNPS.gdb"]:   # r"x:\Albers\base\climate"]:
-    print('Workspace Folder ' + d)
+for d in [
+    r"X:\Albers\base\cultural\statewid\TrailsNPS.gdb"
+]:  # r"x:\Albers\base\climate"]:
+    print("Workspace Folder " + d)
     inspect_workspace(d, 1)

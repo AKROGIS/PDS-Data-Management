@@ -17,11 +17,11 @@ import arcpy
 infile = r"data\tm.csv"
 
 data = {}
-with open(infile, 'rb') as f:
+with open(infile, "rb") as f:
     for row in csv.reader(f):
-        theme = row[1] + '/' + row[2]
+        theme = row[1] + "/" + row[2]
         workspace = row[9]
-        feature = row[10] if row[10] and row[10].lower().endswith('.dwg') else row[12]
+        feature = row[10] if row[10] and row[10].lower().endswith(".dwg") else row[12]
         if workspace not in data:
             data[workspace] = (set([]), [])
         data[workspace][0].add(theme)
@@ -34,15 +34,15 @@ for workspace in data:
     if workspace and os.path.exists(workspace):
         found.append(workspace)
 for workspace in sorted(found):
-    print('  ' + workspace)
+    print("  " + workspace)
 
 
 print("\nMissing Workspace:")
 for workspace in sorted(data.keys()):
     if workspace and not os.path.exists(workspace):
-        print('  ' + workspace)
+        print("  " + workspace)
         for theme in data[workspace][0]:
-            print('    ' + theme)
+            print("    " + theme)
 
 
 print("\nMissing Feature in found Workspace:")
@@ -51,5 +51,5 @@ for workspace in data:
         for feature, theme in data[workspace][1]:
             path = os.path.join(workspace, feature)
             if not arcpy.Exists(path):
-                print('  ' + path)
-                print('    ' + theme)
+                print("  " + path)
+                print("    " + theme)

@@ -54,20 +54,24 @@ def read_csv(files):
     for file_num in files:
         root, map_path, hash_path = files[file_num]
         if map_path is not None:
-            with open(map_path, 'rb') as fh:
+            with open(map_path, "rb") as fh:
                 # ignore the first record (header)
                 fh.readline()
                 line_num = 1
                 for row in csv.reader(fh):
                     line_num += 1
-                    unicode_row = [unicode(item, 'utf-8') if item else None for item in row]
+                    unicode_row = [
+                        unicode(item, "utf-8") if item else None for item in row
+                    ]
                     mappings[(file_num, line_num)] = tuple(unicode_row)
         if hash_path is not None:
-            with open(hash_path, 'rb') as fh:
+            with open(hash_path, "rb") as fh:
                 # ignore the first record (header)
                 fh.readline()
                 for row in csv.reader(fh):
-                    path = os.path.join(unicode(row[0], 'utf-8'), unicode(row[1], 'utf-8'))
+                    path = os.path.join(
+                        unicode(row[0], "utf-8"), unicode(row[1], "utf-8")
+                    )
                     file_hash[(file_num, path)] = row[2]
     if len(mappings) == 0:
         mappings = None
@@ -123,18 +127,28 @@ def compare_list_to_files(root, paths):
     items = [os.path.join(root, item) for item in paths if item]
     found, extra = search(root, items)
     missing = list(set(items).difference(set(found)))
-    missing = [m.replace(root + os.path.sep, '') for m in missing]
-    extra = [e.replace(root + os.path.sep, '') for e in extra]
+    missing = [m.replace(root + os.path.sep, "") for m in missing]
+    extra = [e.replace(root + os.path.sep, "") for e in extra]
     for item in missing:
         file_num, line_num = paths[item]
-        errors.append((file_num, line_num, "'{}' was not found on the disk.".format(item)))
-    line_num = -1  # extra errors do not have a line number, but they are in the same filesystem
+        errors.append(
+            (file_num, line_num, "'{}' was not found on the disk.".format(item))
+        )
+    line_num = (
+        -1
+    )  # extra errors do not have a line number, but they are in the same filesystem
     try:
         file_num, _ = paths[paths.keys()[0]]
     except IndexError:
         file_num = -1
     for item in extra:
-        errors.append((file_num, line_num, "'{}' was found on the disk, but not listed.".format(item)))
+        errors.append(
+            (
+                file_num,
+                line_num,
+                "'{}' was found on the disk, but not listed.".format(item),
+            )
+        )
     return errors
 
 
@@ -161,14 +175,24 @@ def make_maps(mappings, files):
             if ext2_path is not None:
                 errors.append((file_num, line_num, "Line has two external destination"))
         if int_path is not None and ext_path is not None:
-            errors.append((file_num, line_num, "Line has both an internal and external destination"))
+            errors.append(
+                (
+                    file_num,
+                    line_num,
+                    "Line has both an internal and external destination",
+                )
+            )
             continue
         new_path = int_path if ext_path is None else ext_path
         if old_path is None and new_path is None:
-            errors.append((file_num, line_num, "Line has both no source or destination"))
+            errors.append(
+                (file_num, line_num, "Line has both no source or destination")
+            )
             continue
-        if old_path is not None and new_path is None and status != 'trash':
-            errors.append((file_num, line_num, "Source '{}' has no destination".format(old_path)))
+        if old_path is not None and new_path is None and status != "trash":
+            errors.append(
+                (file_num, line_num, "Source '{}' has no destination".format(old_path))
+            )
             continue
         # ignore old_path is None and new_path is not None (new file on destination is ok
         if old_path is not None and new_path is not None:
@@ -209,7 +233,7 @@ def find_dups(mappings):
             destination = ext2_path
         if destination is None:
             continue
-        if status == 'duplicate' or status == 'similar':
+        if status == "duplicate" or status == "similar":
             continue
         if destination not in seen_destinations:
             seen_destinations.add(destination)
@@ -220,16 +244,24 @@ def find_dups(mappings):
         src, dest1, dest2, dest3 = mappings[key][:4]
         if src in src_dups:
             file_num, line_num = key
-            errors.append((file_num, line_num, "Source '{0}' is a duplicate".format(src)))
+            errors.append(
+                (file_num, line_num, "Source '{0}' is a duplicate".format(src))
+            )
         if dest1 in dest_dups:
             file_num, line_num = key
-            errors.append((file_num, line_num, "Destination '{0}' is a duplicate".format(dest1)))
+            errors.append(
+                (file_num, line_num, "Destination '{0}' is a duplicate".format(dest1))
+            )
         if dest2 in dest_dups:
             file_num, line_num = key
-            errors.append((file_num, line_num, "Destination '{0}' is a duplicate".format(dest2)))
+            errors.append(
+                (file_num, line_num, "Destination '{0}' is a duplicate".format(dest2))
+            )
         if dest3 in dest_dups:
             file_num, line_num = key
-            errors.append((file_num, line_num, "Destination '{0}' is a duplicate".format(dest3)))
+            errors.append(
+                (file_num, line_num, "Destination '{0}' is a duplicate".format(dest3))
+            )
 
     return errors
 
@@ -254,19 +286,27 @@ def check_equivalence(maps, mappings, file_hash=None):
         for old_path in maps:
             new_path, file_num, line_num = maps[old_path]
             # print("{0}, {1}".format(old_path, new_path))
-            if new_path.endswith('SDMI_IFSAR'):
+            if new_path.endswith("SDMI_IFSAR"):
                 print("***  Skipping {} == {}".format(old_path, new_path))
-            elif new_path.endswith('SDMI_SPOT5'):
+            elif new_path.endswith("SDMI_SPOT5"):
                 print("***  Skipping {} == {}".format(old_path, new_path))
-            elif new_path.startswith('\\\\inpakrovmdist\\gisdata2\\Extras2\\Source_Data\\'):
+            elif new_path.startswith(
+                "\\\\inpakrovmdist\\gisdata2\\Extras2\\Source_Data\\"
+            ):
                 print("***  Skipping {} == {}".format(old_path, new_path))
-            elif old_path.endswith('\\X_RetiredData\\Archive'):
+            elif old_path.endswith("\\X_RetiredData\\Archive"):
                 print("***  Skipping {} == {}".format(old_path, new_path))
             elif not paths_equal(old_path, new_path):
                 # print("*************  Folders not equal ****************")
                 status = mappings[(file_num, line_num)][4]
-                if status != 'similar':
-                    errors.append((file_num, line_num, "Folders not equal: {0} <> {1}".format(old_path, new_path)))
+                if status != "similar":
+                    errors.append(
+                        (
+                            file_num,
+                            line_num,
+                            "Folders not equal: {0} <> {1}".format(old_path, new_path),
+                        )
+                    )
     else:
         for old_path in maps:
             new_path, file_num, line_num = maps[old_path]
@@ -275,7 +315,13 @@ def check_equivalence(maps, mappings, file_hash=None):
             except KeyError:
                 match = False
             if not match:
-                errors.append((file_num, line_num, "Folders not equal: {0} <> {1}".format(old_path, new_path)))
+                errors.append(
+                    (
+                        file_num,
+                        line_num,
+                        "Folders not equal: {0} <> {1}".format(old_path, new_path),
+                    )
+                )
     return errors
 
 
@@ -297,11 +343,11 @@ def print_errors(errors, files=None, file_path=None):
                 root = files[file_num][0]
             else:
                 root = file_num
-            print('{0}, {1}, {2}'.format(root, line_num, issue))
+            print("{0}, {1}, {2}".format(root, line_num, issue))
     else:
-        with open(file_path, 'wb') as fh:
+        with open(file_path, "wb") as fh:
             writer = csv.writer(fh)
-            writer.writerow(['file', 'line', 'issue'])
+            writer.writerow(["file", "line", "issue"])
             for file_num, line_num, issue in errors:
                 if files is not None:
                     root = files[file_num]
@@ -405,7 +451,7 @@ def search(start, items):
 
 
 def load_csv(filepath, col=0):
-    with open(filepath, 'r') as fh:
+    with open(filepath, "r") as fh:
         # ignore the first record (header)
         fh.readline()
         data = [row[col] for row in csv.reader(fh)]
@@ -417,14 +463,23 @@ def print_issues(root, items):
     found, extra = search(root, new_items)
     missing = list(set(new_items).difference(set(found)))
 
-    print('found', sorted([f.replace(root + os.path.sep, '') for f in found]))
-    print('missing', sorted([m.replace(root + os.path.sep, '') for m in missing]))
-    print('extra', sorted([e.replace(root + os.path.sep, '') for e in extra]))
+    print("found", sorted([f.replace(root + os.path.sep, "") for f in found]))
+    print("missing", sorted([m.replace(root + os.path.sep, "") for m in missing]))
+    print("extra", sorted([e.replace(root + os.path.sep, "") for e in extra]))
 
 
 def test():
-    test_root = os.path.join('data', 'test')
-    test_list = ['a.txt', 'c.txt', r'a\b.txt', r'a\c.txt', 'b', r'd\c', 'e', 'f']  # use OS specific path separator
+    test_root = os.path.join("data", "test")
+    test_list = [
+        "a.txt",
+        "c.txt",
+        r"a\b.txt",
+        r"a\c.txt",
+        "b",
+        r"d\c",
+        "e",
+        "f",
+    ]  # use OS specific path separator
     # cd $test_root
     # mkdir a; mkdir b; mkdir c; mkdir d; mkdir d/b; mkdir d/c; mkdir e; mkdir e/a; mkdir g; mkdir g/a
     # touch a.txt; touch b.txt; touch a/a.txt; touch  a/b.txt
@@ -455,23 +510,34 @@ def test():
 
 
 def test_csv():
-    root = r'\\inpakrovmais\data'
-    items = load_csv('data/ais_map.csv', 0)
+    root = r"\\inpakrovmais\data"
+    items = load_csv("data/ais_map.csv", 0)
     print_issues(root, items)
 
 
 def test_equivalence():
     test_map = {
-        r'\\inpakrovmdist\gisdata\AHAP':
-            (r'\\inpakrovmdist\gisdata\AHAP', 2, 1),
-        r'\\inpakrovmdist\gisdata\AHAP\ANIA':
-            (r'\\inpakrovmdist\gisdata2\Extras\ANIA\AHAP', 2, 2),
-        r'\\inpakrovmdist\gisdata\AHAP\BELA':
-            (r'\\inpakrovmdist\gisdata2\Extras\CAKR\AHAP', 2, 3),
-        r'\\inpakrovmdist\gisdata\OrthoBase\ANCH/UA_ANCH.mdb':
-            (r'\\inpakrovmdist\gisdata2\Extras\Anchorage\Imagery/UA_ANCH.mdb', 2, 4),
-        r'\\inpakrovmdist\gisdata\Albers\base\Anno_GDB':
-            (r'\\inpakrovmdist\gisdata2\akr\Statewide\anno', 2, 5),
+        r"\\inpakrovmdist\gisdata\AHAP": (r"\\inpakrovmdist\gisdata\AHAP", 2, 1),
+        r"\\inpakrovmdist\gisdata\AHAP\ANIA": (
+            r"\\inpakrovmdist\gisdata2\Extras\ANIA\AHAP",
+            2,
+            2,
+        ),
+        r"\\inpakrovmdist\gisdata\AHAP\BELA": (
+            r"\\inpakrovmdist\gisdata2\Extras\CAKR\AHAP",
+            2,
+            3,
+        ),
+        r"\\inpakrovmdist\gisdata\OrthoBase\ANCH/UA_ANCH.mdb": (
+            r"\\inpakrovmdist\gisdata2\Extras\Anchorage\Imagery/UA_ANCH.mdb",
+            2,
+            4,
+        ),
+        r"\\inpakrovmdist\gisdata\Albers\base\Anno_GDB": (
+            r"\\inpakrovmdist\gisdata2\akr\Statewide\anno",
+            2,
+            5,
+        ),
     }
     errors = check_equivalence(test_map, None)
     print_errors(errors, None)
@@ -481,9 +547,21 @@ def main():
     errors = []
     # file_info = {file#: ("root", "map_path", "hash_path")}
     file_info = {
-        1: (r'\\inpakrovmdist\gisdata2', None, None),  # r'data/int_hash'),  # Destination: column 2/3 of the map files
-        2: (r'\\inpakrovmdist\gisdata', r'data\PDS Moves - inpakrovmdist%5Cgisdata.csv', None),  # r'data/dist_hash'),
-        3: (r'\\inpakrovmais\data', r'data\PDS Moves - inpakrovmais%5Cdata.csv', None),  # r'data/ais_hash')
+        1: (
+            r"\\inpakrovmdist\gisdata2",
+            None,
+            None,
+        ),  # r'data/int_hash'),  # Destination: column 2/3 of the map files
+        2: (
+            r"\\inpakrovmdist\gisdata",
+            r"data\PDS Moves - inpakrovmdist%5Cgisdata.csv",
+            None,
+        ),  # r'data/dist_hash'),
+        3: (
+            r"\\inpakrovmais\data",
+            r"data\PDS Moves - inpakrovmais%5Cdata.csv",
+            None,
+        ),  # r'data/ais_hash')
     }
     mappings, file_hashes = read_csv(file_info)
     trees = get_paths(mappings, file_info)
@@ -500,12 +578,17 @@ def test_specific_folders():
     # print(paths_equal(r'\\inpakrovmdist\gisdata\GIS\ArcGIS10.3.1',
     #                   r'\\inpakrovmdist\gisdata2\Extras\Software\ArcGIS 10.3.1'))
     # for name in os.listdir(r'\\inpakrovmdist\gisdata\GIS\ThemeMgr\Alaska-wide - Multi Park Themes'):
-    for name in ['GIS\ThemeMgr']:
-        print(name, paths_equal(os.path.join(r'\\inpakrovmdist\gisdata', name),
-                                os.path.join(r'\\inpakrovmdist\gisdata2', name)))
+    for name in ["GIS\ThemeMgr"]:
+        print(
+            name,
+            paths_equal(
+                os.path.join(r"\\inpakrovmdist\gisdata", name),
+                os.path.join(r"\\inpakrovmdist\gisdata2", name),
+            ),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # test_csv()
     # test_equivalence()
     # test_specific_folders()
