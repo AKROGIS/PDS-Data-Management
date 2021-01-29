@@ -91,7 +91,7 @@ def read_csv_map(csv_path, since):
         csv_file = open(csv_path, "rb")
     else:
         logger.debug("Opening as UTF-8 encoded unicode for Python 3")
-        csv_file = open(csv_path, "r", encoding="utf8", newline="")
+        csv_file = open(csv_path, "r", encoding="utf-8", newline="")
 
     since_timestamp = since.strftime(timestamp_format)
     logger.info("Filtering on moves with timestamp > '%s'", since_timestamp)

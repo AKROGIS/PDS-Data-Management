@@ -6,7 +6,6 @@ Lists all the tif images(with sizes) below a starting folder
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import csv
-from io import open
 import os
 
 
@@ -32,7 +31,6 @@ def main(folder, ext='tif', csv_file=None):
         print(','.join(['folder', 'filename', 'ext', 'size']))
         check_folder(folder, ext)
     else:
-        import csv
         with open(csv_file, 'wb') as f:
             csv_writer = csv.writer(f)
 

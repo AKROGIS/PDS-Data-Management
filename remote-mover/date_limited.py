@@ -114,7 +114,7 @@ def get_last_run_time_from_file(prefix=None):
         name = "{0}.timestamp".format(prefix)
     logger.debug("timestamp filename: %s", name)
     try:
-        with open(name, "r", encoding="utf8") as in_file:
+        with open(name, "r", encoding="utf-8") as in_file:
             for line in in_file:
                 return datetime.datetime(*[int(i) for i in line.split(",")])
     except (IOError, ValueError, TypeError) as ex:
@@ -134,7 +134,7 @@ def save_last_run_time(since, prefix=None):
         name = "{0}.timestamp".format(prefix)
     logger.debug("save_last_run_time (%s) in %s", since, name)
     try:
-        with open(name, "w", encoding="utf8") as out_file:
+        with open(name, "w", encoding="utf-8") as out_file:
             time = "{0},{1},{2},{3},{4},{5},{6}".format(
                 since.year,
                 since.month,

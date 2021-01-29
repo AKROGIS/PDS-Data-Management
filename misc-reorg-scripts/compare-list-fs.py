@@ -20,7 +20,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import csv
 import filecmp
-from io import open
 import os
 
 """

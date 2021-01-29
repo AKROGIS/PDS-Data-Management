@@ -9,7 +9,6 @@ Checks the Theme Manager database and reports on
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import csv
-from io import open
 import os
 
 import arcpy

@@ -6,7 +6,6 @@ Replaces old raster paths with new paths in a raster mosaic dataset.
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import csv
-from io import open
 import logging
 import os
 import tempfile

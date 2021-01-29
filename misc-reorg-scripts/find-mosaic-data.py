@@ -10,7 +10,7 @@ use arcpy
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from io import open
+import csv
 import os
 import tempfile
 
@@ -87,8 +87,6 @@ def main(folder, csv_file=None):
     if csv_file is None:
         check_folder(folder, printer)
     else:
-        import csv
-
         with open(csv_file, "w") as f:
             csv_writer = csv.writer(f)
 

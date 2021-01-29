@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Compares a list of spot photos with the file system
+Writes a list of spot photos found in the file system
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
@@ -8,7 +8,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from io import open
 import os
 
-with open(r"data\build_spot_orthometric.csv", "w") as fh:
+with open(r"data\build_spot_orthometric.csv", "w", encoding="utf-8") as fh:
     for d, _, fs in os.walk(r"X:\Extras\AKR\Statewide\Imagery\SDMI_SPOT5"):
         for f in fs:
             fl = f.lower()

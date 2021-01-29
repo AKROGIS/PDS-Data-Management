@@ -11,18 +11,20 @@ import fix_file
 
 
 def read(path):
-    with open(path, "rb") as fh:
+    """Read the file as one giant string."""
+    with open(path, "r", encoding="utf-8") as fh:
         return fh.read()
 
 
 def save(data, path):
-    with open(path, "wb") as fh:
+    """data is the entire contents of the file as one big string."""
+    with open(path, "w", encoding="utf-8") as fh:
         fh.write(data)
 
 
 def read_paths(path):
     old_paths = []
-    with open(path, "r") as fh:
+    with open(path, "r", encoding="utf-8") as fh:
         for line in fh:
             old_paths.append(line.strip())
     return old_paths

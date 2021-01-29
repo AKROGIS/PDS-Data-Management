@@ -10,7 +10,6 @@ Multiple checks are possible.
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import csv
-from io import open
 
 
 def check_unique_sources(data):

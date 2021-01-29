@@ -7,7 +7,6 @@ Compares Theme Manager against file system and reports on
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import csv
-from io import open
 import os
 
 tm_filesystem = r"X:\GIS\ThemeMgr"
