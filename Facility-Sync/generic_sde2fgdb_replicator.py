@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """
 A generic tool to export an esri SDE database to a file geodatabase.
 
