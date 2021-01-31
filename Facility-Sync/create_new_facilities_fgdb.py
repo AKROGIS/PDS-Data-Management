@@ -202,6 +202,7 @@ arcpy.AddIndex_management(AKR_ATTACH, "GEOMETRYID", "GEOMETRYID_IDX", "#", "#")
 # Add Metadata
 # ============
 
+
 def copy_metadata(source, destination):
     """
     Copy Metadata from the source feature class to the destination feature class

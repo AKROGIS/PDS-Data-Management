@@ -139,7 +139,9 @@ def main():
         ""  # No path will put it in the current directory (likely the script directory)
     )
     target_gdb = r"c:\tmp\fmss\akr_facility_new.gdb"  # must be a full path
-    db_connection = r"X:\GIS\SDE Connection Files\inpakrovmais.akr_facilities.akr_reader_web.sde"
+    db_connection = (
+        r"X:\GIS\SDE Connection Files\inpakrovmais.akr_facilities.akr_reader_web.sde"
+    )
 
     ############################### logging items ###################################
     # Get the global logging object.
