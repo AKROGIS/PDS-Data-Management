@@ -11,6 +11,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import csv
 
+import csv23
+
 
 def check_unique_sources(data):
     """
@@ -20,7 +22,7 @@ def check_unique_sources(data):
     :return: invalid source locations
     """
     # build a sorted list of (normalized) sources
-    sources = [row[0].upper() for row in data]
+    sources = [csv23.fix(row)[0].upper() for row in data]
     sources.sort()
     # shorter strings are listed first
     # for each item, I only need to check the next item in the list (do not check the last item)
@@ -43,6 +45,7 @@ def check_unusual(data):
         ("SUBSIST", "SUBSISTENCE"),
     ]
     for row in data:
+        row = csv23.fix(row)
         old = row[0].upper()
         new = row[1].upper()
         ext = row[2].upper()
@@ -75,13 +78,12 @@ def check_unusual(data):
 
 
 def main():
-    filepath = r"data/reorg.csv"
-    with open(filepath, "r") as fh:
-        # ignore the first record (header)
-        fh.readline()
-        data = csv.reader(fh)
-        # check_unique_sources(data)
-        check_unusual(data)
+    csv_path = r"data/reorg.csv"
+    with csv23.open(csv_path, "r") as csv_file:
+        csv_reader = csv.reader(csv_file)
+        next(csv_reader)  # ignore the header
+        # check_unique_sources(csv_reader)
+        check_unusual(csv_reader)
 
 
 if __name__ == "__main__":

@@ -10,6 +10,8 @@ import hashlib
 from io import open
 import os
 
+import csv23
+
 
 def sha1_file(path):
     _blocksize_ = 65536
@@ -74,14 +76,14 @@ def get_file_hashes(start):
     return hash_list
 
 
-def write_folder_to_file(folder, csv_file):
+def write_folder_to_file(folder, csv_path):
     hashlist = get_file_hashes(folder)
-    mode = "wb"  # 'w' for python 3; 'wb' for python 2
-    with open(csv_file, mode) as fh:
-        writer = csv.writer(fh)
-        writer.writerow(["path", "name", "hash"])
+    with csv23.open(csv_path, "w") as csv_file:
+        csv_writer = csv.writer(csv_file)
+        header = ["path", "name", "hash"]
+        csv23.write(csv_writer, header)
         for row in hashlist:
-            writer.writerow(row)
+            csv23.write(csv_writer, row)
 
 
 if __name__ == "__main__":

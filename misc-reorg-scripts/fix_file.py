@@ -15,6 +15,8 @@ import os
 
 import arcpy
 
+import csv23
+
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
@@ -166,15 +168,15 @@ def find_and_fix_all(start, extension, replace_map, fix="check"):
                 check_and_fix_file(old_path, replace_map, fix=fix)
 
 
-def read_csv_map(csvpath):
+def read_csv_map(csv_path):
     mappings = {}
-    with open(csvpath, "rb") as fh:
-        # ignore the first record (header)
-        fh.readline()
-        for row in csv.reader(fh):
-            unicode_row = [unicode(item, "utf-8") if item else None for item in row]
-            old_path = unicode_row[0]
-            new_path = unicode_row[2] if unicode_row[1] is None else unicode_row[1]
+    with csv23.open(csv_path, "r") as csv_file:
+        csv_reader = csv.reader(csv_file)
+        next(csv_reader)  # ignore the header
+        for row in csv_reader:
+            row = csv23.fix(row)
+            old_path = row[0]
+            new_path = row[2] if row[1] is None else row[1]
             mappings[old_path] = new_path
     return mappings
 

@@ -9,13 +9,18 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import csv
 import os
 
+import csv23
+
+
 tm_filesystem = r"X:\GIS\ThemeMgr"
 tm_database = r"data\TM_20171206.csv"
 
 unique_themes = set([])
-with open(tm_database, "r") as f:
-    f.readline()  # remove and discard header
-    for row in csv.reader(f):
+with csv23.open(tm_database, "r") as csv_file:
+    csv_reader = csv.reader(csv_file)
+    next(csv_reader)  # ignore the header
+    for row in csv_reader:
+        row = csv23.fix(row)
         theme = row[3]
         unique_themes.add(theme)
 

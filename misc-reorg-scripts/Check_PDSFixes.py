@@ -8,14 +8,20 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import csv
 import os
 
+import csv23
+
+
 old_x = r"\\INPAKROVMDIST\gisdata"
 new_x = r"\\INPAKROVMDIST\gisdata2"
-csv_data = r"data\PDS Fixes - X.csv"
+csv_path = r"data\PDS Fixes - X.csv"
+
 unique_themes = set([])
-with open(csv_data, "r") as f:
-    f.readline()
+with csv23.open(csv_path, "r") as csv_file:
+    csv_reader = csv.reader(csv_file)
+    next(csv_reader)  # ignore the header
     line = 1
-    for row in csv.reader(f):
+    for row in csv_reader:
+        row = csv23.fix(row)
         line += 1
         # check that time stamp is valid and increasing
         old_workspace = None if len(row[1].strip()) == 0 else row[1]

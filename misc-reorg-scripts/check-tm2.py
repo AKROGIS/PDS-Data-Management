@@ -13,11 +13,17 @@ import os
 
 import arcpy
 
-infile = r"data\tm.csv"
+import csv23
+
+
+csv_path = r"data\tm.csv"
 
 data = {}
-with open(infile, "rb") as f:
-    for row in csv.reader(f):
+with csv23.open(csv_path, "r") as csv_file:
+    csv_reader = csv.reader(csv_file)
+    # next(csv_reader) # ignore the header
+    for row in csv_reader:
+        row = csv23.fix(row)
         theme = row[1] + "/" + row[2]
         workspace = row[9]
         feature = row[10] if row[10] and row[10].lower().endswith(".dwg") else row[12]

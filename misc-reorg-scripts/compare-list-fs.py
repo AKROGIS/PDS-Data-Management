@@ -22,6 +22,8 @@ import csv
 import filecmp
 import os
 
+import csv23
+
 """
 # configuration constants
 int_root = ''
@@ -53,24 +55,21 @@ def read_csv(files):
     for file_num in files:
         root, map_path, hash_path = files[file_num]
         if map_path is not None:
-            with open(map_path, "rb") as fh:
-                # ignore the first record (header)
-                fh.readline()
+            with csv23.open(map_path, "r") as csv_file:
+                csv_reader = csv.reader(csv_file)
+                next(csv_reader)  # ignore the header
                 line_num = 1
-                for row in csv.reader(fh):
+                for row in csv_reader:
+                    row = csv23.fix(row)
                     line_num += 1
-                    unicode_row = [
-                        unicode(item, "utf-8") if item else None for item in row
-                    ]
-                    mappings[(file_num, line_num)] = tuple(unicode_row)
+                    mappings[(file_num, line_num)] = tuple(row)
         if hash_path is not None:
-            with open(hash_path, "rb") as fh:
-                # ignore the first record (header)
-                fh.readline()
-                for row in csv.reader(fh):
-                    path = os.path.join(
-                        unicode(row[0], "utf-8"), unicode(row[1], "utf-8")
-                    )
+            with csv23.open(hash_path, "r") as csv_file:
+                csv_reader = csv.reader(csv_file)
+                next(csv_reader)  # ignore the header
+                for row in csv_reader:
+                    row = csv23.fix(row)
+                    path = os.path.join(row[0], row[1])
                     file_hash[(file_num, path)] = row[2]
     if len(mappings) == 0:
         mappings = None
@@ -324,7 +323,7 @@ def check_equivalence(maps, mappings, file_hash=None):
     return errors
 
 
-def print_errors(errors, files=None, file_path=None):
+def print_errors(errors, files=None, csv_path=None):
     """
     Writes a list of errors to a CSV file, or prints to the console
 
@@ -336,7 +335,7 @@ def print_errors(errors, files=None, file_path=None):
     :return: None
     """
     errors.sort()
-    if file_path is None:
+    if csv_path is None:
         for file_num, line_num, issue in errors:
             if files is not None:
                 root = files[file_num][0]
@@ -344,15 +343,17 @@ def print_errors(errors, files=None, file_path=None):
                 root = file_num
             print("{0}, {1}, {2}".format(root, line_num, issue))
     else:
-        with open(file_path, "wb") as fh:
-            writer = csv.writer(fh)
-            writer.writerow(["file", "line", "issue"])
+        with csv23.open(csv_path, "w") as csv_file:
+            csv_writer = csv.writer(csv_file)
+            header = ["file", "line", "issue"]
+            csv23.write(csv_writer, header)
             for file_num, line_num, issue in errors:
                 if files is not None:
                     root = files[file_num]
                 else:
                     root = file_num
-                writer.writerow([root, line_num, issue])
+                row = [root, line_num, issue]
+                csv23.write(csv_writer, row)
 
 
 def paths_equal(path1, path2):
@@ -449,11 +450,11 @@ def search(start, items):
     return found, extra
 
 
-def load_csv(filepath, col=0):
-    with open(filepath, "r") as fh:
-        # ignore the first record (header)
-        fh.readline()
-        data = [row[col] for row in csv.reader(fh)]
+def load_csv(csv_path, col=0):
+    with csv23.open(csv_path, "r") as csv_file:
+        csv_reader = csv.reader(csv_file)
+        next(csv_reader)  # ignore the header
+        data = [csv23.fix(row)[col] for row in csv_reader]
     return data
 
 

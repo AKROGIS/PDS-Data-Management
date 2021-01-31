@@ -16,6 +16,8 @@ import tempfile
 
 import arcpy
 
+import csv23
+
 
 def check_gdb(gdb, outputter=None):
     # print(gdb)
@@ -83,27 +85,26 @@ def check_folder(folder, outputter=None):
                     check_gdb(os.path.join(root, name), outputter)
 
 
-def main(folder, csv_file=None):
-    if csv_file is None:
+def main(folder, csv_path=None):
+    if csv_path is None:
         check_folder(folder, printer)
     else:
-        with open(csv_file, "w") as f:
-            csv_writer = csv.writer(f)
+        with csv23.open(csv_path, "w") as csv_file:
+            csv_writer = csv.writer(csv_file)
+            header = [
+                "fgdb",
+                "mosaic",
+                "folder",
+                "filename",
+                "extension",
+                "sourceoid",
+                "size",
+            ]
 
             def put_in_csv(row):
-                csv_writer.writerow(row)
+                csv23.write(csv_writer, row)
 
-            put_in_csv(
-                [
-                    "fgdb",
-                    "mosaic",
-                    "folder",
-                    "filename",
-                    "extension",
-                    "sourceoid",
-                    "size",
-                ]
-            )
+            put_in_csv(header)
             check_folder(folder, put_in_csv)
 
 

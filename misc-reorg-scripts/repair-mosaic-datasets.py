@@ -12,6 +12,8 @@ import tempfile
 
 import arcpy
 
+import csv23
+
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
@@ -81,18 +83,18 @@ def printer(row):
     print(row)
 
 
-def read_csv_map(csvpath):
+def read_csv_map(csv_path):
     mappings = {}
-    with open(csvpath, "rb") as fh:
-        # ignore the first record (header)
-        fh.readline()
-        for row in csv.reader(fh):
-            unicode_row = [unicode(item, "utf-8") if item else None for item in row]
-            old_fgdb = unicode_row[0]
-            mosaic = unicode_row[1]
-            old_path = unicode_row[2]
-            new_fgdb = unicode_row[3]
-            new_path = unicode_row[4]
+    with csv23.open(csv_path, "r") as csv_file:
+        csv_reader = csv.reader(csv_file)
+        next(csv_reader)  # ignore the header
+        for row in csv_reader:
+            row = csv23.fix(row)
+            old_fgdb = row[0]
+            mosaic = row[1]
+            old_path = row[2]
+            new_fgdb = row[3]
+            new_path = row[4]
             new_fgdb_mosaic = os.path.join(new_fgdb, mosaic)
             if new_fgdb_mosaic not in mappings:
                 mappings[new_fgdb_mosaic] = []
