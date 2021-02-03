@@ -21,8 +21,16 @@ import os
 import sys
 
 
+# Python 2/3 compatible xrange cabability
+# pylint: disable=undefined-variable,redefined-builtin
+if sys.version_info[0] < 3:
+    range = xrange
+
+
 class Config:
     """Configuration Constants; edit as necessary for each execution."""
+
+    # pylint: disable=useless-object-inheritance,too-few-public-methods
 
     # Output Size  (10000 is good for 32bit 1band DEM,
     #   and 5000 is good for 16bit-3band orthos)
@@ -66,6 +74,9 @@ class Config:
 
 def print_commands():
     """Prints the GDAL commands to re-tile per the configuration."""
+
+    # pylint: disable=too-many-locals
+    # I acknowledge that this function is too big
 
     if Config.in_columns < 1 or Config.in_rows < 1:
         print("Error: Both in_columns and in_rows must be greater than zero.")
