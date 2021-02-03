@@ -38,8 +38,7 @@ def build_file_mapping(in_path, all_paths):
         new_path = fix_file.find_replacement(old_path, moves)
         print(old_path, new_path)
         if new_path is not None and new_path != old_path:
-            new_path = str(new_path)
-            results.append((old_path, str(new_path)))
+            results.append((old_path, new_path))
     return results
 
 

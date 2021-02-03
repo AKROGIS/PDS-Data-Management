@@ -21,7 +21,7 @@ def check_folder(folder, ext, outputter=None):
                     size = os.path.getsize(os.path.join(current_folder, filename))
                 except os.error:
                     pass
-                output = [current_folder, name, extension, str(size)]
+                output = [current_folder, name, extension, "{0}".format(size)]
                 if outputter is None:
                     print(",".join(output))
                 else:

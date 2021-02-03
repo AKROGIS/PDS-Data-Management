@@ -66,10 +66,11 @@ fcs = [
 
 
 # derived variables
-DATESTAMP = str(datetime.date.today())
+NEW_FGDB_NAME = "{0}_new{1}".format(FGDB_NAME, FGDB_EXT)
+SAVED_FGDB_NAME = "{0}_{1}{2}".format(FGDB_NAME, datetime.date.today(), FGDB_EXT)
 xdrive_fgdb = os.path.join(XDRIVE_FOLDER, FGDB_NAME + FGDB_EXT)
-new_fgdb = os.path.join(WORKING_FOLDER, FGDB_NAME + "_new" + FGDB_EXT)
-saved_fgdb = os.path.join(WORKING_FOLDER, FGDB_NAME + "_" + DATESTAMP + FGDB_EXT)
+new_fgdb = os.path.join(WORKING_FOLDER, NEW_FGDB_NAME)
+saved_fgdb = os.path.join(WORKING_FOLDER, SAVED_FGDB_NAME)
 sde_tables = [os.path.join(CONNECTION_FILE, SDE_SCHEMA + table) for table in tables]
 sde_fcs = [os.path.join(CONNECTION_FILE, SDE_SCHEMA + fc) for fc in fcs]
 
