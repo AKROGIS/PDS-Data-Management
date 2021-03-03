@@ -1,6 +1,7 @@
 # repo specific ignore
 data/
 timestamp
+.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -416,7 +417,7 @@ __pycache__/
 # OpenCover UI analysis results
 OpenCover/
 
-# Azure Stream Analytics local run output 
+# Azure Stream Analytics local run output
 ASALocalRun/
 
 *.db
