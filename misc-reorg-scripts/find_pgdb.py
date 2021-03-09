@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-walk file system
-*.mxd - list data frames, and all layers recursively (flag any missing data sources)
-*.lyr - list all layers recursively  (flag any missing data sources)
-*.gdb
-*.mdb - list all datasets
-*.shp - list
-*.gdb/mosaic - list all photo workspaces  (flag any missing data sources)
+Find Microsoft Access databases, and try to describe as a Personal Geodatabase
 
-use arcpy
+Pro can find the Access database, but it cannot list the contents.
+
+uses arcpy
  ListDatasets, ListFeatureClasses, ListFiles, ListRasters, ListTables, and ListWorkspaces
 """
 
@@ -17,7 +13,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os.path
 
 import walk_workspaces
-
 
 class Config(object):
     """Namespace for configuration parameters. Edit as needed."""
@@ -37,24 +32,16 @@ def is_pgdb(name):
     return os.path.splitext(name)[1].lower() in [".mdb"]
 
 
-def is_fgdb(name):
-    return os.path.splitext(name)[1].lower() in [".gdb"]
-
-
-def walk_fs(root):
+def find_pgdb(root):
     """Find all the personal geodatabases below root"""
-    for path, folders, file_names in os.walk(root):
-        for folder in folders:
-            if is_fgdb(folder):
-                folders.remove(folder)
-                print(path)
-                walk_workspaces.inspect_workspace(0, path, False)
+    for folder, _, file_names in os.walk(root):
         for file_name in file_names:
             if is_access_file(file_name):
-                data_source = os.path.join(path, file_name)
+                path = os.path.join(folder, file_name)
                 print(path)
-                walk_workspaces.inspect_workspace(0, path, False)
+                if is_pgdb(file_name):
+                    walk_workspaces.inspect_workspace(0, path, False)
 
 
 if __name__ == "__main__":
-    walk_fs(Config.start_folder)
+    find_pgdb(Config.start_folder)
