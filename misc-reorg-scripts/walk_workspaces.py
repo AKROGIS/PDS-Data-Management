@@ -77,7 +77,6 @@ def inspect_feature_datasets(level, workspace):
     ]
     for kind in kinds:
         for dataset in arcpy.ListDatasets("*", kind):
-            print("dataset",dataset)
             if dataset not in found:
                 found.add(dataset)
                 print_item(level, item, kind, dataset)
