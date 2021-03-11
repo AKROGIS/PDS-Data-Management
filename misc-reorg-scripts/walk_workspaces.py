@@ -16,6 +16,8 @@ import os.path
 
 import arcpy
 
+# pylint: disable=missing-function-docstring
+
 
 class Config(object):
     """Namespace for configuration parameters. Edit as needed."""

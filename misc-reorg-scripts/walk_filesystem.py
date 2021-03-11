@@ -18,6 +18,8 @@ import os.path
 
 import walk_workspaces
 
+# pylint: disable=missing-function-docstring
+
 
 class Config(object):
     """Namespace for configuration parameters. Edit as needed."""
@@ -47,13 +49,14 @@ def walk_fs(root):
         for folder in folders:
             if is_fgdb(folder):
                 folders.remove(folder)
-                print(path)
-                walk_workspaces.inspect_workspace(0, path, False)
+                fgdb = os.path.join(path, folder)
+                print(fgdb)
+                walk_workspaces.inspect_workspace(0, fgdb, False)
         for file_name in file_names:
-            if is_access_file(file_name):
-                data_source = os.path.join(path, file_name)
-                print(path)
-                walk_workspaces.inspect_workspace(0, path, False)
+            if is_pgdb(file_name):
+                fgdb = os.path.join(path, file_name)
+                print(fgdb)
+                walk_workspaces.inspect_workspace(0, fgdb, False)
 
 
 if __name__ == "__main__":
