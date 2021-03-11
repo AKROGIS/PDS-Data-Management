@@ -44,7 +44,7 @@ def inspect_workspace(level, workspace, folder=False):
         level += 1
         found = set()
         # Pro returns all files as workspaces with "All"
-        kinds = ["FileGDB", "Access", "SDE", "Coverage", "Folder"] #, "All"]
+        kinds = ["FileGDB", "Access", "SDE", "Coverage", "Folder"]  # , "All"]
         for kind in kinds:
             arcpy.env.workspace = workspace
             for name in arcpy.ListWorkspaces("*", kind):
@@ -144,7 +144,7 @@ def inspect_files(level, folder, found):
     arcpy.env.workspace = folder
     for name in arcpy.ListFiles():
         if name not in found:
-            print_item(level, item,  None, name)
+            print_item(level, item, None, name)
 
 
 def print_item(level, item, kind, name):
@@ -159,5 +159,5 @@ def print_item(level, item, kind, name):
 
 
 if __name__ == "__main__":
-    print_item(0,"Workspace", "Folder", Config.start_folder)
+    print_item(0, "Workspace", "Folder", Config.start_folder)
     inspect_workspace(0, Config.start_folder, True)

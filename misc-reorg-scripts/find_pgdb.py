@@ -14,6 +14,7 @@ import os.path
 
 import walk_workspaces
 
+
 class Config(object):
     """Namespace for configuration parameters. Edit as needed."""
 
