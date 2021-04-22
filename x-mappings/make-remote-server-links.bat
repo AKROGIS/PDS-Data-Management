@@ -18,7 +18,7 @@ mklink /D XDrive-LACL \\INPLACLvFS\GIS
 mklink /D XDrive-SEAN \\INPGLBAFS03\GISData
 mklink /D XDrive-KATM \\inpkatmvfs\GIS
 mklink /D XDrive-SITK \\INPSITKvFS\SITK\GISData
-mklink /D XDrive-NOME \\INPWEARNOMEvFS\GIS
+mklink /D XDrive-NOME \\INPBELAvFS\GIS
 mklink /D XDrive-KOTZ \\INPWEARvFS\GIS
 mklink /D XDrive-GLBA \\INPGLBAFSPri\GIS
 mklink /D XDrive-KENN \\inpwrstkennms\gis_data
