@@ -16,7 +16,7 @@ REM start /min CMD /c E:\XDrive\UpdateTools\robo-remote-server.bat E:\Xdrive\Rem
 start /min CMD /c E:\XDrive\UpdateTools\robo-remote-server.bat E:\XDrive\RemoteServers\XDrive-KEFJ %logpath% KEFJ "/R:5 /W:5 /Z /MIR /NDL /NP /NS /NC /XJ /RH:2200-0600 /PF"
 start /min CMD /c E:\XDrive\UpdateTools\robo-remote-server.bat E:\XDrive\RemoteServers\XDrive-YUGA %logpath% YUGA "/R:5 /W:5 /Z /MIR /NDL /NP /NS /NC /XJ /RH:2200-0600 /PF"
 start /min CMD /c E:\XDrive\UpdateTools\robo-remote-server.bat E:\XDrive\RemoteServers\XDrive-WRST %logpath% WRST "/R:5 /W:5 /Z /MIR /NDL /NP /NS /NC /XJ /RH:2000-0600 /PF /XD GIS_WRST"
-REM start /min CMD /c E:\XDrive\UpdateTools\robo-remote-server.bat E:\XDrive\RemoteServers\XDrive-KENN %logpath% KENN "/R:5 /W:5 /Z /MIR /NDL /NP /NS /NC /XJ /RH:1800-0600 /PF /XD GIS_WRST"
+start /min CMD /c E:\XDrive\UpdateTools\robo-remote-server.bat E:\XDrive\RemoteServers\XDrive-KENN %logpath% KENN "/R:5 /W:5 /Z /MIR /NDL /NP /NS /NC /XJ /RH:1800-0600 /PF /XD GIS_WRST"
 start /min CMD /c E:\XDrive\UpdateTools\robo-remote-server.bat E:\XDrive\RemoteServers\XDrive-DENA %logpath% DENA "/R:5 /W:5 /Z /MIR /NDL /NP /NS /NC /XJ /RH:2200-0600 /PF /XD Local Research_Files"
 start /min CMD /c E:\XDrive\UpdateTools\robo-remote-server.bat E:\XDrive\RemoteServers\XDrive-LACL %logpath% LACL "/R:5 /W:5 /Z /MIR /NDL /NP /NS /NC /XJ /RH:1800-0600 /PF"
 start /min CMD /c E:\XDrive\UpdateTools\robo-remote-server.bat E:\XDrive\RemoteServers\XDrive-KATM %logpath% KATM "/R:5 /W:5 /Z /MIR /NDL /NP /NS /NC /XJ /RH:1800-0600 /PF"
