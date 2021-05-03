@@ -21,5 +21,5 @@ mklink /D XDrive-SITK \\INPSITKvFS\SITK\GISData
 mklink /D XDrive-NOME \\INPBELAvFS\GIS
 mklink /D XDrive-KOTZ \\INPWEARvFS\GIS
 mklink /D XDrive-GLBA \\INPGLBAFSPri\GIS
-mklink /D XDrive-KENN \\inpwrstkennms\gis_data
+mklink /D XDrive-KENN \\inpwrstkenn\gis_data
 mklink /D XDrive-KLGO \\inpklgogis01\akro_gis
