@@ -147,8 +147,12 @@ def move_on_mounts(moves, mount_path, dry_run=True):
 
     Nothing is returned.
     """
+    logger.debug("Listing files in %s", mount_path)
     for server in os.listdir(mount_path):
         server_path = os.path.join(mount_path, server)
+        if os.path.isfile(server_path):
+            logger.debug("Skipping %s", server)
+            continue
         move_on_server(moves, server_path, dry_run=dry_run)
 
 
