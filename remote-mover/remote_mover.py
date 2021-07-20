@@ -201,6 +201,11 @@ def move_on_server(moves, server_path, dry_run=True):
             continue
         if not dry_run:
             try:
+                # create any needed sub folders
+                dest_folder = os.path.dirname(destination_path)
+                if not os.path.exists(dest_folder):
+                    logger.info("Creating destination folder %s", dest_folder)
+                    os.makedirs(dest_folder)
                 # Python 3.3+: If dst exists, the operation will fail with an
                 # OSError subclass.
                 # Python 2.7:  On Windows, if dst already exists, OSError will be
