@@ -328,7 +328,11 @@ def main():
                 logger.error("Unable to rename/move folders.")
                 logger.exception(ex)
                 return False
-            return True
+            if args.dry_run:
+                logger.info("Not updating the timestamp on a dry run")
+                return False
+            else:
+                return True
 
         date_limited.timestamped_operation(
             timed_csv_read, timestamp_override=args.since
