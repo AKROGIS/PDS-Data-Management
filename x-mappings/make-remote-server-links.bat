@@ -13,7 +13,7 @@ REM
 mklink /D XDrive-KEFJ \\inpkefjvfs01\GISData
 mklink /D XDrive-YUGA \\inpyugavmgis\GISData
 mklink /D XDrive-DENA \\inpdenagis\GIS_Data
-mklink /D XDrive-WRST \\INPWRSTvFS03\GIS_Data
+mklink /D XDrive-WRST \\INPWRSTvFS03\GIS
 mklink /D XDrive-LACL \\INPLACLvFS\GIS
 mklink /D XDrive-SEAN \\INPGLBAFS03\GISData
 mklink /D XDrive-KATM \\inpkatmvfs01\GIS
