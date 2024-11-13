@@ -11,7 +11,7 @@ REM   4) Delete the old junction e.g. rmdir E:\XDrive\RemoteServers\XDrive-LACL
 REM   5) Run this script e.g. E:\XDrive\RemoteServers\make-remote-server-links.bat
 REM
 mklink /D XDrive-KEFJ \\inpkefjvfs01\GISData
-mklink /D XDrive-YUGA \\inpyugavmgis\GISData
+mklink /D XDrive-YUGA \\inpyugagis\GISData
 mklink /D XDrive-DENA \\inpdenagis\GIS_Data
 mklink /D XDrive-WRST \\INPWRSTvFS03\GIS
 mklink /D XDrive-LACL \\INPLACLvFS\GIS
